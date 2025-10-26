@@ -1,12 +1,17 @@
-import './App.css'
-import { Routes, Route, Link } from "react-router-dom";
+import './App.css';
+import { Routes, Route } from "react-router-dom";
+import LandingPage from './pages/LandingPage';
+
+
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline text-red-800">College System</h1>
-      
-    </>
-  )
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPage />} />
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;
