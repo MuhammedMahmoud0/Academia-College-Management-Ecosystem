@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -99,7 +100,9 @@ export default function Header() {
 
       {/* Desktop Login Button */}
       <div className="login hidden lg:block">
-        <button className="cursor-pointer px-4 py-2 bg-[#4f46e5] text-white hover:bg-[#4338ca]" style={{ borderRadius: "8px"}}>Login</button>
+        <Link to="/login">
+          <button className="cursor-pointer px-4 py-2 bg-[#4f46e5] text-white hover:bg-[#4338ca]" style={{ borderRadius: "8px"}}>Login</button>
+        </Link>
       </div>
 
       {/* Mobile Menu Button */}
@@ -164,7 +167,9 @@ export default function Header() {
               <a href="#contact" onClick={(e) => handleSmoothScroll(e, '#contact')} className="block py-2">Contact</a>
             </li>
             <li className="mt-4">
-              <button className="w-full cursor-pointer px-4 py-2 bg-[#4f46e5] text-white hover:bg-[#4338ca]" style={{ borderRadius: "8px"}}>Login</button>
+              <Link to="/login">
+                <button className="w-full cursor-pointer px-4 py-2 bg-[#4f46e5] text-white hover:bg-[#4338ca]" style={{ borderRadius: "8px"}}>Login</button>
+              </Link>
             </li>
           </ul>
         </nav>
