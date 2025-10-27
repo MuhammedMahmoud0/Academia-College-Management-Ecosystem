@@ -11,6 +11,9 @@ import StudentSay from '../components/landingPage/student-say/StudentSay.jsx';
 import Events from '../components/landingPage/events/Events.jsx';
 import Programs from '../components/landingPage/programs/Programs.jsx';
 import Faq from '../components/landingPage/faq/Faq.jsx';
+import Contact from '../components/landingPage/contact/Contact.jsx';
+import Footer from '../components/landingPage/Footer.jsx';
+
 export default function LandingPage() {
     return (
         <div className="landing-page flex-column" style={{height:"100vh", width:"100%"}}>
@@ -27,6 +30,8 @@ export default function LandingPage() {
             <Events />
             <Programs />
             <Faq />
+            <Contact />
+            <Footer />
         </div>
     )
 }
