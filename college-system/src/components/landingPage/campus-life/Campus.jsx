@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ImagesCard from "./ImagesCard.jsx"; 
 
 import libraryImg from '../../../assets/images/library.jpg';
@@ -8,10 +8,32 @@ import loungeImg from '../../../assets/images/lounge.jpg';
 
 export default function Campus() {
     const [hoveredCard, setHoveredCard] = useState(null);
+    const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+    const videoRef = useRef(null);
     const videoUrl = "https://www.dropbox.com/scl/fi/zjhqrknt4iydbgr3ui3ky/college-tour.mp4?rlkey=jcig7h9frhakec6fmjk1w3ufx&st=vlto9bp1&dl=1";
 
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setShouldLoadVideo(true);
+                        observer.disconnect();
+                    }
+                });
+            },
+            { rootMargin: '200px' }
+        );
+
+        if (videoRef.current) {
+            observer.observe(videoRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <div className="campus-life-section py-20 px-8 bg-slate-100">
+        <div className="campus-life-section py-20 px-8 bg-slate-100 border border-slate-200">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
@@ -74,17 +96,25 @@ export default function Campus() {
                 </div>
 
                 {/* Video */}
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-4xl mx-auto" ref={videoRef}>
                     <div className="bg-slate-900 rounded-lg overflow-hidden shadow-2xl">
-                        <video 
-                            src={videoUrl} 
-                            controls
-                            controlsList="nodownload"
-                            disablePictureInPicture
-                            className="w-full h-auto"
-                        >
-                            Your browser does not support the video tag.
-                        </video>
+                        {shouldLoadVideo ? (
+                            <video 
+                                src={videoUrl} 
+                                controls
+                                controlsList="nodownload"
+                                disablePictureInPicture
+                                preload="metadata"
+                                className="w-full h-auto"
+                                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%230f172a' width='1920' height='1080'/%3E%3Ctext x='50%25' y='50%25' font-size='48' fill='%23fff' text-anchor='middle' dominant-baseline='middle'%3EClick to load video%3C/text%3E%3C/svg%3E"
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        ) : (
+                            <div className="w-full aspect-video bg-slate-900 flex items-center justify-center">
+                                <p className="text-slate-400">Loading video...</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
