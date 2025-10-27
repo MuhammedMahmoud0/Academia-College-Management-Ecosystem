@@ -35,13 +35,13 @@ export default function About() {
   }
 
   return (
-    <div className="about-section py-20 px-8 bg-white border border-slate-200">
+    <div id="about" className="about-section py-12 md:py-20 px-4 md:px-8 bg-white border border-slate-200">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left Content */}
           <div className="about-text">
             <motion.h1 
-              className="text-4xl font-bold text-slate-900 mb-4"
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -50,7 +50,7 @@ export default function About() {
               About Academia College
             </motion.h1>
             <motion.h2 
-              className="text-lg font-semibold text-indigo-600 mb-6"
+              className="text-base md:text-lg font-semibold text-indigo-600 mb-4 md:mb-6"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -59,7 +59,7 @@ export default function About() {
               Fostering a Legacy of Innovation and Excellence.
             </motion.h2>
             <motion.p 
-              className="text-slate-600 mb-4 leading-relaxed"
+              className="text-slate-600 mb-3 md:mb-4 leading-relaxed text-sm md:text-base"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -72,7 +72,7 @@ export default function About() {
               challenges.
             </motion.p>
             <motion.p 
-              className="text-slate-600 mb-8 leading-relaxed"
+              className="text-slate-600 mb-6 md:mb-8 leading-relaxed text-sm md:text-base"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -85,7 +85,7 @@ export default function About() {
 
             {/* Stats */}
             <motion.div 
-              className="grid grid-cols-3 gap-8"
+              className="grid grid-cols-3 gap-4 md:gap-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -97,10 +97,10 @@ export default function About() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <div className="text-4xl font-bold text-indigo-600 mb-1">
+                <div className="text-2xl md:text-4xl font-bold text-indigo-600 mb-1">
                   <Counter value={1985} />
                 </div>
-                <div className="text-sm text-slate-600">Founded In</div>
+                <div className="text-xs md:text-sm text-slate-600">Founded In</div>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -108,10 +108,10 @@ export default function About() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
               >
-                <div className="text-4xl font-bold text-indigo-600 mb-1">
+                <div className="text-2xl md:text-4xl font-bold text-indigo-600 mb-1">
                   <Counter value={50} suffix="+" />
                 </div>
-                <div className="text-sm text-slate-600">Student Clubs</div>
+                <div className="text-xs md:text-sm text-slate-600">Student Clubs</div>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -119,21 +119,21 @@ export default function About() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <div className="text-4xl font-bold text-indigo-600 mb-1">
+                <div className="text-2xl md:text-4xl font-bold text-indigo-600 mb-1">
                   <Counter value={10000} suffix="+" />
                 </div>
-                <div className="text-sm text-slate-600">Alumni Network</div>
+                <div className="text-xs md:text-sm text-slate-600">Alumni Network</div>
               </motion.div>
             </motion.div>
           </div>
 
           {/* Right Content - Image Placeholder */}
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 1, ease: "easeOut" }} className="about-image">
-            <div className="rounded-2xl h-96 flex items-center justify-center shadow-xl shadow-black/30 overflow-hidden bg-slate-200">
+            <div className="rounded-2xl h-64 md:h-96 flex items-center justify-center shadow-xl shadow-black/30 overflow-hidden bg-slate-200">
                 <img 
                   src={collegeImage} 
                   alt="College Campus" 
-                  className="rounded-2xl h-96 w-full object-cover transform-gpu"
+                  className="rounded-2xl h-64 md:h-96 w-full object-cover transform-gpu"
                   loading="lazy"
                   style={{ 
                     willChange: 'transform',

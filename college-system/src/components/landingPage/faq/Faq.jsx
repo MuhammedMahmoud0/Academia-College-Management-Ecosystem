@@ -32,17 +32,17 @@ export default function Faq() {
     };
 
     return (
-        <div className="faq-section py-20 px-8 bg-slate-50 border border-slate-200">
+        <div id="faq" className="faq-section py-12 md:py-20 px-4 md:px-8 bg-slate-50 border border-slate-200">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <motion.div 
-                    className="text-center mb-16"
+                    className="text-center mb-12 md:mb-16"
                     initial={{ opacity: 0, y: -20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.3 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2 className="text-4xl font-bold text-slate-900 mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">
                         Frequently Asked Questions
                     </h2>
                 </motion.div>

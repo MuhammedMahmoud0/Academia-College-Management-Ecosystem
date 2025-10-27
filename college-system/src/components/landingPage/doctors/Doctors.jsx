@@ -26,26 +26,26 @@ export default function Doctors() {
   ];
 
   return (
-    <div className="faculty-section py-20 px-8 bg-white border border-slate-200">
+    <div id="doctors" className="faculty-section py-12 md:py-20 px-4 md:px-8 bg-white border border-slate-200">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">
             Our Esteemed Faculty
           </h1>
-          <p className="text-slate-600">
+          <p className="text-slate-600 text-sm md:text-base">
             Learn from the brightest minds in the industry.
           </p>
         </motion.div>
 
         {/* Faculty Cards */}
-        <div className="grid md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
           {faculty.map((member, index) => (
             <motion.div 
               key={member.id} 
