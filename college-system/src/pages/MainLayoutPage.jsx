@@ -15,7 +15,7 @@ export default function MainLayoutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#f1f5f9]">
             {/* Header */}
             <Header onMenuToggle={toggleSidebar} />
 
