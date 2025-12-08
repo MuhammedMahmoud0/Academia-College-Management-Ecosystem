@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 // Initial exam schedule data
 const initialRows = [
@@ -82,40 +84,75 @@ const initialRows = [
 export default function ExamScheduleTable() {
   // State for managing rows
   const [rows, setRows] = useState(initialRows);
+  
+  // Responsive breakpoints
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Define columns with custom rendering
-  const columns = useMemo(() => [
-    { field: 'course', headerName: 'Course', flex: 0.8 },
-    { field: 'exam', headerName: 'Exam', flex: 1.8 },
-    { field: 'date', headerName: 'Date', flex: 1 },
-    { field: 'time', headerName: 'Time', flex: 1.2 },
-    { field: 'location', headerName: 'Location', flex: 1 },
-    {
-      field: 'status',
-      headerName: 'Status',
-      flex: 1,
-      renderCell: (params) => (
-        <span
-          style={{
-            backgroundColor:
-              params.value === 'Upcoming' ? '#dbeafe' :
-              params.value === 'Completed' ? '#d1fae5' :
-              '#f3f4f6',
-            color:
-              params.value === 'Upcoming' ? '#1e40af' :
-              params.value === 'Completed' ? '#065f46' :
-              '#374151',
-            padding: '4px 12px',
-            borderRadius: '6px',
-            fontWeight: '500',
-            fontSize: '0.875rem',
-          }}
-        >
-          {params.value}
-        </span>
-      ),
-    },
-  ], []);
+  const columns = useMemo(() => {
+    const baseColumns = [
+      { 
+        field: 'course', 
+        headerName: 'Course', 
+        flex: isMobile ? 0 : 0.8,
+        minWidth: isMobile ? 80 : 100,
+      },
+      { 
+        field: 'exam', 
+        headerName: 'Exam', 
+        flex: isMobile ? 0 : 1.8,
+        minWidth: isMobile ? 150 : 200,
+      },
+      { 
+        field: 'date', 
+        headerName: 'Date', 
+        flex: isMobile ? 0 : 1,
+        minWidth: isMobile ? 100 : 120,
+      },
+      { 
+        field: 'time', 
+        headerName: 'Time', 
+        flex: isMobile ? 0 : 1.2,
+        minWidth: isMobile ? 110 : 130,
+      },
+      { 
+        field: 'location', 
+        headerName: 'Location', 
+        flex: isMobile ? 0 : 1,
+        minWidth: isMobile ? 100 : 120,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        flex: isMobile ? 0 : 1,
+        minWidth: isMobile ? 100 : 120,
+        renderCell: (params) => (
+          <span
+            style={{
+              backgroundColor:
+                params.value === 'Upcoming' ? '#dbeafe' :
+                params.value === 'Completed' ? '#d1fae5' :
+                '#f3f4f6',
+              color:
+                params.value === 'Upcoming' ? '#1e40af' :
+                params.value === 'Completed' ? '#065f46' :
+                '#374151',
+              padding: isMobile ? '3px 8px' : '4px 12px',
+              borderRadius: '6px',
+              fontWeight: '500',
+              fontSize: isMobile ? '0.75rem' : '0.875rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {params.value}
+          </span>
+        ),
+      },
+    ];
+
+    return baseColumns;
+  }, [isMobile]);
 
   // Handle row updates (can be extended for future functionality)
   const processRowUpdate = (newRow) => {
@@ -135,11 +172,12 @@ export default function ExamScheduleTable() {
   };
   return (
     <Box 
-      className="bg-white p-8 rounded-2xl shadow-sm w-full" 
+      className="bg-white rounded-2xl shadow-sm w-full" 
       sx={{ 
         height: 'auto',
         width: '100%',
-        overflow: 'visible'
+        overflow: 'auto',
+        padding: { xs: '16px', sm: '24px', md: '32px' },
       }}
     >
       <DataGrid
@@ -155,23 +193,23 @@ export default function ExamScheduleTable() {
           minWidth: { xs: '600px', sm: '100%' },
           '& .MuiDataGrid-cell': {
             borderBottom: 'none',
-            fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
-          
+            fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+            padding: { xs: '8px', sm: '12px', md: '16px' },
             color: '#1f2937',
             fontWeight: '400',
           },
           '& .MuiDataGrid-columnHeaders': {
             borderBottom: '1px solid #e5e7eb',
             backgroundColor: 'transparent',
-            fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.9rem' },
+            fontSize: { xs: '0.75rem', sm: '0.85rem', md: '0.9rem' },
             fontWeight: '500',
             color: '#6b7280',
-            minHeight: '56px !important',
-            maxHeight: '56px !important',
+            minHeight: { xs: '48px !important', sm: '56px !important' },
+            maxHeight: { xs: '48px !important', sm: '56px !important' },
           },
           '& .MuiDataGrid-columnHeader': {
-         backgroundColor: '#f8fafc',
-            padding: '16px',
+            backgroundColor: '#f8fafc',
+            padding: { xs: '8px', sm: '12px', md: '16px' },
             '&:focus': {
               outline: 'none',
             },
@@ -186,6 +224,7 @@ export default function ExamScheduleTable() {
           '& .MuiDataGrid-row': {
             marginBottom: '0px',
             borderBottom: '1px solid #f3f4f6',
+            minHeight: { xs: '48px !important', sm: '52px !important' },
             '&:last-child': {
               borderBottom: 'none',
             }
