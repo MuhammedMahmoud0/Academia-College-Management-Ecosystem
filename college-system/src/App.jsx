@@ -6,7 +6,7 @@ import MainLayoutPage from './pages/MainLayoutPage';
 import Info from './components/info page/Info';
 import CoursesAndGradesPage from './components/courses&grades/courses&grades';
 import ExamSchedulePage from './components/examSchedule/ExamSchedule';
-
+import TeacherSchedulePage from './components/TeacherSchedule/TeacherSchedule';
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
           <Route path="info" element={<Info />} />
           <Route path="courses" element={<CoursesAndGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
-          <Route path="teachers" element={<div className="text-2xl">Teacher's Table Page</div>} />
+          <Route path="teachers" element={<TeacherSchedulePage />} />
           <Route path="register" element={<div className="text-2xl">Courses Register Page</div>} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<div className="text-2xl">Material Page</div>} />
