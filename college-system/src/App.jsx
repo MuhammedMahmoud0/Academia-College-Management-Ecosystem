@@ -7,6 +7,7 @@ import Info from './components/info page/Info';
 import CoursesAndGradesPage from './components/courses&grades/courses&grades';
 import ExamSchedulePage from './components/examSchedule/ExamSchedule';
 import TeacherSchedulePage from './components/TeacherSchedule/TeacherSchedule';
+import StudentSchedulePage from './components/StudentSchedule/StudentSchedule';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="courses" element={<CoursesAndGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
           <Route path="teachers" element={<TeacherSchedulePage />} />
+           <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<div className="text-2xl">Courses Register Page</div>} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<div className="text-2xl">Material Page</div>} />

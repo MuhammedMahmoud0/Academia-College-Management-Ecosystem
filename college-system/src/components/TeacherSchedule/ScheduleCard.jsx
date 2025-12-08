@@ -19,9 +19,13 @@ export default function ScheduleCard({ course, timeColorMap }) {
             <div className="text-xs sm:text-sm md:text-base">{course.time}</div>
           </div>
 
-          <div className="flex gap-1 sm:gap-2 items-center text-gray-700 pb-2 sm:pb-3 md:pb-5">
+          <div className="flex gap-1 sm:gap-2 items-center text-gray-700 ">
             <LocationOnIcon sx={{ fontSize: { xs: '16px', sm: '18px', md: '24px' } }} /> 
             <div className="text-xs sm:text-sm md:text-base">{course.location}</div>
+          </div>
+             <div className="flex gap-1 sm:gap-2 items-center text-gray-700 pb-2 sm:pb-3 md:pb-5">
+            
+            <div className="text-xs sm:text-sm md:text-base">{course.doctor}</div>
           </div>
         </div>
       </div>
