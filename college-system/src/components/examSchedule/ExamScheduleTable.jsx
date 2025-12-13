@@ -90,7 +90,19 @@ export default function ExamScheduleTable() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Define columns with custom rendering
-  const columns = useMemo(() => {
+const columns = useMemo(() => {
+    // Helper to get colors based on status
+    const getStatusColor = (status) => {
+      switch (status) {
+        case 'Upcoming':
+          return { bg: '#DBEAFE', text: '#1E40AF' }; // Blue-100 bg, Blue-800 text
+        case 'Completed':
+          return { bg: '#D1FAE5', text: '#065F46' }; // Green-100 bg, Green-800 text
+        default:
+          return { bg: '#F3F4F6', text: '#374151' }; // Gray default
+      }
+    };
+
     const baseColumns = [
       { 
         field: 'course', 
@@ -127,27 +139,36 @@ export default function ExamScheduleTable() {
         headerName: 'Status',
         flex: isMobile ? 0 : 1,
         minWidth: isMobile ? 100 : 120,
-        renderCell: (params) => (
-          <span
-            style={{
-              backgroundColor:
-                params.value === 'Upcoming' ? '#dbeafe' :
-                params.value === 'Completed' ? '#d1fae5' :
-                '#f3f4f6',
-              color:
-                params.value === 'Upcoming' ? '#1e40af' :
-                params.value === 'Completed' ? '#065f46' :
-                '#374151',
-              padding: isMobile ? '3px 8px' : '4px 12px',
-              borderRadius: '6px',
-              fontWeight: '500',
-              fontSize: isMobile ? '0.75rem' : '0.875rem',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {params.value}
-          </span>
-        ),
+        align: 'center',       // Aligns the cell content container
+        headerAlign: 'center', // Aligns the header title
+        renderCell: (params) => {
+          const styles = getStatusColor(params.value);
+          
+          return (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              width: '100%', 
+              height: '100%' 
+            }}>
+              <span
+                style={{
+                  backgroundColor: styles.bg,
+                  color: styles.text,
+                  padding: isMobile ? '4px 12px' : '6px 16px',
+                  borderRadius: '9999px',
+                  fontWeight: '600',
+                  fontSize: isMobile ? '0.75rem' : '0.8rem',
+                  lineHeight: 1, // Ensures text is vertically centered in the pill
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {params.value}
+              </span>
+            </div>
+          );
+        },
       },
     ];
 
@@ -197,6 +218,8 @@ export default function ExamScheduleTable() {
             padding: { xs: '8px', sm: '12px', md: '16px' },
             color: '#1f2937',
             fontWeight: '400',
+            display: 'flex',
+            alignItems: 'center',
           },
           '& .MuiDataGrid-columnHeaders': {
             borderBottom: '1px solid #e5e7eb',

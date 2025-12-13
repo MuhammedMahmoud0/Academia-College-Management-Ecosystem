@@ -23,7 +23,11 @@ export default function ScheduleCard({ course, timeColorMap }) {
             <LocationOnIcon sx={{ fontSize: { xs: '18px', sm: '20px', md: '22px' } }} /> 
             <div className="text-xs sm:text-sm md:text-base font-medium">{course.location}</div>
           </div>
-       
+          {course.doctor && (
+            <div className="flex gap-2 items-center text-gray-700 pb-5">
+              <div className="text-xs sm:text-sm md:text-base font-medium">{course.doctor}</div>
+            </div>
+          )}
         </div>
       </div>
 
