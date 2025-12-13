@@ -151,6 +151,8 @@ export default function CourseTableRegistration() {
             padding: { xs: '8px', sm: '12px', md: '16px' },
             color: '#1f2937',
             fontWeight: '400',
+            display: 'flex',
+            alignItems: 'center',
           },
           '& .MuiDataGrid-columnHeaders': {
             borderBottom: '1px solid #e5e7eb',

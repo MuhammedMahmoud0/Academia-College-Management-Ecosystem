@@ -1,5 +1,5 @@
 import React from "react";
-import ScheduleCard from "../TeacherSchedule/ScheduleCard.jsx";
+import ScheduleCard from "../StudentSchedule/ScheduleCard.jsx";
 
 export default function StudentSchedulePage() {
   // 1. Define your Color Map
@@ -63,14 +63,14 @@ export default function StudentSchedulePage() {
         <h1 className="text-xl sm:text-2xl font-semibold mb-4">Weekly Schedule</h1>
       </div>
 
-      {/* Scrollable Container for Mobile */}
-      <div className="overflow-x-auto px-4 sm:px-6 md:px-8">
-        {/* Grid Container: 7 Columns */}
-        <div className="grid grid-cols-7 gap-2 sm:gap-3 md:gap-4 mb-6 min-w-[1200px] lg:min-w-0">
+      {/* Responsive Grid Container */}
+      <div className="px-4 sm:px-6 md:px-8">
+        {/* Grid Container: Responsive Columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5 lg:gap-4 mb-6">
           {days.map((day) => (
             <div key={day} className="flex flex-col gap-2 sm:gap-3">
               {/* Column Header */}
-              <h1 className="font-bold text-center border-b-2 border-gray-500 pb-3 sm:pb-4 md:pb-5 mb-2 sm:mb-3 text-sm sm:text-base md:text-lg">
+              <h1 className="font-bold text-center border-b-2 border-gray-500 pb-2 sm:pb-3 md:pb-4 mb-2 sm:mb-3 text-base sm:text-lg md:text-xl">
                 {day}
               </h1>
 
@@ -79,7 +79,7 @@ export default function StudentSchedulePage() {
                 const course = scheduleData[day] && scheduleData[day][timeSlot];
 
                 return (
-                  <div key={`${day}-${timeSlot}`} className="h-full min-h-[100px] sm:min-h-[90px] md:min-h-[130px]">
+                  <div key={`${day}-${timeSlot}`} className="h-full min-h-[120px] sm:min-h-[130px] md:min-h-[140px]">
                     {course ? (
                       <ScheduleCard 
                         course={{ ...course, time: timeSlot }} 
@@ -87,8 +87,8 @@ export default function StudentSchedulePage() {
                       />
                     ) : (
                       // Empty Placeholder to maintain grid shape
-                      <div className="border border-dashed border-gray-300 rounded-lg h-full flex items-center justify-center text-gray-300 text-xs sm:text-sm">
-                        _
+                      <div className="border border-dashed border-gray-300 rounded-lg h-full flex items-center justify-center text-gray-400 text-sm">
+                        -
                       </div>
                     )}
                   </div>

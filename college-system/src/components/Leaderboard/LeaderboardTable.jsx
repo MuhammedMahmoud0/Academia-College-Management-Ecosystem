@@ -45,19 +45,26 @@ export default function LeaderboardTable({ selectedYear }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Filter rows based on selected year
+  // Filter rows based on selected year and re-rank
   const filteredRows = useMemo(() => {
     if (selectedYear === 'all') return rows;
-    return rows.filter(row => row.year === parseInt(selectedYear));
+    const filtered = rows.filter(row => row.year === parseInt(selectedYear));
+    // Re-rank the filtered results
+    return filtered.map((row, index) => ({
+      ...row,
+      rank: index + 1
+    }));
   }, [rows, selectedYear]);
 
-  const columns = useMemo(() => {
+ const columns = useMemo(() => {
     const baseColumns = [
       {
         field: 'rank',
         headerName: 'Rank',
         flex: isMobile ? 0 : 0.5,
         minWidth: isMobile ? 50 : 70,
+        align: 'center',
+        headerAlign: 'center',
         renderCell: (params) => {
           const rank = params.value;
           let icon = null;
@@ -86,10 +93,13 @@ export default function LeaderboardTable({ selectedYear }) {
       {
         field: 'name',
         headerName: 'Student',
-        flex: isMobile ? 0 : 2,
+        flex: isMobile ? 0 : 0.8,
         minWidth: isMobile ? 140 : 200,
+        align: 'left',       // Changed: Left align looks better for names
+        headerAlign: 'left', // Changed: Match header to content
         renderCell: (params) => (
-          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+          // align-items center keeps it vertically centered, but we remove justify-center
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', height: '100%', gap: isMobile ? '8px' : '12px' }}>
             <Avatar
               sx={{
                 backgroundColor: params.row.avatarColor,
@@ -97,7 +107,8 @@ export default function LeaderboardTable({ selectedYear }) {
                 width: isMobile ? 28 : 36,
                 height: isMobile ? 28 : 36,
                 fontSize: isMobile ? '0.75rem' : '1rem',
-                fontWeight: 600
+                fontWeight: 600,
+                borderRadius: '50%'
               }}
             >
               {params.row.avatar}
@@ -111,6 +122,11 @@ export default function LeaderboardTable({ selectedYear }) {
         headerName: 'ID',
         flex: isMobile ? 0 : 1.2,
         minWidth: isMobile ? 90 : 120,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (params) => (
+            <span style={{ color: '#6b7280', fontSize: '0.85rem' }}>{params.value}</span>
+        )
       },
       {
         field: 'year',
@@ -125,17 +141,16 @@ export default function LeaderboardTable({ selectedYear }) {
         headerName: 'GPA',
         flex: isMobile ? 0 : 0.8,
         minWidth: isMobile ? 70 : 90,
-        align: 'right',
-        headerAlign: 'right',
+        align: 'center',
+        headerAlign: 'center',
         renderCell: (params) => (
-          <span style={{ fontWeight: 600 }}>{params.value.toFixed(2)}</span>
+          <span style={{ fontWeight: 700, color: '#111827' }}>{params.value.toFixed(2)}</span>
         ),
       },
     ];
 
     return baseColumns;
   }, [isMobile]);
-
   const processRowUpdate = (newRow) => {
     return newRow;
   };
@@ -146,7 +161,8 @@ export default function LeaderboardTable({ selectedYear }) {
       sx={{
         height: 'auto',
         width: '100%',
-        overflow: 'auto',
+        overflowX: 'auto',
+        overflowY: 'visible',
         padding: { xs: '12px', sm: '20px', md: '32px' },
       }}
     >
@@ -161,17 +177,22 @@ export default function LeaderboardTable({ selectedYear }) {
         autoHeight
         disableColumnMenu
         disableRowSelectionOnClick
+        rowCount={filteredRows.length}
+        getRowHeight={() => 'auto'}
         sx={{
           textAlign: 'left',
           border: 'none',
-          minWidth: { xs: '600px', sm: '100%' },
+          minWidth: '100%',
           '& .MuiDataGrid-cell': {
             borderBottom: 'none',
             fontSize: { xs: '0.75rem', sm: '0.875rem', md: '0.9rem' },
             padding: { xs: '10px 6px', sm: '14px 10px', md: '16px' },
             color: '#1f2937',
             fontWeight: '400',
+            display: 'flex',
+            alignItems: 'center',
           },
+
           '& .MuiDataGrid-columnHeaders': {
             borderBottom: '1px solid #e5e7eb',
             backgroundColor: '#f9fafb',
