@@ -11,6 +11,8 @@ import StudentSchedulePage from './components/StudentSchedule/StudentSchedule';
 import StudentRegistrationPage from './components/StuentRegestration/StudentRegestration';
 import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
 import CommunityPage from './components/Community Page/CommunityPage';
+import StudentAnalyticsPage from './components/Student Analytics/StudentAnalytics';
+import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
 function App() {
   return (
     <div className="App">
@@ -28,8 +30,8 @@ function App() {
            <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
-          <Route path="material" element={<div className="text-2xl">Material Page</div>} />
-          <Route path="analytics" element={<div className="text-2xl">Analytics Page</div>} />
+          <Route path="material" element={<StudentMatrialsPage />} />
+          <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
