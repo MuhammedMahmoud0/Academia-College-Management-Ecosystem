@@ -11,6 +11,7 @@ import StudentSchedulePage from './components/StudentSchedule/StudentSchedule';
 import StudentRegistrationPage from './components/StuentRegestration/StudentRegestration';
 import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
 import CommunityPage from './components/Community Page/CommunityPage';
+import IDPage from './components/id_page/IDPage';
 function App() {
   return (
     <div className="App">
@@ -25,7 +26,7 @@ function App() {
           <Route path="courses" element={<CoursesAndGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
           <Route path="teachers" element={<TeacherSchedulePage />} />
-           <Route path="students" element={<StudentSchedulePage />} />
+          <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<div className="text-2xl">Material Page</div>} />
@@ -33,6 +34,7 @@ function App() {
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
+          <Route path="id-card" element={<IDPage />} />
           <Route index element={<Info />} />
         </Route>
       </Routes>
