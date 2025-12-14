@@ -13,6 +13,7 @@ import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
 import CommunityPage from './components/Community Page/CommunityPage';
 import StudentAnalyticsPage from './components/Student Analytics/StudentAnalytics';
 import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
+import IDPage from './components/id_page/IDPage';
 function App() {
   return (
     <div className="App">
@@ -27,7 +28,7 @@ function App() {
           <Route path="courses" element={<CoursesAndGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
           <Route path="teachers" element={<TeacherSchedulePage />} />
-           <Route path="students" element={<StudentSchedulePage />} />
+          <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<StudentMatrialsPage />} />
@@ -35,6 +36,7 @@ function App() {
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
+          <Route path="id-card" element={<IDPage />} />
           <Route index element={<Info />} />
         </Route>
       </Routes>
