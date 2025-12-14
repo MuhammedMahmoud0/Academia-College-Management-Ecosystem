@@ -10,7 +10,7 @@ import TeacherSchedulePage from './components/TeacherSchedule/TeacherSchedule';
 import StudentSchedulePage from './components/StudentSchedule/StudentSchedule';
 import StudentRegistrationPage from './components/StuentRegestration/StudentRegestration';
 import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
-
+import CommunityPage from './components/Community Page/CommunityPage';
 function App() {
   return (
     <div className="App">
@@ -31,7 +31,7 @@ function App() {
           <Route path="material" element={<div className="text-2xl">Material Page</div>} />
           <Route path="analytics" element={<div className="text-2xl">Analytics Page</div>} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
-          <Route path="community" element={<div className="text-2xl">Community Page</div>} />
+          <Route path="community" element={<CommunityPage />} />
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
           <Route index element={<Info />} />
         </Route>
