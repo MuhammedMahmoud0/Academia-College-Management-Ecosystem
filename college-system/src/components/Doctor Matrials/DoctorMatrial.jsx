@@ -1,9 +1,14 @@
 import LecturesMatrial from "./LecturesMatrial";
 import ExternalResourses from './ExternalResourses';
+import AddMaterialModal from './AddMaterialModal';
+import EditMaterialModal from './EditMaterialModal';
 import { Search } from '@mui/icons-material';
 import { useState } from "react";
 export default function DoctorMaterialsPage () {
    const [selectedCourse, setSelectedCourse] = useState('CS462');
+   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+   const [editingMaterial, setEditingMaterial] = useState(null);
    
      const lectures = [
        {
@@ -26,6 +31,26 @@ export default function DoctorMaterialsPage () {
          url: 'https://ai.googleblog.com',
        },
      ];
+
+     const handleAddMaterial = (data) => {
+       console.log('Adding material:', data);
+       // Add your logic to save the material
+     };
+
+     const handleEditMaterial = (data) => {
+       console.log('Editing material:', data);
+       // Add your logic to update the material
+     };
+
+     const handleOpenEdit = (material) => {
+       setEditingMaterial(material);
+       setIsEditModalOpen(true);
+     };
+
+     const handleDelete = (id) => {
+       console.log('Deleting material:', id);
+       // Add your logic to delete the material
+     };
    
      return (
        <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
@@ -67,7 +92,10 @@ export default function DoctorMaterialsPage () {
            </div>
            {/* add material button */}
               <div className=" rounded-lg p-3 sm:p-4  flex items-center justify-center">
-                <button className="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium py-2 sm:py-2.5 md:py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 text-sm sm:text-base">
+                <button 
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium py-2 sm:py-2.5 md:py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 text-sm sm:text-base"
+                >
                   + Add Material
                 </button>
               </div>
@@ -80,7 +108,12 @@ export default function DoctorMaterialsPage () {
            </h2>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
              {lectures.map((lecture) => (
-               <LecturesMatrial key={lecture.id} lecture={lecture} />
+               <LecturesMatrial 
+                 key={lecture.id} 
+                 lecture={lecture} 
+                 onEdit={() => handleOpenEdit({ ...lecture, section: 'Lecture Materials', type: 'file' })}
+                 onDelete={() => handleDelete(lecture.id)}
+               />
              ))}
            </div>
          </div>
@@ -92,10 +125,28 @@ export default function DoctorMaterialsPage () {
            </h2>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
              {externalResources.map((resource) => (
-               <ExternalResourses key={resource.id} resource={resource} />
+               <ExternalResourses 
+                 key={resource.id} 
+                 resource={resource} 
+                 onEdit={() => handleOpenEdit({ ...resource, section: 'External Resources', type: 'link' })}
+                 onDelete={() => handleDelete(resource.id)}
+               />
              ))}
            </div>
          </div>
+
+         {/* Modals */}
+         <AddMaterialModal 
+           isOpen={isAddModalOpen}
+           onClose={() => setIsAddModalOpen(false)}
+           onSave={handleAddMaterial}
+         />
+         <EditMaterialModal 
+           isOpen={isEditModalOpen}
+           onClose={() => setIsEditModalOpen(false)}
+           onSave={handleEditMaterial}
+           material={editingMaterial}
+         />
        </div>
     );
 
