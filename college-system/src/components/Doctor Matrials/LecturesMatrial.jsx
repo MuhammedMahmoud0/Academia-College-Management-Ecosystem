@@ -1,14 +1,20 @@
 import { Description, Download, Edit, Delete } from '@mui/icons-material';
 
-export default function LecturesMatrial({ lecture }) {
+export default function LecturesMatrial({ lecture, onEdit, onDelete }) {
   return (
     <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-200">
       {/* Action Buttons */}
       <div className="flex justify-end gap-1 sm:gap-2 mb-2 sm:mb-3">
-        <button className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-md sm:rounded-lg transition-colors">
+        <button 
+          onClick={onEdit}
+          className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-md sm:rounded-lg transition-colors"
+        >
           <Edit className="text-gray-600 text-base sm:text-lg" />
         </button>
-        <button className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-md sm:rounded-lg transition-colors">
+        <button 
+          onClick={onDelete}
+          className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-md sm:rounded-lg transition-colors"
+        >
           <Delete className="text-gray-600 text-base sm:text-lg" />
         </button>
       </div>
