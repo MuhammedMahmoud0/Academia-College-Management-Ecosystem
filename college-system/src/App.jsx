@@ -13,6 +13,7 @@ import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
 import CommunityPage from './components/Community Page/CommunityPage';
 import StudentAnalyticsPage from './components/Student Analytics/StudentAnalytics';
 import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
+import DoctorMaterialsPage from './components/Doctor Matrials/DoctorMatrial';
 import IDPage from './components/id_page/IDPage';
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="register" element={<StudentRegistrationPage />} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<StudentMatrialsPage />} />
+          <Route path="doctormaterial" element={<DoctorMaterialsPage />} />
           <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
