@@ -1,20 +1,15 @@
+import 'package:college_project/core/routing/app_routes.dart';
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Define colors from the screenshot
-    const Color primaryColor = Color(0xFF4B4EFC); // Approx blue/purple
-    const Color cardBackgroundColor = Colors.white;
-    const Color backgroundColor = Color(0xFFF8F9FA); // Light grey background
-    const Color textColor = Color(0xFF333333);
-    const Color subtitleColor = Color(0xFF666666);
-    const Color borderColor = Color(0xFFE0E0E0);
-
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -33,14 +28,18 @@ class LoginScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.school, color: primaryColor, size: 32),
+                        const Icon(
+                          Icons.school,
+                          color: AppColors.primaryColor,
+                          size: 32,
+                        ),
                         const SizedBox(width: 12),
                         Text(
                           'Academia College',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w600,
-                            color: textColor,
+                            color: AppColors.textColor,
                           ),
                         ),
                       ],
@@ -54,14 +53,17 @@ class LoginScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
-                        color: textColor,
+                        color: AppColors.textColor,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Sign in to continue to your account.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: subtitleColor),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.subtitleColor,
+                      ),
                     ),
                     const SizedBox(height: 32),
 
@@ -69,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(24.0),
                       decoration: BoxDecoration(
-                        color: cardBackgroundColor,
+                        color: AppColors.cardBackgroundColor,
                         borderRadius: BorderRadius.circular(24.0),
                         boxShadow: [
                           BoxShadow(
@@ -88,7 +90,7 @@ class LoginScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: textColor,
+                              color: AppColors.textColor,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -98,24 +100,24 @@ class LoginScreen extends StatelessWidget {
                               hintText: 'you@example.com',
                               prefixIcon: const Icon(
                                 Icons.email_outlined,
-                                color: subtitleColor,
+                                color: AppColors.subtitleColor,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: borderColor,
+                                  color: AppColors.borderColor,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: borderColor,
+                                  color: AppColors.borderColor,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: primaryColor,
+                                  color: AppColors.primaryColor,
                                 ),
                               ),
                             ),
@@ -131,7 +133,7 @@ class LoginScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: textColor,
+                                  color: AppColors.textColor,
                                 ),
                               ),
                               TextButton(
@@ -142,7 +144,7 @@ class LoginScreen extends StatelessWidget {
                                   'Forgot password?',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: primaryColor,
+                                    color: AppColors.primaryColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -156,24 +158,24 @@ class LoginScreen extends StatelessWidget {
                               hintText: '••••••••',
                               prefixIcon: const Icon(
                                 Icons.lock_outline,
-                                color: subtitleColor,
+                                color: AppColors.subtitleColor,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: borderColor,
+                                  color: AppColors.borderColor,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: borderColor,
+                                  color: AppColors.borderColor,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                                 borderSide: const BorderSide(
-                                  color: primaryColor,
+                                  color: AppColors.primaryColor,
                                 ),
                               ),
                             ),
@@ -184,9 +186,10 @@ class LoginScreen extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () {
                               // Handle login
+                              context.pushReplacement(AppRoutes.homeScreen);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
+                              backgroundColor: AppColors.primaryColor,
                               foregroundColor: Colors.white,
                               minimumSize: const Size(
                                 double.infinity,
