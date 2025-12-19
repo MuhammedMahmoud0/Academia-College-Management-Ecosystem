@@ -16,6 +16,7 @@ import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
 import DoctorMaterialsPage from './components/Doctor Matrials/DoctorMatrial';
 import IDPage from './components/id_page/IDPage';
 import FAQPage from './components/FAQ/FAQ';
+import NotificationsPage from './components/Notification/Notifications';
 function App() {
   return (
     <div className="App">
@@ -41,6 +42,7 @@ function App() {
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
           <Route path="id-card" element={<IDPage />} />
           <Route path="faq" element={<FAQPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
           <Route index element={<Info />} />
         </Route>
       </Routes>
