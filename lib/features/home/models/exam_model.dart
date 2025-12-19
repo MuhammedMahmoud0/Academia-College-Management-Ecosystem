@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Exam {
   final String id;
   final String courseName;
@@ -36,17 +38,39 @@ class Exam {
       'Nov',
       'Dec',
     ];
-    return '${months[dateTime.month - 1]} ${dateTime.day}';
+    return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
 
   String get formattedTime {
-    final hour = dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
+    final hour = dateTime.hour > 12
+        ? dateTime.hour - 12
+        : (dateTime.hour == 0 ? 12 : dateTime.hour);
     final period = dateTime.hour >= 12 ? 'PM' : 'AM';
     final minute = dateTime.minute.toString().padLeft(2, '0');
     return '$hour:$minute $period';
   }
 
-  // Mock data
+  String get formattedDuration {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    if (minutes == 0) return '$hours min';
+    return '${duration.inMinutes} min';
+  }
+
+  // Helper for UI coloring based on logic (can be moved to a ViewModel later)
+  Color get statusColor {
+    final now = DateTime.now();
+    if (dateTime.isBefore(now)) return const Color(0xFF10B981); // Completed
+    if (daysRemaining < 0) return const Color(0xFFEF4444); // Missed
+    return const Color(0xFF6366F1); // Upcoming
+  }
+
+  String get statusString {
+    final now = DateTime.now();
+    if (dateTime.isBefore(now)) return 'completed';
+    return 'upcoming';
+  }
+
   static List<Exam> mockExams = [
     Exam(
       id: '1',
@@ -68,7 +92,9 @@ class Exam {
       id: '3',
       courseName: 'Database Systems',
       courseCode: 'CS310',
-      dateTime: DateTime.now().add(const Duration(days: 12)),
+      dateTime: DateTime.now().subtract(
+        const Duration(days: 2),
+      ), // Mocking a completed one
       location: 'Hall A-301',
       duration: const Duration(hours: 2),
     ),

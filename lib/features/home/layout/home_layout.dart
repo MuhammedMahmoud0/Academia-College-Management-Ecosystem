@@ -1,6 +1,9 @@
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
+import 'package:college_project/features/courses/courses_screen.dart';
+import 'package:college_project/features/exams/exams_screen.dart';
 import 'package:college_project/features/home/screens/home_screen.dart';
+import 'package:college_project/features/registration/registration_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeLayout extends StatefulWidget {
@@ -15,9 +18,9 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const _PlaceholderScreen(title: 'Courses & Grades'),
-    const _PlaceholderScreen(title: 'Registration'),
-    const _PlaceholderScreen(title: 'Exams'),
+    const CoursesGradesScreen(),
+    const CourseRegistrationScreen(),
+    const ExamDashboardScreen(),
     const _PlaceholderScreen(title: 'Profile'),
   ];
 
