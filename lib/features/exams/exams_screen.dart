@@ -64,11 +64,26 @@ class _ExamDashboardScreenState extends State<ExamDashboardScreen>
   }
 
   Widget _buildFilteredExamList(String status) {
-    // In a real MVVM app, this filtering logic would be in a ViewModel
+    final now = DateTime.now();
+
+    // Filtering logic now fully implements the 'missed' state
     final filteredExams = Exam.mockExams.where((exam) {
-      if (status == 'upcoming') return exam.statusString == 'upcoming';
-      if (status == 'completed') return exam.statusString == 'completed';
-      // Basic missed logic for demo: upcoming but time has passed
+      final isPast = exam.dateTime.isBefore(now);
+
+      if (status == 'upcoming') {
+        return !isPast;
+      }
+      if (status == 'completed') {
+        // In this mock, we assume exams are completed if they are in the past
+        // and specifically tagged as completed in a real DB.
+        // For the demo, we'll use the statusString helper.
+        return exam.statusString == 'completed';
+      }
+      if (status == 'missed') {
+        // An exam is missed if the date has passed but it wasn't 'completed'.
+        // For this mock logic, we'll show exams that are past but not completed.
+        return isPast && exam.statusString != 'completed';
+      }
       return false;
     }).toList();
 
@@ -77,11 +92,15 @@ class _ExamDashboardScreenState extends State<ExamDashboardScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_note_outlined, size: 64, color: Colors.grey[300]),
+            Icon(Icons.event_busy_outlined, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
               'No $status exams found',
-              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+              style: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

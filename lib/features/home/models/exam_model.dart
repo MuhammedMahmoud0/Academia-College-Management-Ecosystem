@@ -7,6 +7,8 @@ class Exam {
   final DateTime dateTime;
   final String location;
   final Duration duration;
+  final String? description;
+  final bool isCompleted;
 
   const Exam({
     required this.id,
@@ -15,6 +17,8 @@ class Exam {
     required this.dateTime,
     required this.location,
     required this.duration,
+    this.description,
+    this.isCompleted = false,
   });
 
   int get daysRemaining {
@@ -51,23 +55,21 @@ class Exam {
   }
 
   String get formattedDuration {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    if (minutes == 0) return '$hours min';
-    return '${duration.inMinutes} min';
+    final minutes = duration.inMinutes;
+    return '$minutes min';
   }
 
-  // Helper for UI coloring based on logic (can be moved to a ViewModel later)
   Color get statusColor {
     final now = DateTime.now();
-    if (dateTime.isBefore(now)) return const Color(0xFF10B981); // Completed
-    if (daysRemaining < 0) return const Color(0xFFEF4444); // Missed
-    return const Color(0xFF6366F1); // Upcoming
+    if (isCompleted) return const Color(0xFF10B981); // Completed (Green)
+    if (dateTime.isBefore(now)) return const Color(0xFFEF4444); // Missed (Red)
+    return const Color(0xFF6366F1); // Upcoming (Indigo)
   }
 
   String get statusString {
     final now = DateTime.now();
-    if (dateTime.isBefore(now)) return 'completed';
+    if (isCompleted) return 'completed';
+    if (dateTime.isBefore(now)) return 'missed';
     return 'upcoming';
   }
 
@@ -79,6 +81,7 @@ class Exam {
       dateTime: DateTime.now().add(const Duration(days: 3)),
       location: 'Hall A-201',
       duration: const Duration(hours: 2),
+      description: 'Covers Trees, Graphs, and Hash Tables.',
     ),
     Exam(
       id: '2',
@@ -87,16 +90,37 @@ class Exam {
       dateTime: DateTime.now().add(const Duration(days: 7)),
       location: 'Hall B-105',
       duration: const Duration(hours: 2, minutes: 30),
+      description: 'Focuses on Dynamic Programming and Greedy Algorithms.',
     ),
     Exam(
       id: '3',
       courseName: 'Database Systems',
       courseCode: 'CS310',
-      dateTime: DateTime.now().subtract(
-        const Duration(days: 2),
-      ), // Mocking a completed one
+      dateTime: DateTime.now().subtract(const Duration(days: 2)),
       location: 'Hall A-301',
       duration: const Duration(hours: 2),
+      isCompleted: true,
+      description: 'Final exam covering SQL and Normalization.',
+    ),
+    Exam(
+      id: '4',
+      courseName: 'Discrete Mathematics',
+      courseCode: 'MATH201',
+      dateTime: DateTime.now().subtract(const Duration(days: 5)),
+      location: 'Hall C-102',
+      duration: const Duration(hours: 3),
+      isCompleted: false,
+      description: 'Midterm covering Logic and Set Theory.',
+    ),
+    Exam(
+      id: '5',
+      courseName: 'Operating Systems',
+      courseCode: 'CS305',
+      dateTime: DateTime.now().subtract(const Duration(hours: 5)),
+      location: 'Lab 4',
+      duration: const Duration(hours: 2),
+      isCompleted: false,
+      description: 'Exam on Process Scheduling and Memory Management.',
     ),
   ];
 }

@@ -1,3 +1,4 @@
+import 'package:college_project/core/routing/app_routes.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
 import 'package:college_project/features/home/models/exam_model.dart';
@@ -10,6 +11,7 @@ import 'package:college_project/features/home/widgets/quick_actions_row.dart';
 import 'package:college_project/features/home/widgets/recent_grades.dart';
 import 'package:college_project/features/home/widgets/upcoming_exam_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -143,7 +145,9 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.badge_rounded,
                         color: AppColors.infoColor,
                         onTap: () {
-                          // Navigate to ID card
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRoutes.studentIdScreen);
                         },
                       ),
                     ],
