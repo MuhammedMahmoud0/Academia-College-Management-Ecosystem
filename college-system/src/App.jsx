@@ -15,6 +15,7 @@ import StudentAnalyticsPage from './components/Student Analytics/StudentAnalytic
 import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
 import DoctorMaterialsPage from './components/Doctor Matrials/DoctorMatrial';
 import IDPage from './components/id_page/IDPage';
+import FAQPage from './components/FAQ/FAQ';
 function App() {
   return (
     <div className="App">
@@ -39,6 +40,7 @@ function App() {
           <Route path="community" element={<CommunityPage />} />
           <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
           <Route path="id-card" element={<IDPage />} />
+          <Route path="faq" element={<FAQPage />} />
           <Route index element={<Info />} />
         </Route>
       </Routes>
