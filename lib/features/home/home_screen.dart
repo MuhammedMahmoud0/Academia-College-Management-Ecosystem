@@ -183,7 +183,9 @@ class _HomeViewState extends State<HomeView> {
                       // Notification Bell
                       GestureDetector(
                         onTap: () {
-                          // Navigate to notifications
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRoutes.notificationScreen);
                         },
                         child: Stack(
                           children: [
@@ -244,19 +246,23 @@ class _HomeViewState extends State<HomeView> {
                     QuickActionsRow(
                       actions: [
                         QuickAction(
-                          label: 'Courses',
-                          icon: Icons.menu_book_rounded,
+                          label: 'leaderboard',
+                          icon: Icons.leaderboard_rounded,
                           color: AppColors.primaryColor,
                           onTap: () {
-                            // Navigate to courses
+                            GoRouter.of(
+                              context,
+                            ).pushNamed(AppRoutes.leaderboard);
                           },
                         ),
                         QuickAction(
-                          label: 'Register',
-                          icon: Icons.add_circle_outline_rounded,
+                          label: 'Materials',
+                          icon: Icons.menu_book_rounded,
                           color: AppColors.successColor,
                           onTap: () {
-                            // Navigate to registration
+                            GoRouter.of(
+                              context,
+                            ).pushNamed(AppRoutes.materialsScreen);
                           },
                         ),
                         QuickAction(
@@ -285,7 +291,9 @@ class _HomeViewState extends State<HomeView> {
                     NotificationsPreview(
                       notifications: notifications,
                       onTap: () {
-                        // Navigate to notifications
+                        GoRouter.of(
+                          context,
+                        ).pushNamed(AppRoutes.notificationScreen);
                       },
                     ),
                     const SizedBox(height: 28),
