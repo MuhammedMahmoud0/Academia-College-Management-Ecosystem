@@ -97,34 +97,34 @@ export default function NotificationsPage() {
   const groupedNotifications = groupByTime(filteredNotifications);
 
   return (
-    <div className="w-full min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+    <div className="w-full min-h-screen bg-gray-50 rounded-lg">
+      <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Notifications
           </h1>
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={markAllAsRead}
-              className="text-xs sm:text-sm md:text-base text-indigo-600 hover:text-indigo-700 font-medium transition-colors whitespace-nowrap"
+              className="text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors whitespace-nowrap"
             >
               Mark all as read
             </button>
             <button className="p-1.5 sm:p-2 hover:bg-gray-200 rounded-lg transition-colors">
-              <Settings className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-600" />
+              <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
             </button>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="-mx-3 sm:mx-0 px-3 sm:px-0 mb-6 md:mb-8">
-          <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 hide-scrollbar">
+        <div className="mb-6">
+          <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
             {filters.map((filter) => (
               <button
                 key={filter.name}
                 onClick={() => setActiveFilter(filter.name)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-lg font-medium text-xs sm:text-sm md:text-base whitespace-nowrap transition-all flex-shrink-0 ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-all flex-shrink-0 ${
                   activeFilter === filter.name
                     ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
                     : 'bg-transparent text-gray-600 hover:bg-gray-100 active:bg-gray-200'
@@ -132,7 +132,7 @@ export default function NotificationsPage() {
               >
                 {filter.name}
                 {filter.count && (
-                  <span className="bg-indigo-600 text-white text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  <span className="bg-indigo-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full min-w-[20px] text-center">
                     {filter.count}
                   </span>
                 )}
@@ -142,14 +142,14 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notifications List */}
-        <div className="space-y-4 sm:space-y-6 md:space-y-8">
+        <div className="space-y-6">
           {Object.entries(groupedNotifications).map(([timeGroup, notifs]) => (
             notifs.length > 0 && (
               <div key={timeGroup}>
-                <h2 className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 sm:mb-3 md:mb-4 px-1">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                   {timeGroup}
                 </h2>
-                <div className="space-y-2 md:space-y-3">
+                <div className="space-y-3">
                   {notifs.map((notification) => (
                     <NotificationCard
                       key={notification.id}
@@ -164,7 +164,7 @@ export default function NotificationsPage() {
         </div>
 
         {filteredNotifications.length === 0 && (
-          <div className="text-center py-12 md:py-16 text-sm md:text-base text-gray-500">
+          <div className="text-center py-16 text-gray-500">
             No notifications found.
           </div>
         )}
