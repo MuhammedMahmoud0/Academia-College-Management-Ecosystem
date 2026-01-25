@@ -17,6 +17,7 @@ import DoctorMaterialsPage from './components/Doctor Matrials/DoctorMatrial';
 import IDPage from './components/id_page/IDPage';
 import FAQPage from './components/FAQ/FAQ';
 import NotificationsPage from './components/Notification/Notifications';
+import AcademicManagementPage from './components/Academic Management/AcademicManagement';
 function App() {
   return (
     <div className="App">
@@ -43,6 +44,7 @@ function App() {
           <Route path="id-card" element={<IDPage />} />
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="academic-management" element={<AcademicManagementPage />} />
           <Route index element={<Info />} />
         </Route>
       </Routes>
