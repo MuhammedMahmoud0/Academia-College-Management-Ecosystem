@@ -3,21 +3,21 @@ import { Routes, Route } from "react-router-dom";
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import MainLayoutPage from './pages/MainLayoutPage';
-import Info from './components/info page/Info';
-import CoursesAndGradesPage from './components/courses&grades/courses&grades';
-import ExamSchedulePage from './components/examSchedule/ExamSchedule';
-import TeacherSchedulePage from './components/TeacherSchedule/TeacherSchedule';
-import StudentSchedulePage from './components/StudentSchedule/StudentSchedule';
-import StudentRegistrationPage from './components/StuentRegestration/StudentRegestration';
-import LeaderBoardPage from './components/Leaderboard/LeaderBoard';
-import CommunityPage from './components/Community Page/CommunityPage';
-import StudentAnalyticsPage from './components/Student Analytics/StudentAnalytics';
-import StudentMatrialsPage from './components/Student Matrials/StudentMatrials';
-import DoctorMaterialsPage from './components/Doctor Matrials/DoctorMatrial';
-import IDPage from './components/id_page/IDPage';
-import FAQPage from './components/FAQ/FAQ';
-import NotificationsPage from './components/Notification/Notifications';
-import AcademicManagementPage from './components/Academic Management/AcademicManagement';
+import InfoPage from './pages/InfoPage';
+import CoursesGradesPage from './pages/CoursesGradesPage';
+import ExamSchedulePage from './pages/ExamSchedulePage';
+import TeacherSchedulePage from './pages/TeacherSchedulePage';
+import StudentSchedulePage from './pages/StudentSchedulePage';
+import StudentRegistrationPage from './pages/StudentRegistrationPage';
+import LeaderBoardPage from './pages/LeaderBoardPage';
+import CommunityPage from './pages/CommunityPage';
+import StudentAnalyticsPage from './pages/StudentAnalyticsPage';
+import StudentMatrialsPage from './pages/StudentMatrialsPage';
+import DoctorMatrialsPage from './pages/DoctorMatrialsPage';
+import IDPage from './pages/IDPage';
+import FAQPage from './pages/FAQPage';
+import NotificationsPage from './pages/NotificationsPage';
+import AcademicManagementPage from './pages/AcademicManagementPage';
 function App() {
   return (
     <div className="App">
@@ -28,15 +28,15 @@ function App() {
         
         {/* Dashboard Routes with Layout */}
         <Route path="/dashboard" element={<MainLayoutPage />}>
-          <Route path="info" element={<Info />} />
-          <Route path="courses" element={<CoursesAndGradesPage />} />
+          <Route path="info" element={<InfoPage />} />
+          <Route path="courses" element={<CoursesGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
           <Route path="teachers" element={<TeacherSchedulePage />} />
           <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
           <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
           <Route path="material" element={<StudentMatrialsPage />} />
-          <Route path="doctormaterial" element={<DoctorMaterialsPage />} />
+          <Route path="doctormaterial" element={<DoctorMatrialsPage />} />
           <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
@@ -45,7 +45,7 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="academic-management" element={<AcademicManagementPage />} />
-          <Route index element={<Info />} />
+          <Route index element={<InfoPage />} />
         </Route>
       </Routes>
     </div>
