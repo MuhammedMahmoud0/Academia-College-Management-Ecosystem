@@ -19,6 +19,7 @@ import FAQPage from './pages/FAQPage';
 import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
+import AdminPaymentPage from './pages/AdminPaymentPage';
 function App() {
   return (
     <div className="App">
@@ -46,6 +47,7 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="academic-management" element={<AcademicManagementPage />} />
+          <Route path="admin-payment" element={<AdminPaymentPage />} />
           <Route index element={<InfoPage />} />
         </Route>
       </Routes>
