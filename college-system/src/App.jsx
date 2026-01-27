@@ -18,6 +18,7 @@ import IDPage from './pages/IDPage';
 import FAQPage from './pages/FAQPage';
 import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
+import StudentsPaymentPage from './pages/StudentsPaymentPage';
 function App() {
   return (
     <div className="App">
@@ -40,7 +41,7 @@ function App() {
           <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
-          <Route path="payment" element={<div className="text-2xl">Payment Page</div>} />
+          <Route path="payment" element={<StudentsPaymentPage />} />
           <Route path="id-card" element={<IDPage />} />
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
