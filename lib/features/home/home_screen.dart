@@ -271,6 +271,9 @@ class _HomeViewState extends State<HomeView> {
                           color: AppColors.warningColor,
                           onTap: () {
                             // Navigate to schedule
+                            GoRouter.of(
+                              context,
+                            ).pushNamed(AppRoutes.studentSchedule);
                           },
                         ),
                         QuickAction(

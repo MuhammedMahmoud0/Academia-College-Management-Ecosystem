@@ -1,20 +1,17 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/leaderboard/models/leaderboard_model.dart';
 import 'package:college_project/features/leaderboard/widgets/Leaderboard_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LeaderboardScreen extends StatefulWidget {
-  const LeaderboardScreen({Key? key}) : super(key: key);
+  const LeaderboardScreen({super.key});
 
   @override
   State<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
-  // Theme configuration
-  final Color primaryColor = const Color(0xFF6C63FF);
-  final Color backgroundColor = const Color(0xFFF8F9FE);
-
   // State for year filtering
   // 0: All Years, 1: Year 1, 2: Year 2, 3: Year 3, 4: Year 4
   int _selectedYearIndex = 0;
@@ -49,7 +46,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -80,7 +77,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: backgroundColor,
+                color: AppColors.backgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),
@@ -136,7 +133,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         child: Text(
           title,
           style: TextStyle(
-            color: isSelected ? primaryColor : Colors.white,
+            color: isSelected ? AppColors.primaryColor : Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 13.sp,
           ),
@@ -167,7 +164,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
         return LeaderboardCard(
           student: student,
-          primaryColor: primaryColor,
+          primaryColor: AppColors.primaryColor,
           isCurrentUser: student.id == currentUserId,
           // Rank is based on the index in the current filtered/sorted list
           rank: index + 1,

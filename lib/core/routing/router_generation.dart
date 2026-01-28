@@ -5,6 +5,7 @@ import 'package:college_project/features/material/material_screen.dart';
 import 'package:college_project/features/notifications/notification_screen.dart';
 import 'package:college_project/features/splash/splash_screen.dart';
 import 'package:college_project/features/student_id/student_id_screen.dart';
+import 'package:college_project/features/student_schedule/student_schedule_screen.dart';
 import 'package:college_project/layout/home_layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,6 +37,11 @@ class RouterGenerationConfig {
         path: AppRoutes.leaderboard,
         name: AppRoutes.leaderboard,
         builder: (context, state) => const LeaderboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.studentSchedule,
+        name: AppRoutes.studentSchedule,
+        builder: (context, state) => const StudentScheduleScreen(),
       ),
       GoRoute(
         path: AppRoutes.materialsScreen,
