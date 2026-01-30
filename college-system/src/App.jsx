@@ -20,6 +20,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
 import AdminPaymentPage from './pages/AdminPaymentPage';
+import AdminDashboard from './pages/AdminDashboard';
 function App() {
   return (
     <div className="App">
@@ -30,6 +31,7 @@ function App() {
         
         {/* Dashboard Routes with Layout */}
         <Route path="/dashboard" element={<MainLayoutPage />}>
+          <Route path="admin" element={<AdminDashboard />} />
           <Route path="info" element={<InfoPage />} />
           <Route path="courses" element={<CoursesGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
