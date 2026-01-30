@@ -19,6 +19,8 @@ import FAQPage from './pages/FAQPage';
 import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
+import UserManagementPage from './pages/UserManagementPage';
+import ManagementProfile from './components/admin/User Managment/ManagementProfile';
 import AdminPaymentPage from './pages/AdminPaymentPage';
 import AdminDashboard from './pages/AdminDashboard';
 function App() {
@@ -49,6 +51,8 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="academic-management" element={<AcademicManagementPage />} />
+          <Route path="user-management" element={<UserManagementPage />} />
+          <Route path="user-management/management-profile" element={<ManagementProfile />} />
           <Route path="admin-payment" element={<AdminPaymentPage />} />
           <Route index element={<InfoPage />} />
         </Route>
