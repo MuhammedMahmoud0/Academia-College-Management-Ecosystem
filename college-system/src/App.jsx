@@ -21,6 +21,8 @@ import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
 import UserManagementPage from './pages/UserManagementPage';
 import ManagementProfile from './components/admin/User Managment/ManagementProfile';
+import AdminPaymentPage from './pages/AdminPaymentPage';
+import AdminDashboard from './pages/AdminDashboard';
 function App() {
   return (
     <div className="App">
@@ -31,6 +33,7 @@ function App() {
         
         {/* Dashboard Routes with Layout */}
         <Route path="/dashboard" element={<MainLayoutPage />}>
+          <Route path="admin" element={<AdminDashboard />} />
           <Route path="info" element={<InfoPage />} />
           <Route path="courses" element={<CoursesGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
@@ -50,6 +53,7 @@ function App() {
           <Route path="academic-management" element={<AcademicManagementPage />} />
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="user-management/management-profile" element={<ManagementProfile />} />
+          <Route path="admin-payment" element={<AdminPaymentPage />} />
           <Route index element={<InfoPage />} />
         </Route>
       </Routes>
