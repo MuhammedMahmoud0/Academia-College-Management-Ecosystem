@@ -213,6 +213,8 @@ export default function Sidebar({ isOpen, onClose }) {
                             <line x1="8" y1="2" x2="8" y2="22"></line>
                             <line x1="16" y1="2" x2="16" y2="22"></line>
                         </svg>  
+                    )
+                },
                 { 
                     name: 'Payments Reports', 
                     path: '/dashboard/admin-payment', 
