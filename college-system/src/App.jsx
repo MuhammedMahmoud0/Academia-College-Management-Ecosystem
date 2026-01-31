@@ -23,6 +23,7 @@ import UserManagementPage from './pages/UserManagementPage';
 import ManagementProfile from './components/admin/User Managment/ManagementProfile';
 import AdminPaymentPage from './pages/AdminPaymentPage';
 import AdminDashboard from './pages/AdminDashboard';
+import SystemConfigurationPage from './pages/SystemConfigurationPage';
 function App() {
   return (
     <div className="App">
@@ -54,6 +55,7 @@ function App() {
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="user-management/management-profile" element={<ManagementProfile />} />
           <Route path="admin-payment" element={<AdminPaymentPage />} />
+          <Route path="system-configuration" element={<SystemConfigurationPage />} />
           <Route index element={<InfoPage />} />
         </Route>
       </Routes>
