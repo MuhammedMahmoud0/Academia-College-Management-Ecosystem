@@ -25,6 +25,10 @@ import StudentSettingPage from './pages/StudentSettingPage';
 import AdminPaymentPage from './pages/AdminPaymentPage';
 import AdminDashboard from './pages/AdminDashboard';
 import SystemConfigurationPage from './pages/SystemConfigurationPage';
+import DoctorDashboard from './pages/DoctorDashboard';
+import CourseDetailPage from './components/doctors/DoctorDashboard/CourseDetailPage';
+import LiveAttendancePage from './components/doctors/DoctorDashboard/LiveAttendancePage';
+
 function App() {
   return (
     <div className="App">
@@ -58,6 +62,12 @@ function App() {
           <Route path="admin-payment" element={<AdminPaymentPage />} />
           <Route path="system-configuration" element={<SystemConfigurationPage />} />
           <Route path="student-settings" element={<StudentSettingPage />} />
+          
+          {/* Doctor Routes */}
+          <Route path="doctor" element={<DoctorDashboard />} />
+          <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
+          <Route path="doctor/course/:courseId/attendance" element={<LiveAttendancePage />} />
+          
           <Route index element={<InfoPage />} />
         </Route>
       </Routes>
