@@ -37,20 +37,7 @@ export default function DoctorsManagement() {
   return (
     <div className=" bg-gray-50 min-h-screen">
       <div className="max-w-8xl ">
-        {/* Header */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">User Management</h1>
-
-        {/* Tabs */}
-        <div className="mb-6 border-b border-gray-200">
-          <div className="flex gap-8">
-            <button className="pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-800 transition-colors">
-              Students
-            </button>
-            <button className="pb-3 px-1 text-sm font-medium border-b-2 border-blue-500 text-blue-600 transition-colors">
-              Doctors & Faculty
-            </button>
-          </div>
-        </div>
+       
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow">

@@ -48,28 +48,28 @@ export default function NotificationsSetting() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="w-full p-4 md:p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Notification Preferences</h1>
-          <p className="text-gray-500">Manage how you receive notifications.</p>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Notification Preferences</h1>
+          <p className="text-sm md:text-base text-gray-500">Manage how you receive notifications.</p>
         </div>
 
         {/* Notification Options */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {notificationOptions.map((option, index) => (
             <div
               key={option.key}
-              className={`flex items-center justify-between py-4 ${
+              className={`flex items-center justify-between gap-4 py-4 ${
                 index !== notificationOptions.length - 1 ? 'border-b border-gray-200' : ''
               }`}
             >
-              <div className="flex-1">
-                <h3 className="text-base font-semibold text-gray-900 mb-1">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">
                   {option.title}
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs md:text-sm text-gray-500">
                   {option.description}
                 </p>
               </div>
@@ -94,10 +94,10 @@ export default function NotificationsSetting() {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end mt-8">
+        <div className="flex justify-end mt-6 md:mt-8">
           <button
             onClick={handleSavePreferences}
-            className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            className="bg-indigo-600 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors font-medium w-full sm:w-auto"
           >
             Save Preferences
           </button>

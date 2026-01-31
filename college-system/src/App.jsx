@@ -21,7 +21,7 @@ import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
 import UserManagementPage from './pages/UserManagementPage';
 import ManagementProfile from './components/admin/User Managment/ManagementProfile';
-import StudentSettingPage from './pages/StudentSettingPage';
+import SettingPage from './pages/SettingPage';
 import AdminPaymentPage from './pages/AdminPaymentPage';
 import AdminDashboard from './pages/AdminDashboard';
 import SystemConfigurationPage from './pages/SystemConfigurationPage';
@@ -61,7 +61,7 @@ function App() {
           <Route path="user-management/management-profile" element={<ManagementProfile />} />
           <Route path="admin-payment" element={<AdminPaymentPage />} />
           <Route path="system-configuration" element={<SystemConfigurationPage />} />
-          <Route path="student-settings" element={<StudentSettingPage />} />
+          <Route path="settings" element={<SettingPage />} />
           
           {/* Doctor Routes */}
           <Route path="doctor" element={<DoctorDashboard />} />
