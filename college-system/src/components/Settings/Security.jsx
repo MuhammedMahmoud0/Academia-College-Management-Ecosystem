@@ -45,18 +45,18 @@ export default function SecuritySetting() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="w-full p-4 md:p-6 space-y-6 md:space-y-8">
       {/* Change Password Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Change Password</h2>
-          <p className="text-gray-500">Update your password for enhanced security.</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Change Password</h2>
+          <p className="text-sm md:text-base text-gray-500">Update your password for enhanced security.</p>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-4 md:space-y-5">
           {/* Current Password */}
           <div>
-            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="currentPassword" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Current Password
             </label>
             <input
@@ -103,7 +103,7 @@ export default function SecuritySetting() {
           <div className="flex justify-end pt-2">
             <button
               onClick={handleUpdatePassword}
-              className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              className="bg-indigo-600 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors font-medium w-full sm:w-auto"
             >
               Update Password
             </button>
@@ -112,21 +112,21 @@ export default function SecuritySetting() {
       </div>
 
       {/* Login History Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Login History</h2>
-          <p className="text-gray-500">Recent login activity on your account.</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Login History</h2>
+          <p className="text-sm md:text-base text-gray-500">Recent login activity on your account.</p>
         </div>
 
         <div className="space-y-4">
           {loginHistory.map((session, index) => (
             <div
               key={index}
-              className="flex items-center justify-between py-4 border-b border-gray-200 last:border-b-0"
+              className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-2 border-b border-gray-200 last:border-b-0"
             >
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-900 font-medium">{session.device}</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm md:text-base text-gray-900 font-medium">{session.device}</span>
                   {session.status && (
                     <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
                       {session.status}
@@ -134,7 +134,7 @@ export default function SecuritySetting() {
                   )}
                 </div>
               </div>
-              <div className="text-right text-sm text-gray-500">
+              <div className="text-left sm:text-right text-xs md:text-sm text-gray-500">
                 <div>{session.location} - {session.time}</div>
               </div>
             </div>
