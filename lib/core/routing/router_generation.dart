@@ -3,6 +3,8 @@ import 'package:college_project/features/auth/login_screen.dart';
 import 'package:college_project/features/leaderboard/leaderboard_screen.dart';
 import 'package:college_project/features/material/material_screen.dart';
 import 'package:college_project/features/notifications/notification_screen.dart';
+import 'package:college_project/features/settings/edit_profile_screen.dart';
+import 'package:college_project/features/settings/settings_screen.dart';
 import 'package:college_project/features/splash/splash_screen.dart';
 import 'package:college_project/features/student_id/student_id_screen.dart';
 import 'package:college_project/features/student_schedule/student_schedule_screen.dart';
@@ -52,6 +54,16 @@ class RouterGenerationConfig {
         path: AppRoutes.notificationScreen,
         name: AppRoutes.notificationScreen,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settingsScreen,
+        name: AppRoutes.settingsScreen,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfileScreen,
+        name: AppRoutes.editProfileScreen,
+        builder: (context, state) => const EditProfileScreen(),
       ),
     ],
   );

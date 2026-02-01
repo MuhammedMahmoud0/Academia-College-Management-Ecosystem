@@ -1,9 +1,15 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ExamFilterBar extends StatelessWidget {
   final TabController controller;
+  final bool isDark;
 
-  const ExamFilterBar({super.key, required this.controller});
+  const ExamFilterBar({
+    super.key,
+    required this.controller,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +17,7 @@ class ExamFilterBar extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: isDark ? AppColors.darkCardBackground : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(14),
       ),
       child: TabBar(
@@ -21,17 +27,17 @@ class ExamFilterBar extends StatelessWidget {
         dividerColor: Colors.transparent,
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
+          color: AppColors.getCardBackground(isDark),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        labelColor: const Color(0xFF4F46E5),
-        unselectedLabelColor: const Color(0xFF94A3B8),
+        labelColor: AppColors.primaryColor,
+        unselectedLabelColor: AppColors.getSubtitleColor(isDark),
         labelStyle: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 14,

@@ -1,3 +1,4 @@
+import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/features/home/cubit/home_states.dart';
 import 'package:college_project/features/home/models/exam_model.dart';
 import 'package:college_project/features/home/models/grade_model.dart';
@@ -11,7 +12,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
   static HomeCubit get(BuildContext context) => BlocProvider.of(context);
 
-  Student? student;
+  StudentModel? student;
   List<Exam> upcomingExams = [];
   List<Grade> recentGrades = [];
   List<AppNotification> notifications = [];
@@ -25,7 +26,7 @@ class HomeCubit extends Cubit<HomeStates> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       // TODO: Replace with actual API calls
-      student = Student.mock;
+      student = Constants.student!;
       upcomingExams = Exam.mockExams;
       recentGrades = Grade.mockRecentGrades;
       notifications = AppNotification.mockNotifications;
@@ -64,7 +65,7 @@ class HomeCubit extends Cubit<HomeStates> {
       await Future.delayed(const Duration(seconds: 1));
 
       // TODO: Replace with actual API calls
-      student = Student.mock;
+      student = Constants.student!;
       upcomingExams = Exam.mockExams;
       recentGrades = Grade.mockRecentGrades;
       notifications = AppNotification.mockNotifications;
@@ -119,11 +120,12 @@ class HomeCubit extends Cubit<HomeStates> {
     return upcomingExams.length;
   }
 
-  /// Get greeting based on time of day
-  String getGreeting() {
+  /// Get greeting type based on time of day
+  /// Returns: 'morning', 'afternoon', or 'evening'
+  String getGreetingType() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning 👋';
-    if (hour < 17) return 'Good Afternoon 👋';
-    return 'Good Evening 👋';
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
   }
 }

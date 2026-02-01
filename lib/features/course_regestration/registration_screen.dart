@@ -1,7 +1,12 @@
+import 'package:college_project/core/appCubit/app_cubit.dart';
+import 'package:college_project/core/appCubit/app_states.dart';
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/course_regestration/models/course_model.dart';
 import 'package:college_project/features/course_regestration/widgets/registered_courses_table.dart';
 import 'package:college_project/features/course_regestration/widgets/registration_card.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CourseRegistrationScreen extends StatefulWidget {
@@ -14,11 +19,8 @@ class CourseRegistrationScreen extends StatefulWidget {
 
 class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  // Logic: Tracking enrolled courses by their codes
   final Set<String> _enrolledCourseCodes = {'CS405'};
 
-  // Mock Data (Ideally provided via a ViewModel or Repository)
   final List<Course> _allCourses = [
     Course(
       title: 'Artificial Intelligence',
@@ -46,7 +48,6 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
     ),
   ];
 
-  /// Handles adding/removing courses from the registration list
   void _toggleEnrollment(String code) {
     setState(() {
       final cleanCode = code.trim();
@@ -60,21 +61,21 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Derived state: Filter list to identify currently registered courses
     final registeredCourses = _allCourses
         .where((c) => _enrolledCourseCodes.contains(c.code))
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getCardBackground(
+          context.watch<AppCubit>().isDarkMode,
+        ),
         centerTitle: false,
         title: Text(
-          'Registration',
+          S.of(context).registration,
           style: TextStyle(
-            color: const Color(0xFF0F172A),
+            color: AppColors.getTextColor(context.watch<AppCubit>().isDarkMode),
             fontWeight: FontWeight.w800,
             fontSize: 22.sp,
           ),
@@ -82,24 +83,27 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
       ),
       body: Column(
         children: [
-          _buildSearchBar(),
-
-          // Table Section: Displays registered courses using the external widget
+          _buildSearchBar(context.watch<AppCubit>().isDarkMode),
           if (registeredCourses.isNotEmpty) ...[
-            _buildSectionHeaderPadding('Registered Courses'),
+            _buildSectionHeaderPadding(
+              S.of(context).registeredCourses,
+              context.watch<AppCubit>().isDarkMode,
+            ),
             SizedBox(height: 12.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: RegisteredCoursesTable(
                 courses: registeredCourses,
                 onRemove: _toggleEnrollment,
+                isDark: context.watch<AppCubit>().isDarkMode,
               ),
             ),
             SizedBox(height: 24.h),
           ],
-
-          _buildSectionHeaderPadding('Available Courses'),
-
+          _buildSectionHeaderPadding(
+            S.of(context).availableCourses,
+            context.watch<AppCubit>().isDarkMode,
+          ),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -110,6 +114,7 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
                   course: course,
                   isEnrolled: _enrolledCourseCodes.contains(course.code),
                   onToggleEnrollment: () => _toggleEnrollment(course.code),
+                  isDark: context.watch<AppCubit>().isDarkMode,
                 );
               },
             ),
@@ -119,41 +124,50 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(bool isDark) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: TextField(
         controller: _searchController,
-        style: TextStyle(fontSize: 14.sp),
+        style: TextStyle(
+          fontSize: 14.sp,
+          color: AppColors.getTextColor(isDark),
+        ),
         decoration: InputDecoration(
-          hintText: 'Search courses or codes...',
-          hintStyle: TextStyle(fontSize: 14.sp, color: const Color(0xFF94A3B8)),
+          hintText: S.of(context).searchCoursesOrCodes,
+          hintStyle: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.getSubtitleColor(isDark),
+          ),
           prefixIcon: Icon(
             Icons.search,
-            color: const Color(0xFF94A3B8),
+            color: AppColors.getSubtitleColor(isDark),
             size: 20.w,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AppColors.getCardBackground(isDark),
           contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-          border: _outlineBorder(),
-          enabledBorder: _outlineBorder(),
-          focusedBorder: _outlineBorder().copyWith(
-            borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 1.5),
+          border: _outlineBorder(isDark),
+          enabledBorder: _outlineBorder(isDark),
+          focusedBorder: _outlineBorder(isDark).copyWith(
+            borderSide: const BorderSide(
+              color: AppColors.primaryColor,
+              width: 1.5,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeaderPadding(String title) {
+  Widget _buildSectionHeaderPadding(String title, bool isDark) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: _buildSectionHeader(title),
+      child: _buildSectionHeader(title, isDark),
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, bool isDark) {
     return Row(
       children: [
         Text(
@@ -161,19 +175,19 @@ class _CourseRegistrationScreenState extends State<CourseRegistrationScreen> {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF1E293B),
+            color: AppColors.getTextColor(isDark),
           ),
         ),
         SizedBox(width: 8.w),
-        const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+        Expanded(child: Divider(color: AppColors.getBorderColor(isDark))),
       ],
     );
   }
 
-  OutlineInputBorder _outlineBorder() {
+  OutlineInputBorder _outlineBorder(bool isDark) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(16.r),
-      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      borderSide: BorderSide(color: AppColors.getBorderColor(isDark)),
     );
   }
 }

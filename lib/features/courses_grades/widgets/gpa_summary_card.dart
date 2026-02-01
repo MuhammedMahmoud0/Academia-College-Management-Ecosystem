@@ -4,12 +4,14 @@ class GPASummaryCard extends StatelessWidget {
   final String gpa;
   final String creditsEarned;
   final String currentSemester;
+  final bool isDark;
 
   const GPASummaryCard({
     super.key,
     required this.gpa,
     required this.creditsEarned,
     required this.currentSemester,
+    this.isDark = false,
   });
 
   @override
@@ -25,7 +27,7 @@ class GPASummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4F46E5).withOpacity(0.3),
+            color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -42,7 +44,7 @@ class GPASummaryCard extends StatelessWidget {
                   Text(
                     'Cumulative GPA',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -61,7 +63,7 @@ class GPASummaryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.school, color: Colors.white, size: 32),
@@ -69,7 +71,7 @@ class GPASummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Divider(color: Colors.white.withOpacity(0.2), thickness: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.2), thickness: 1),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,7 +91,10 @@ class GPASummaryCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7),
+            fontSize: 12,
+          ),
         ),
         const SizedBox(height: 4),
         Text(

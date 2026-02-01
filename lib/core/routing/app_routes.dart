@@ -7,4 +7,6 @@ class AppRoutes {
   static const String studentSchedule = '/studentScheduleScreen';
   static const String materialsScreen = '/MaterialsScreen';
   static const String notificationScreen = '/notificationScreen';
+  static const String settingsScreen = '/settingsScreen';
+  static const String editProfileScreen = '/editProfileScreen';
 }

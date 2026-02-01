@@ -18,8 +18,13 @@ class QuickAction {
 
 class QuickActionsRow extends StatelessWidget {
   final List<QuickAction> actions;
+  final bool isDark;
 
-  const QuickActionsRow({super.key, required this.actions});
+  const QuickActionsRow({
+    super.key,
+    required this.actions,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,7 @@ class QuickActionsRow extends StatelessWidget {
             padding: EdgeInsets.only(
               right: actions.indexOf(action) < actions.length - 1 ? 12 : 0,
             ),
-            child: _QuickActionItem(action: action),
+            child: _QuickActionItem(action: action, isDark: isDark),
           ),
         );
       }).toList(),
@@ -40,8 +45,9 @@ class QuickActionsRow extends StatelessWidget {
 
 class _QuickActionItem extends StatelessWidget {
   final QuickAction action;
+  final bool isDark;
 
-  const _QuickActionItem({required this.action});
+  const _QuickActionItem({required this.action, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +56,11 @@ class _QuickActionItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: AppColors.cardBackgroundColor,
+          color: AppColors.getCardBackground(isDark),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -65,7 +71,7 @@ class _QuickActionItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: action.color.withOpacity(0.1),
+                color: action.color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(action.icon, color: action.color, size: 24),
@@ -75,7 +81,7 @@ class _QuickActionItem extends StatelessWidget {
               action.label,
               style: AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textColor,
+                color: AppColors.getTextColor(isDark),
               ),
               textAlign: TextAlign.center,
             ),

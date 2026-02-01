@@ -1,5 +1,7 @@
+import 'package:college_project/core/appCubit/app_cubit.dart';
 import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/core/styles/app_colors.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:college_project/layout/cubit/home_layout_cubit.dart';
 import 'package:college_project/layout/cubit/home_layout_states.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +16,18 @@ class HomeLayout extends StatelessWidget {
       create: (context) => HomeLayoutCubit(),
       child: BlocBuilder<HomeLayoutCubit, HomeLayoutStates>(
         builder: (context, state) {
-          final cubit = context.watch<HomeLayoutCubit>();
+          final cubit = HomeLayoutCubit.get(context);
 
           return Scaffold(
             body: IndexedStack(
               index: cubit.currentIndex,
               children: Constants.screens,
             ),
-            bottomNavigationBar: _buildBottomNavigationBar(context, cubit),
+            bottomNavigationBar: _buildBottomNavigationBar(
+              context,
+              cubit,
+              context.watch<AppCubit>().isDarkMode,
+            ),
           );
         },
       ),
@@ -31,13 +37,14 @@ class HomeLayout extends StatelessWidget {
   Widget _buildBottomNavigationBar(
     BuildContext context,
     HomeLayoutCubit cubit,
+    bool isDark,
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardBackground(isDark),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -54,35 +61,40 @@ class HomeLayout extends StatelessWidget {
                 0,
                 Icons.home_rounded,
                 Icons.home_outlined,
-                'Home',
+                S.of(context).home,
+                isDark,
               ),
               _buildNavItem(
                 cubit,
                 1,
                 Icons.menu_book_rounded,
                 Icons.menu_book_outlined,
-                'Courses',
+                S.of(context).courses,
+                isDark,
               ),
               _buildNavItem(
                 cubit,
                 2,
                 Icons.add_circle_rounded,
                 Icons.add_circle_outline_rounded,
-                'Register',
+                S.of(context).register,
+                isDark,
               ),
               _buildNavItem(
                 cubit,
                 3,
                 Icons.event_note_rounded,
                 Icons.event_note_outlined,
-                'Exams',
+                S.of(context).exams,
+                isDark,
               ),
               _buildNavItem(
                 cubit,
                 4,
                 Icons.person_rounded,
                 Icons.person_outline_rounded,
-                'Profile',
+                S.of(context).profile,
+                isDark,
               ),
             ],
           ),
@@ -97,6 +109,7 @@ class HomeLayout extends StatelessWidget {
     IconData activeIcon,
     IconData inactiveIcon,
     String label,
+    bool isDark,
   ) {
     final isSelected = cubit.currentIndex == index;
 
@@ -110,7 +123,11 @@ class HomeLayout extends StatelessWidget {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryLight : Colors.transparent,
+          color: isSelected
+              ? (isDark
+                    ? AppColors.primaryColor.withValues(alpha: 0.2)
+                    : AppColors.primaryLight)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -120,7 +137,7 @@ class HomeLayout extends StatelessWidget {
               isSelected ? activeIcon : inactiveIcon,
               color: isSelected
                   ? AppColors.primaryColor
-                  : AppColors.subtitleColor,
+                  : AppColors.getSubtitleColor(isDark),
               size: 24,
             ),
             if (isSelected) ...[

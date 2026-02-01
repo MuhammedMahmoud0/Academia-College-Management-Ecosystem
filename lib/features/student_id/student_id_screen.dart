@@ -18,7 +18,6 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,

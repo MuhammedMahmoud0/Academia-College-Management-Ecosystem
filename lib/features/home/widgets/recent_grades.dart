@@ -1,20 +1,26 @@
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
 import 'package:college_project/features/home/models/grade_model.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class RecentGradesCard extends StatelessWidget {
   final List<Grade> grades;
   final VoidCallback? onSeeAllTap;
+  final bool isDark;
 
-  const RecentGradesCard({super.key, required this.grades, this.onSeeAllTap});
+  const RecentGradesCard({
+    super.key,
+    required this.grades,
+    this.onSeeAllTap,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
@@ -25,7 +31,7 @@ class RecentGradesCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.successColor.withOpacity(0.1),
+                      color: AppColors.successColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -35,13 +41,18 @@ class RecentGradesCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text('Recent Grades', style: AppTextStyles.heading3),
+                  Text(
+                    S.of(context).recentGrades,
+                    style: AppTextStyles.heading3.copyWith(
+                      color: AppColors.getTextColor(isDark),
+                    ),
+                  ),
                 ],
               ),
               TextButton(
                 onPressed: onSeeAllTap,
                 child: Text(
-                  'See All',
+                  S.of(context).seeAll,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.primaryColor,
                     fontWeight: FontWeight.w600,
@@ -52,14 +63,13 @@ class RecentGradesCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        // Grades List
         Container(
           decoration: BoxDecoration(
-            color: AppColors.cardBackgroundColor,
+            color: AppColors.getCardBackground(isDark),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -68,7 +78,7 @@ class RecentGradesCard extends StatelessWidget {
           child: Column(
             children: grades.take(3).map((grade) {
               final isLast = grades.indexOf(grade) == grades.take(3).length - 1;
-              return _GradeItem(grade: grade, showDivider: !isLast);
+              return _GradeItem(grade: grade, showDivider: !isLast, isDark: isDark);
             }).toList(),
           ),
         ),
@@ -80,8 +90,13 @@ class RecentGradesCard extends StatelessWidget {
 class _GradeItem extends StatelessWidget {
   final Grade grade;
   final bool showDivider;
+  final bool isDark;
 
-  const _GradeItem({required this.grade, this.showDivider = true});
+  const _GradeItem({
+    required this.grade,
+    this.showDivider = true,
+    required this.isDark,
+  });
 
   Color _getGradeColor(String? grade) {
     if (grade == null) return AppColors.subtitleColor;
@@ -99,12 +114,13 @@ class _GradeItem extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Course Icon
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: isDark
+                      ? AppColors.primaryColor.withValues(alpha: 0.2)
+                      : AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -119,7 +135,6 @@ class _GradeItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              // Course Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,22 +143,24 @@ class _GradeItem extends StatelessWidget {
                       grade.courseName,
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: AppColors.getTextColor(isDark),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${grade.courseCode} • ${grade.creditHours} Credits',
-                      style: AppTextStyles.bodySmall,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.getSubtitleColor(isDark),
+                      ),
                     ),
                   ],
                 ),
               ),
-              // Grade Badge
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getGradeColor(grade.grade).withOpacity(0.1),
+                  color: _getGradeColor(grade.grade).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -164,7 +181,7 @@ class _GradeItem extends StatelessWidget {
           Divider(
             height: 1,
             thickness: 1,
-            color: AppColors.borderColor.withOpacity(0.5),
+            color: AppColors.getBorderColor(isDark).withValues(alpha: 0.5),
             indent: 74,
           ),
       ],

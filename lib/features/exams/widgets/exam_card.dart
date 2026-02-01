@@ -1,10 +1,16 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/home/models/exam_model.dart';
 import 'package:flutter/material.dart';
 
 class ExamCard extends StatelessWidget {
   final Exam exam;
+  final bool isDark;
 
-  const ExamCard({super.key, required this.exam});
+  const ExamCard({
+    super.key,
+    required this.exam,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +20,12 @@ class ExamCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardBackground(isDark),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: AppColors.getBorderColor(isDark)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF64748B).withOpacity(0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -32,12 +38,9 @@ class ExamCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.08),
+                  color: statusColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -53,7 +56,7 @@ class ExamCard extends StatelessWidget {
               Text(
                 exam.statusString.toUpperCase(),
                 style: TextStyle(
-                  color: statusColor.withOpacity(0.5),
+                  color: statusColor.withValues(alpha: 0.5),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -63,10 +66,10 @@ class ExamCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             exam.courseName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1E293B),
+              color: AppColors.getTextColor(isDark),
               height: 1.2,
             ),
           ),
@@ -81,16 +84,10 @@ class ExamCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              _buildIconText(
-                Icons.hourglass_bottom_rounded,
-                exam.formattedDuration,
-              ),
+              _buildIconText(Icons.hourglass_bottom_rounded, exam.formattedDuration),
               const SizedBox(width: 20),
               Expanded(
-                child: _buildIconText(
-                  Icons.location_on_outlined,
-                  exam.location,
-                ),
+                child: _buildIconText(Icons.location_on_outlined, exam.location),
               ),
             ],
           ),
@@ -103,14 +100,14 @@ class ExamCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF94A3B8)),
+        Icon(icon, size: 16, color: AppColors.getSubtitleColor(isDark)),
         const SizedBox(width: 8),
         Flexible(
           child: Text(
             text,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Color(0xFF475569),
+            style: TextStyle(
+              color: AppColors.getSubtitleColor(isDark),
               fontSize: 13,
               fontWeight: FontWeight.w500,
             ),

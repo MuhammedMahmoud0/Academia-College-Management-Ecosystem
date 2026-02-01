@@ -1,10 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
+import 'package:college_project/core/widgets/widgets.dart';
 import 'package:college_project/features/home/models/student_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCard extends StatelessWidget {
-  final Student student;
+  final StudentModel student;
   final VoidCallback? onTap;
 
   const ProfileCard({super.key, required this.student, this.onTap});
@@ -46,16 +48,13 @@ class ProfileCard extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: student.profilePhotoUrl != null
+                  child: student.avatarUrl != null
                       ? ClipOval(
-                          child: Image.network(
-                            student.profilePhotoUrl!,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Widgets.defaultImage(student.avatarUrl!),
                         )
                       : Center(
                           child: Text(
-                            student.name
+                            student.name!
                                 .split(' ')
                                 .map((e) => e[0])
                                 .take(2)
@@ -75,21 +74,21 @@ class ProfileCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        student.name,
+                        student.name!,
                         style: AppTextStyles.heading2.copyWith(
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'ID: ${student.id}',
+                        'ID: ${student.studentId}',
                         style: AppTextStyles.bodySmall.copyWith(
                           color: Colors.white.withOpacity(0.8),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        student.department,
+                        student.departmentName!,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: Colors.white.withOpacity(0.8),
                         ),
@@ -110,9 +109,9 @@ class ProfileCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildStat('GPA', student.gpa.toStringAsFixed(2)),
+                  _buildStat('GPA', student.cgpa!.toStringAsFixed(2)),
                   _buildDivider(),
-                  _buildStat('Level', student.level.replaceAll('Level ', '')),
+                  _buildStat('Level', student.yearLevel!.toString()),
                   _buildDivider(),
                   _buildStat('Status', 'Good'),
                 ],

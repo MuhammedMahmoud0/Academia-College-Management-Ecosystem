@@ -1,16 +1,19 @@
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
 import 'package:college_project/features/home/models/notification_model.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsPreview extends StatelessWidget {
   final List<AppNotification> notifications;
   final VoidCallback? onTap;
+  final bool isDark;
 
   const NotificationsPreview({
     super.key,
     required this.notifications,
     this.onTap,
+    this.isDark = false,
   });
 
   IconData _getIcon(NotificationType type) {
@@ -52,12 +55,14 @@ class NotificationsPreview extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.cardBackgroundColor,
+          color: AppColors.getCardBackground(isDark),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderColor.withOpacity(0.5)),
+          border: Border.all(
+            color: AppColors.getBorderColor(isDark).withValues(alpha: 0.5),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -65,13 +70,14 @@ class NotificationsPreview extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Bell Icon with Badge
             Stack(
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
+                    color: isDark
+                        ? AppColors.primaryColor.withValues(alpha: 0.2)
+                        : AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
@@ -108,17 +114,17 @@ class NotificationsPreview extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 16),
-            // Content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     unreadCount > 0
-                        ? 'You have $unreadCount new notification${unreadCount > 1 ? 's' : ''}'
-                        : 'No new notifications',
+                        ? S.of(context).youHaveNewNotifications(unreadCount)
+                        : S.of(context).noNewNotifications,
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: AppColors.getTextColor(isDark),
                     ),
                   ),
                   if (notifications.isNotEmpty) ...[
@@ -134,7 +140,9 @@ class NotificationsPreview extends StatelessWidget {
                         Expanded(
                           child: Text(
                             notifications.first.title,
-                            style: AppTextStyles.bodySmall,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.getSubtitleColor(isDark),
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -145,10 +153,9 @@ class NotificationsPreview extends StatelessWidget {
                 ],
               ),
             ),
-            // Arrow
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: AppColors.subtitleColor,
+              color: AppColors.getSubtitleColor(isDark),
             ),
           ],
         ),

@@ -1,34 +1,37 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/course_regestration/models/course_model.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// A reusable table widget to display registered courses in a compact,
-/// responsive format.
 class RegisteredCoursesTable extends StatelessWidget {
   final List<Course> courses;
   final Function(String) onRemove;
+  final bool isDark;
 
   const RegisteredCoursesTable({
     super.key,
     required this.courses,
     required this.onRemove,
+    this.isDark = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardBackground(isDark),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.getBorderColor(isDark)),
       ),
       child: Column(
         children: [
-          // Table Header
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: isDark
+                  ? AppColors.darkBackground
+                  : const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16.r),
                 topRight: Radius.circular(16.r),
@@ -38,12 +41,12 @@ class RegisteredCoursesTable extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 3,
-                  child: Text('COURSE & ID', style: _tableHeaderStyle()),
+                  child: Text(S.of(context).courseId, style: _tableHeaderStyle()),
                 ),
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'CR',
+                    S.of(context).cr,
                     textAlign: TextAlign.center,
                     style: _tableHeaderStyle(),
                   ),
@@ -51,7 +54,7 @@ class RegisteredCoursesTable extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'INSTRUCTOR',
+                    S.of(context).instructor,
                     textAlign: TextAlign.center,
                     style: _tableHeaderStyle(),
                   ),
@@ -59,16 +62,15 @@ class RegisteredCoursesTable extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'SCHEDULE',
+                    S.of(context).scheduleHeader,
                     textAlign: TextAlign.center,
                     style: _tableHeaderStyle(),
                   ),
                 ),
-                SizedBox(width: 30.w), // Space for remove button
+                SizedBox(width: 30.w),
               ],
             ),
           ),
-          // Table Rows
           ...courses.map((course) => _buildTableRow(course)),
         ],
       ),
@@ -78,12 +80,13 @@ class RegisteredCoursesTable extends StatelessWidget {
   Widget _buildTableRow(Course course) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.getBorderColor(isDark)),
+        ),
       ),
       child: Row(
         children: [
-          // Course & ID
           Expanded(
             flex: 3,
             child: Column(
@@ -96,28 +99,31 @@ class RegisteredCoursesTable extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 12.sp,
+                    color: AppColors.getTextColor(isDark),
                   ),
                 ),
                 Text(
                   course.code,
                   style: TextStyle(
-                    color: const Color(0xFF64748B),
+                    color: AppColors.getSubtitleColor(isDark),
                     fontSize: 10.sp,
                   ),
                 ),
               ],
             ),
           ),
-          // Credits
           Expanded(
             flex: 1,
             child: Text(
               course.credits.split(' ')[0],
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12.sp),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+                color: AppColors.getTextColor(isDark),
+              ),
             ),
           ),
-          // Instructor
           Expanded(
             flex: 2,
             child: Text(
@@ -125,31 +131,35 @@ class RegisteredCoursesTable extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11.sp, color: const Color(0xFF475569)),
+              style: TextStyle(
+                fontSize: 11.sp,
+                color: AppColors.getSubtitleColor(isDark),
+              ),
             ),
           ),
-          // Schedule
           Expanded(
             flex: 2,
             child: Text(
               course.time,
               textAlign: TextAlign.center,
               maxLines: 2,
-              style: TextStyle(fontSize: 10.sp, color: const Color(0xFF64748B)),
+              style: TextStyle(
+                fontSize: 10.sp,
+                color: AppColors.getSubtitleColor(isDark),
+              ),
             ),
           ),
-          // Remove Action
           GestureDetector(
             onTap: () => onRemove(course.code),
             child: Container(
               padding: EdgeInsets.all(4.w),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
+                color: AppColors.errorColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6.r),
               ),
               child: Icon(
                 Icons.close,
-                color: const Color(0xFFEF4444),
+                color: AppColors.errorColor,
                 size: 16.w,
               ),
             ),
@@ -163,7 +173,7 @@ class RegisteredCoursesTable extends StatelessWidget {
     return TextStyle(
       fontSize: 9.sp,
       fontWeight: FontWeight.w800,
-      color: const Color(0xFF94A3B8),
+      color: AppColors.getSubtitleColor(isDark),
       letterSpacing: 0.5,
     );
   }

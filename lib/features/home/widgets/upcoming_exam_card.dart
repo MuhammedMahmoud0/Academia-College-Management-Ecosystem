@@ -1,5 +1,6 @@
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 import '../models/exam_model.dart';
@@ -7,15 +8,20 @@ import '../models/exam_model.dart';
 class UpcomingExamsCard extends StatelessWidget {
   final List<Exam> exams;
   final VoidCallback? onSeeAllTap;
+  final bool isDark;
 
-  const UpcomingExamsCard({super.key, required this.exams, this.onSeeAllTap});
+  const UpcomingExamsCard({
+    super.key,
+    required this.exams,
+    this.onSeeAllTap,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
@@ -26,7 +32,7 @@ class UpcomingExamsCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.warningColor.withOpacity(0.1),
+                      color: AppColors.warningColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -36,13 +42,18 @@ class UpcomingExamsCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text('Upcoming Exams', style: AppTextStyles.heading3),
+                  Text(
+                    S.of(context).upcomingExams,
+                    style: AppTextStyles.heading3.copyWith(
+                      color: AppColors.getTextColor(isDark),
+                    ),
+                  ),
                 ],
               ),
               TextButton(
                 onPressed: onSeeAllTap,
                 child: Text(
-                  'See All',
+                  S.of(context).seeAll,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.primaryColor,
                     fontWeight: FontWeight.w600,
@@ -53,8 +64,7 @@ class UpcomingExamsCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        // Exams List
-        ...exams.take(3).map((exam) => _ExamItem(exam: exam)),
+        ...exams.take(3).map((exam) => _ExamItem(exam: exam, isDark: isDark)),
       ],
     );
   }
@@ -62,8 +72,9 @@ class UpcomingExamsCard extends StatelessWidget {
 
 class _ExamItem extends StatelessWidget {
   final Exam exam;
+  final bool isDark;
 
-  const _ExamItem({required this.exam});
+  const _ExamItem({required this.exam, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -73,16 +84,16 @@ class _ExamItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBackgroundColor,
+        color: AppColors.getCardBackground(isDark),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isUrgent
-              ? AppColors.warningColor.withOpacity(0.3)
-              : AppColors.borderColor,
+              ? AppColors.warningColor.withValues(alpha: 0.3)
+              : AppColors.getBorderColor(isDark),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -90,14 +101,15 @@ class _ExamItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Date Badge
           Container(
             width: 56,
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               color: isUrgent
-                  ? AppColors.warningColor.withOpacity(0.1)
-                  : AppColors.primaryLight,
+                  ? AppColors.warningColor.withValues(alpha: 0.1)
+                  : (isDark
+                      ? AppColors.primaryColor.withValues(alpha: 0.2)
+                      : AppColors.primaryLight),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -125,7 +137,6 @@ class _ExamItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-          // Course Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,6 +145,7 @@ class _ExamItem extends StatelessWidget {
                   exam.courseName,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: AppColors.getTextColor(isDark),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -142,38 +154,47 @@ class _ExamItem extends StatelessWidget {
                     Icon(
                       Icons.access_time_rounded,
                       size: 14,
-                      color: AppColors.subtitleColor,
+                      color: AppColors.getSubtitleColor(isDark),
                     ),
                     const SizedBox(width: 4),
-                    Text(exam.formattedTime, style: AppTextStyles.bodySmall),
+                    Text(
+                      exam.formattedTime,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.getSubtitleColor(isDark),
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     Icon(
                       Icons.location_on_outlined,
                       size: 14,
-                      color: AppColors.subtitleColor,
+                      color: AppColors.getSubtitleColor(isDark),
                     ),
                     const SizedBox(width: 4),
-                    Text(exam.location, style: AppTextStyles.bodySmall),
+                    Text(
+                      exam.location,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.getSubtitleColor(isDark),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-          // Days Remaining
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: isUrgent
                   ? AppColors.warningColor
-                  : AppColors.primaryColor.withOpacity(0.1),
+                  : AppColors.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               exam.daysRemaining == 0
-                  ? 'Today'
+                  ? S.of(context).today
                   : exam.daysRemaining == 1
-                  ? '1 day'
-                  : '${exam.daysRemaining} days',
+                      ? '1 ${S.of(context).day}'
+                      : '${exam.daysRemaining} ${S.of(context).days}',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,

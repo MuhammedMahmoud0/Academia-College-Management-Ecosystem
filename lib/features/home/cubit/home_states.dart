@@ -10,7 +10,7 @@ class HomeInitialState extends HomeStates {}
 class HomeLoadingState extends HomeStates {}
 
 class HomeLoadedState extends HomeStates {
-  final Student student;
+  final StudentModel student;
   final List<Exam> upcomingExams;
   final List<Grade> recentGrades;
   final List<AppNotification> notifications;
@@ -30,7 +30,7 @@ class HomeErrorState extends HomeStates {
 }
 
 class HomeRefreshingState extends HomeStates {
-  final Student student;
+  final StudentModel student;
   final List<Exam> upcomingExams;
   final List<Grade> recentGrades;
   final List<AppNotification> notifications;

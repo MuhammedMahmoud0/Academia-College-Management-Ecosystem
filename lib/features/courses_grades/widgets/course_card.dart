@@ -1,10 +1,16 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/home/models/grade_model.dart';
 import 'package:flutter/material.dart';
 
 class CourseGradeCard extends StatelessWidget {
   final Grade grade;
+  final bool isDark;
 
-  const CourseGradeCard({super.key, required this.grade});
+  const CourseGradeCard({
+    super.key,
+    required this.grade,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +20,12 @@ class CourseGradeCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardBackground(isDark),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: AppColors.getBorderColor(isDark)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF64748B).withOpacity(0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -32,12 +38,9 @@ class CourseGradeCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: gradeColor.withOpacity(0.08),
+                  color: gradeColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -51,12 +54,9 @@ class CourseGradeCard extends StatelessWidget {
               ),
               if (!grade.isInProgress)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: gradeColor.withOpacity(0.08),
+                    color: gradeColor.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -72,7 +72,7 @@ class CourseGradeCard extends StatelessWidget {
                 Text(
                   'IN PROGRESS',
                   style: TextStyle(
-                    color: Colors.grey[400],
+                    color: AppColors.getSubtitleColor(isDark),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -82,27 +82,30 @@ class CourseGradeCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             grade.courseName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1E293B),
+              color: AppColors.getTextColor(isDark),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             '${grade.creditHours} Credit Hours • ${grade.semester}',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.getSubtitleColor(isDark),
+            ),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Grade Points',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF475569),
+                  color: AppColors.getSubtitleColor(isDark),
                 ),
               ),
               Text(
@@ -119,12 +122,13 @@ class CourseGradeCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              // Progress visual: mapping 4.0 scale to 0.0-1.0
               value: grade.isInProgress ? 0.5 : (grade.gradePoints ?? 0) / 4.0,
               minHeight: 8,
-              backgroundColor: const Color(0xFFF1F5F9),
+              backgroundColor: AppColors.getBorderColor(isDark),
               valueColor: AlwaysStoppedAnimation<Color>(
-                grade.isInProgress ? Colors.grey[300]! : gradeColor,
+                grade.isInProgress
+                    ? AppColors.getSubtitleColor(isDark)
+                    : gradeColor,
               ),
             ),
           ),

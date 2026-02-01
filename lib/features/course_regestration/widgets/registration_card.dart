@@ -1,16 +1,20 @@
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/course_regestration/models/course_model.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationCard extends StatelessWidget {
   final Course course;
   final bool isEnrolled;
   final VoidCallback onToggleEnrollment;
+  final bool isDark;
 
   const RegistrationCard({
     super.key,
     required this.course,
     required this.isEnrolled,
     required this.onToggleEnrollment,
+    this.isDark = false,
   });
 
   @override
@@ -19,12 +23,12 @@ class RegistrationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.getCardBackground(isDark),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
+        border: Border.all(color: AppColors.getBorderColor(isDark), width: 1),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF64748B).withOpacity(0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -37,18 +41,15 @@ class RegistrationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4F46E5).withOpacity(0.08),
+                  color: AppColors.primaryColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   course.code,
                   style: const TextStyle(
-                    color: Color(0xFF4F46E5),
+                    color: AppColors.primaryColor,
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                   ),
@@ -61,19 +62,19 @@ class RegistrationCard extends StatelessWidget {
                     height: 8,
                     decoration: BoxDecoration(
                       color: course.isFull
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFF10B981),
+                          ? AppColors.errorColor
+                          : AppColors.successColor,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    course.isFull ? 'Full' : '${course.seats} Seats',
+                    course.isFull ? S.of(context).full : '${course.seats} ${S.of(context).seats}',
                     style: TextStyle(
                       fontSize: 13,
                       color: course.isFull
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFF10B981),
+                          ? AppColors.errorColor
+                          : AppColors.successColor,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -84,10 +85,10 @@ class RegistrationCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             course.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1E293B),
+              color: AppColors.getTextColor(isDark),
             ),
           ),
           const SizedBox(height: 8),
@@ -100,7 +101,7 @@ class RegistrationCard extends StatelessWidget {
           const SizedBox(height: 4),
           _buildDetailRow(Icons.calendar_today, course.time),
           const SizedBox(height: 20),
-          _buildActionButton(),
+          _buildActionButton(context),
         ],
       ),
     );
@@ -109,13 +110,13 @@ class RegistrationCard extends StatelessWidget {
   Widget _buildDetailRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF94A3B8)),
+        Icon(icon, size: 16, color: AppColors.getSubtitleColor(isDark)),
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF64748B),
+            color: AppColors.getSubtitleColor(isDark),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -123,7 +124,7 @@ class RegistrationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(BuildContext context) {
     final bool canEnroll = !course.isFull || isEnrolled;
 
     return SizedBox(
@@ -133,9 +134,9 @@ class RegistrationCard extends StatelessWidget {
         onPressed: canEnroll ? onToggleEnrollment : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: isEnrolled
-              ? const Color(0xFFFEE2E2)
-              : const Color(0xFF4F46E5),
-          foregroundColor: isEnrolled ? const Color(0xFFEF4444) : Colors.white,
+              ? AppColors.errorColor.withValues(alpha: 0.1)
+              : AppColors.primaryColor,
+          foregroundColor: isEnrolled ? AppColors.errorColor : Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -146,7 +147,7 @@ class RegistrationCard extends StatelessWidget {
           size: 18,
         ),
         label: Text(
-          isEnrolled ? 'Remove Course' : 'Add Course',
+          isEnrolled ? S.of(context).removeCourse : S.of(context).addCourse,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),

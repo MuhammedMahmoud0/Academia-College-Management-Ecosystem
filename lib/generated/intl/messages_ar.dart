@@ -20,6 +20,137 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ar';
 
+  static String m0(status) => "لا توجد امتحانات ${status}";
+
+  static String m1(count) => "لديك ${count} إشعار(ات) جديدة";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "academicInformation":
+            MessageLookupByLibrary.simpleMessage("المعلومات الأكاديمية"),
+        "addCourse": MessageLookupByLibrary.simpleMessage("إضافة مقرر"),
+        "address": MessageLookupByLibrary.simpleMessage("العنوان"),
+        "appTitle": MessageLookupByLibrary.simpleMessage("أكاديميا"),
+        "appearance": MessageLookupByLibrary.simpleMessage("المظهر"),
+        "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
+        "availableCourses":
+            MessageLookupByLibrary.simpleMessage("المقررات المتاحة"),
+        "camera": MessageLookupByLibrary.simpleMessage("الكاميرا"),
+        "changePassword":
+            MessageLookupByLibrary.simpleMessage("تغيير كلمة المرور"),
+        "chooseImageSource":
+            MessageLookupByLibrary.simpleMessage("اختر مصدر الصورة"),
+        "completed": MessageLookupByLibrary.simpleMessage("مكتملة"),
+        "completedCredits":
+            MessageLookupByLibrary.simpleMessage("الساعات المكتملة"),
+        "courseId": MessageLookupByLibrary.simpleMessage("المقرر والرمز"),
+        "courses": MessageLookupByLibrary.simpleMessage("المقررات"),
+        "coursesAndGrades":
+            MessageLookupByLibrary.simpleMessage("المقررات والدرجات"),
+        "cr": MessageLookupByLibrary.simpleMessage("س.م"),
+        "creditHours": MessageLookupByLibrary.simpleMessage("الساعات المعتمدة"),
+        "creditsEarned":
+            MessageLookupByLibrary.simpleMessage("الساعات المكتسبة"),
+        "cumulativeGpa":
+            MessageLookupByLibrary.simpleMessage("المعدل التراكمي"),
+        "currentSemester": MessageLookupByLibrary.simpleMessage("الفصل الحالي"),
+        "darkMode": MessageLookupByLibrary.simpleMessage("الوضع الداكن"),
+        "day": MessageLookupByLibrary.simpleMessage("يوم"),
+        "days": MessageLookupByLibrary.simpleMessage("أيام"),
+        "department": MessageLookupByLibrary.simpleMessage("القسم"),
+        "downloadTranscript":
+            MessageLookupByLibrary.simpleMessage("تحميل كشف الدرجات"),
+        "editProfile":
+            MessageLookupByLibrary.simpleMessage("تعديل الملف الشخصي"),
+        "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
+        "emailAddress":
+            MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
+        "english": MessageLookupByLibrary.simpleMessage("الإنجليزية"),
+        "enrollmentDate": MessageLookupByLibrary.simpleMessage("تاريخ التسجيل"),
+        "error": MessageLookupByLibrary.simpleMessage("خطأ"),
+        "examSchedule": MessageLookupByLibrary.simpleMessage("جدول الامتحانات"),
+        "exams": MessageLookupByLibrary.simpleMessage("الامتحانات"),
+        "forgotPassword":
+            MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور؟"),
+        "full": MessageLookupByLibrary.simpleMessage("مكتمل"),
+        "fullName": MessageLookupByLibrary.simpleMessage("الاسم الكامل"),
+        "gallery": MessageLookupByLibrary.simpleMessage("المعرض"),
+        "good": MessageLookupByLibrary.simpleMessage("جيد"),
+        "goodAfternoon": MessageLookupByLibrary.simpleMessage("مساء الخير"),
+        "goodEvening": MessageLookupByLibrary.simpleMessage("مساء الخير"),
+        "goodMorning": MessageLookupByLibrary.simpleMessage("صباح الخير"),
+        "gpa": MessageLookupByLibrary.simpleMessage("المعدل"),
+        "gradePoints": MessageLookupByLibrary.simpleMessage("نقاط الدرجة"),
+        "home": MessageLookupByLibrary.simpleMessage("الرئيسية"),
+        "idCard": MessageLookupByLibrary.simpleMessage("البطاقة الجامعية"),
+        "inProgress": MessageLookupByLibrary.simpleMessage("قيد التقدم"),
+        "instructor": MessageLookupByLibrary.simpleMessage("المحاضر"),
+        "language": MessageLookupByLibrary.simpleMessage("اللغة"),
+        "leaderboard": MessageLookupByLibrary.simpleMessage("لوحة المتصدرين"),
+        "level": MessageLookupByLibrary.simpleMessage("المستوى"),
+        "lightMode": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
+        "login": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
+        "loginSuccessfully":
+            MessageLookupByLibrary.simpleMessage("تم تسجيل الدخول بنجاح"),
+        "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),
+        "materials": MessageLookupByLibrary.simpleMessage("المواد"),
+        "missed": MessageLookupByLibrary.simpleMessage("فائتة"),
+        "myProfile": MessageLookupByLibrary.simpleMessage("ملفي الشخصي"),
+        "nationalId": MessageLookupByLibrary.simpleMessage("الرقم القومي"),
+        "noExamsFound": m0,
+        "noNewNotifications":
+            MessageLookupByLibrary.simpleMessage("لا توجد إشعارات جديدة"),
+        "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
+        "password": MessageLookupByLibrary.simpleMessage("كلمة المرور"),
+        "passwordMustBeAtLeastSixCharacters":
+            MessageLookupByLibrary.simpleMessage(
+                "يجب أن تكون كلمة المرور على الأقل 6 أحرف"),
+        "personalInformation":
+            MessageLookupByLibrary.simpleMessage("المعلومات الشخصية"),
+        "phone": MessageLookupByLibrary.simpleMessage("الهاتف"),
+        "pleaseEnterAValidEmail": MessageLookupByLibrary.simpleMessage(
+            "يرجى إدخال بريد إلكتروني صحيح"),
+        "pleaseEnterAddress":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال عنوانك"),
+        "pleaseEnterName":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال اسمك"),
+        "pleaseEnterNationalId":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال الرقم القومي"),
+        "pleaseEnterPhone":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال رقم هاتفك"),
+        "pleaseEnterYourEmail":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال بريدك الإلكتروني"),
+        "pleaseEnterYourPassword":
+            MessageLookupByLibrary.simpleMessage("يرجى إدخال كلمة المرور"),
+        "profile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
+        "quickActions": MessageLookupByLibrary.simpleMessage("إجراءات سريعة"),
+        "recentGrades": MessageLookupByLibrary.simpleMessage("الدرجات الأخيرة"),
+        "register": MessageLookupByLibrary.simpleMessage("التسجيل"),
+        "registeredCourses":
+            MessageLookupByLibrary.simpleMessage("المقررات المسجلة"),
+        "registeredCoursesCount":
+            MessageLookupByLibrary.simpleMessage("المقررات المسجلة"),
+        "registration": MessageLookupByLibrary.simpleMessage("التسجيل"),
+        "removeCourse": MessageLookupByLibrary.simpleMessage("إزالة مقرر"),
+        "retry": MessageLookupByLibrary.simpleMessage("إعادة المحاولة"),
+        "saveChanges": MessageLookupByLibrary.simpleMessage("حفظ التغييرات"),
+        "schedule": MessageLookupByLibrary.simpleMessage("الجدول"),
+        "scheduleHeader": MessageLookupByLibrary.simpleMessage("الجدول"),
+        "searchCoursesOrCodes":
+            MessageLookupByLibrary.simpleMessage("البحث عن مقررات أو رموز..."),
+        "seats": MessageLookupByLibrary.simpleMessage("مقاعد"),
+        "seeAll": MessageLookupByLibrary.simpleMessage("عرض الكل"),
+        "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
+        "signInToContinueToYourAccount": MessageLookupByLibrary.simpleMessage(
+            "قم بتسجيل الدخول لمواصلة حسابك"),
+        "somethingWentWrong":
+            MessageLookupByLibrary.simpleMessage("عذراً! حدث خطأ ما"),
+        "status": MessageLookupByLibrary.simpleMessage("الحالة"),
+        "today": MessageLookupByLibrary.simpleMessage("اليوم"),
+        "upcoming": MessageLookupByLibrary.simpleMessage("قادمة"),
+        "upcomingExams":
+            MessageLookupByLibrary.simpleMessage("الامتحانات القادمة"),
+        "welcomeBack": MessageLookupByLibrary.simpleMessage("مرحباً بك"),
+        "youHaveNewNotifications": m1
+      };
 }

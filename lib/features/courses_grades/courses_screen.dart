@@ -1,7 +1,11 @@
+import 'package:college_project/core/appCubit/app_cubit.dart';
+import 'package:college_project/core/appCubit/app_states.dart';
+import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/courses_grades/widgets/course_card.dart';
 import 'package:college_project/features/courses_grades/widgets/gpa_summary_card.dart';
 import 'package:college_project/features/home/models/grade_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoursesGradesScreen extends StatefulWidget {
   const CoursesGradesScreen({super.key});
@@ -18,15 +22,16 @@ class _CoursesGradesScreenState extends State<CoursesGradesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getCardBackground(
+          context.watch<AppCubit>().isDarkMode,
+        ),
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'Courses & Grades',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: AppColors.getTextColor(context.watch<AppCubit>().isDarkMode),
             fontWeight: FontWeight.w800,
             fontSize: 22,
           ),
@@ -37,17 +42,18 @@ class _CoursesGradesScreenState extends State<CoursesGradesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const GPASummaryCard(
+            GPASummaryCard(
               gpa: '3.84',
               creditsEarned: '102',
               currentSemester: 'Fall 2024',
+              isDark: context.watch<AppCubit>().isDarkMode,
             ),
             const SizedBox(height: 24),
-            // Build sections dynamically from the data
             ...semesterData.map(
               (data) => _buildSemesterSection(
                 data['name'] as String,
                 data['grades'] as List<Grade>,
+                context.watch<AppCubit>().isDarkMode,
               ),
             ),
           ],
@@ -56,7 +62,11 @@ class _CoursesGradesScreenState extends State<CoursesGradesScreen> {
     );
   }
 
-  Widget _buildSemesterSection(String semesterName, List<Grade> grades) {
+  Widget _buildSemesterSection(
+    String semesterName,
+    List<Grade> grades,
+    bool isDark,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -66,20 +76,19 @@ class _CoursesGradesScreenState extends State<CoursesGradesScreen> {
             children: [
               Text(
                 semesterName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.getTextColor(isDark),
                 ),
               ),
               const SizedBox(width: 8),
-              const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+              Expanded(child: Divider(color: AppColors.getBorderColor(isDark))),
             ],
           ),
         ),
         const SizedBox(height: 8),
-        // Use the updated CourseGradeCard that expects a Grade object
-        ...grades.map((grade) => CourseGradeCard(grade: grade)),
+        ...grades.map((grade) => CourseGradeCard(grade: grade, isDark: isDark)),
         const SizedBox(height: 8),
       ],
     );
