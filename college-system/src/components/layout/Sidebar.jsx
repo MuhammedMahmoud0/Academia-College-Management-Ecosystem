@@ -252,9 +252,21 @@ export default function Sidebar({ isOpen, onClose }) {
                             <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
                         </svg>
                     )
-                },    { 
+                },   
+                 { 
                     name: 'Settings', 
                     path: '/dashboard/settings', 
+                    icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"></path>
+                            <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                        </svg>
+                    )
+                },
+                  { 
+                    name: 'Financial Management', 
+                    path: '/dashboard/financial-management', 
                     icon: (
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
