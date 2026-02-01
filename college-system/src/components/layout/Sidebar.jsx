@@ -29,6 +29,16 @@ export default function Sidebar({ isOpen, onClose }) {
                     )
                 },
                 { 
+                    name: 'Doctor Attendance', 
+                    path: '/dashboard/doctor-attendance', 
+                    icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                    )
+                },
+                { 
                     name: 'Info', 
                     path: '/dashboard/info', 
                     icon: (
@@ -59,6 +69,17 @@ export default function Sidebar({ isOpen, onClose }) {
                             <line x1="16" y1="13" x2="8" y2="13"></line>
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                             <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    )
+                },
+                { 
+                    name: 'Attendance', 
+                    path: '/dashboard/attendance', 
+                    icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
                         </svg>
                     )
                 },
@@ -210,6 +231,17 @@ export default function Sidebar({ isOpen, onClose }) {
                             <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
                             <line x1="8" y1="2" x2="8" y2="22"></line>
                             <line x1="16" y1="2" x2="16" y2="22"></line>
+                        </svg>  
+                    )
+                },
+                { 
+                    name: 'Admin Attendance', 
+                    path: '/dashboard/admin-attendance', 
+                    icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
                         </svg>  
                     )
                 },

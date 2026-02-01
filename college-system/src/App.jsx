@@ -16,6 +16,9 @@ import StudentMatrialsPage from './pages/StudentMatrialsPage';
 import DoctorMatrialsPage from './pages/DoctorMatrialsPage';
 import IDPage from './pages/IDPage';
 import FAQPage from './pages/FAQPage';
+import AttendanceForStudents from './pages/AttendanceForStudents';
+import AttendanceForDoctors from './pages/AttendanceForDoctors';
+import AttendanceForAdmin from './pages/AttendanceForAdmin';
 import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
@@ -42,6 +45,7 @@ function App() {
           <Route path="info" element={<InfoPage />} />
           <Route path="courses" element={<CoursesGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
+          <Route path="attendance" element={<AttendanceForStudents />} />
           <Route path="teachers" element={<TeacherSchedulePage />} />
           <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
@@ -56,6 +60,7 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="academic-management" element={<AcademicManagementPage />} />
+          <Route path="admin-attendance" element={<AttendanceForAdmin />} />
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="user-management/management-profile" element={<ManagementProfile />} />
           <Route path="admin-payment" element={<AdminPaymentPage />} />
@@ -63,6 +68,7 @@ function App() {
           
           {/* Doctor Routes */}
           <Route path="doctor" element={<DoctorDashboard />} />
+          <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
           <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
           <Route path="doctor/course/:courseId/attendance" element={<LiveAttendancePage />} />
           
