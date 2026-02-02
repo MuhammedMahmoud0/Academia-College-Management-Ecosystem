@@ -1,5 +1,4 @@
 import 'package:college_project/core/appCubit/app_cubit.dart';
-import 'package:college_project/core/appCubit/app_states.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/course_regestration/models/course_model.dart';
 import 'package:college_project/features/course_regestration/widgets/registered_courses_table.dart';

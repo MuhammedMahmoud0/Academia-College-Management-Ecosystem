@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
 import 'package:college_project/core/widgets/widgets.dart';

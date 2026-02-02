@@ -1,8 +1,10 @@
 import 'package:college_project/core/constants/constants.dart';
+import 'package:college_project/core/data/local/hive_storage_helper.dart';
 import 'package:college_project/core/data/network/api_client.dart';
 import 'package:college_project/core/data/network/api_exception.dart';
 import 'package:college_project/features/auth/cubit/auth_states.dart';
 import 'package:college_project/features/auth/repo/auth_repo.dart';
+import 'package:college_project/features/home/models/student_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -104,7 +106,6 @@ class AuthCubit extends Cubit<AuthState> {
       await getStudentData(rethrowApiException: true);
     } on ApiException catch (e) {
       // Check if token is invalid/expired
-
       if (e.message.contains('Authentication invalid') || e.statusCode == 401) {
         // Try to refresh token
         final refreshed = await refreshToken();
@@ -125,8 +126,17 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> getStudentData({bool rethrowApiException = false}) async {
     try {
       final studentModel = await _authRepo.getStudentData();
-      // TODO save student data in hive here!!
+
+      // Save student data in Hive for offline access
+      final studentProfileModel = StudentProfileModel.fromStudentModel(
+        studentModel,
+      );
+      await HiveStorageService.saveStudent(studentProfileModel);
+      debugPrint('Student data saved to Hive successfully');
+
+      // Also save to Constants for immediate use
       Constants.student = studentModel;
+
       emit(AuthSuccess());
     } on ApiException catch (e) {
       debugPrint('get student data failed: $e');
@@ -143,6 +153,14 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> logout() async {
     _apiClient.clearToken();
     await secureStorage.delete(key: 'token');
+    await secureStorage.delete(key: 'email');
+    await secureStorage.delete(key: 'password');
+    await secureStorage.delete(key: 'expirationTime');
+
+    // Clear Hive data on logout
+    await HiveStorageService.clearAll();
+    debugPrint('Logged out and cleared all data');
+
     emit(AuthInitial());
   }
 }

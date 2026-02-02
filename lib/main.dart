@@ -1,5 +1,6 @@
 import 'package:college_project/core/appCubit/app_cubit.dart';
 import 'package:college_project/core/appCubit/app_states.dart';
+import 'package:college_project/core/data/local/hive_storage_helper.dart';
 import 'package:college_project/core/data/local/sharedpref_helper.dart';
 import 'package:college_project/core/routing/router_generation.dart';
 import 'package:college_project/core/styles/app_colors.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPrefHelper().init();
+  await HiveStorageService.init();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

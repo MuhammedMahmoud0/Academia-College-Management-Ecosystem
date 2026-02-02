@@ -8,11 +8,11 @@ class MaterialCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const MaterialCard({
-    Key? key,
+    super.key,
     required this.material,
     required this.primaryColor,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

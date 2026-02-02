@@ -5,7 +5,7 @@ import 'package:college_project/features/material/widgets/Material_Card_Widget.d
 import 'package:college_project/features/material/widgets/Material_SearchBar.dart';
 
 class MaterialsScreen extends StatefulWidget {
-  const MaterialsScreen({Key? key}) : super(key: key);
+  const MaterialsScreen({super.key});
 
   @override
   State<MaterialsScreen> createState() => _MaterialsScreenState();

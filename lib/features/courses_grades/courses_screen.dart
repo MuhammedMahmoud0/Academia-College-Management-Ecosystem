@@ -1,5 +1,4 @@
 import 'package:college_project/core/appCubit/app_cubit.dart';
-import 'package:college_project/core/appCubit/app_states.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/courses_grades/widgets/course_card.dart';
 import 'package:college_project/features/courses_grades/widgets/gpa_summary_card.dart';

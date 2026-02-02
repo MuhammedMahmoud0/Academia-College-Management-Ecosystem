@@ -1,5 +1,4 @@
 import 'package:college_project/core/appCubit/app_cubit.dart';
-import 'package:college_project/core/appCubit/app_states.dart';
 import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/core/routing/app_routes.dart';
 import 'package:college_project/core/styles/app_colors.dart';
@@ -16,7 +15,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final student = Constants.student!;
-
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
