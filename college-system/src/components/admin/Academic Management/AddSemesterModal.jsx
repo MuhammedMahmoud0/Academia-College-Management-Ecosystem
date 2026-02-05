@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function AddSemesterModal({ isOpen, onClose, onSave }) {
+export default function AddSemesterModal({ isOpen, onClose, onSave, editingSection }) {
   const [formData, setFormData] = useState({
     course: 'CS101',
     instructor: 'Dr. Evelyn Reed',
@@ -9,6 +9,33 @@ export default function AddSemesterModal({ isOpen, onClose, onSave }) {
     classroom: '',
     capacity: '50',
   });
+
+  useEffect(() => {
+    if (editingSection) {
+      // Parse schedule back to days and time
+      const scheduleParts = editingSection.schedule.split(' ');
+      const days = scheduleParts[0] + (scheduleParts[1] ? ' ' + scheduleParts[1] : '');
+      const time = scheduleParts.slice(2).join(' ') || '';
+      
+      setFormData({
+        course: editingSection.course || 'CS101',
+        instructor: editingSection.instructor || 'Dr. Evelyn Reed',
+        days: days,
+        time: time,
+        classroom: editingSection.location || '',
+        capacity: editingSection.capacity?.toString() || '50',
+      });
+    } else {
+      setFormData({
+        course: 'CS101',
+        instructor: 'Dr. Evelyn Reed',
+        days: '',
+        time: '',
+        classroom: '',
+        capacity: '50',
+      });
+    }
+  }, [editingSection, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +66,9 @@ export default function AddSemesterModal({ isOpen, onClose, onSave }) {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-200">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900">Schedule a New Section</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900">
+            {editingSection ? 'Edit Section' : 'Schedule a New Section'}
+          </h3>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"

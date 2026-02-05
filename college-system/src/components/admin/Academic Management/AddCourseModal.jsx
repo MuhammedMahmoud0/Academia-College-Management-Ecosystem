@@ -1,14 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function AddCourseModal({ isOpen, onClose, onSave }) {
+export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse }) {
   const [formData, setFormData] = useState({
     courseCode: '',
     courseName: '',
-    description: '',
+    instructor: '',
     creditHours: '',
     department: 'Computer Science',
     prerequisites: [],
   });
+
+  useEffect(() => {
+    if (editingCourse) {
+      setFormData({
+        courseCode: editingCourse.code || '',
+        courseName: editingCourse.name || '',
+        instructor: editingCourse.instructor || '',
+        creditHours: editingCourse.credits?.toString() || '',
+        department: editingCourse.department || 'Computer Science',
+        prerequisites: editingCourse.prerequisites || [],
+      });
+    } else {
+      setFormData({
+        courseCode: '',
+        courseName: '',
+        instructor: '',
+        creditHours: '',
+        department: 'Computer Science',
+        prerequisites: [],
+      });
+    }
+  }, [editingCourse, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +55,7 @@ export default function AddCourseModal({ isOpen, onClose, onSave }) {
     setFormData({
       courseCode: '',
       courseName: '',
-      description: '',
+      instructor: '',
       creditHours: '',
       department: 'Computer Science',
       prerequisites: [],
@@ -48,7 +70,9 @@ export default function AddCourseModal({ isOpen, onClose, onSave }) {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-200">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900">Create New Course</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900">
+            {editingCourse ? 'Edit Course' : 'Create New Course'}
+          </h3>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -94,15 +118,15 @@ export default function AddCourseModal({ isOpen, onClose, onSave }) {
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              Instructor
             </label>
             <textarea
-              name="description"
-              value={formData.description}
+              name="instructor"
+              value={formData.instructor}
               onChange={handleInputChange}
               rows="4"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-              placeholder="Enter course description..."
+              placeholder="Enter instructor name..."
             />
           </div>
 

@@ -33,9 +33,14 @@ export default function ManagementTable() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
 
   const handleEdit = (id) => {
-    console.log('Edit course:', id);
+    const course = courses.find(c => c.id === id);
+    if (course) {
+      setEditingCourse(course);
+      setIsModalOpen(true);
+    }
   };
 
   const handleDelete = (id) => {
@@ -45,16 +50,34 @@ export default function ManagementTable() {
   };
 
   const handleSaveCourse = (formData) => {
-    const newCourse = {
-      id: courses.length + 1,
-      name: formData.courseName,
-      code: formData.courseCode,
-      department: formData.department,
-      instructor: 'TBA',
-      enrolled: 0,
-      credits: parseInt(formData.creditHours) || 0,
-    };
-    setCourses([...courses, newCourse]);
+    if (editingCourse) {
+      // Update existing course
+      setCourses(courses.map(course => 
+        course.id === editingCourse.id 
+          ? {
+              ...course,
+              name: formData.courseName,
+              code: formData.courseCode,
+              department: formData.department,
+              instructor: formData.instructor,
+              credits: parseInt(formData.creditHours) || 0,
+            }
+          : course
+      ));
+      setEditingCourse(null);
+    } else {
+      // Add new course
+      const newCourse = {
+        id: courses.length + 1,
+        name: formData.courseName,
+        code: formData.courseCode,
+        department: formData.department,
+        instructor: formData.instructor,
+        enrolled: 0,
+        credits: parseInt(formData.creditHours) || 0,
+      };
+      setCourses([...courses, newCourse]);
+    }
   };
 
   return (
@@ -151,8 +174,12 @@ export default function ManagementTable() {
       {/* Add Course Modal */}
       <AddCourseModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingCourse(null);
+        }}
         onSave={handleSaveCourse}
+        editingCourse={editingCourse}
       />
     </div>
   );

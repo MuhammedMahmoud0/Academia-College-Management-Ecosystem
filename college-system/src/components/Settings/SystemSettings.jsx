@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import AddUserModal from './AddUserModal';
 
 export default function SystemSettings() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAddUserModal, setShowAddUserModal] = useState(false);
+    const [users, setUsers] = useState([]);
     const [semesterDates, setSemesterDates] = useState({
         startDate: '2025-09-01',
         registrationDeadline: '2025-09-15'
@@ -27,8 +30,24 @@ export default function SystemSettings() {
     };
 
     const handleAddUser = () => {
-        console.log('Add user clicked');
-        // Add your add user logic here
+        setShowAddUserModal(true);
+    };
+
+    const handleSaveUser = (userData) => {
+        const newUser = {
+            id: users.length + 1,
+            ...userData,
+            createdAt: new Date().toISOString()
+        };
+        setUsers([...users, newUser]);
+        console.log('User added:', newUser);
+        alert('User added successfully!');
+    };
+
+    const handleDeleteUser = (userId) => {
+        if (window.confirm('Are you sure you want to delete this user?')) {
+            setUsers(users.filter(user => user.id !== userId));
+        }
     };
 
     return (
@@ -59,9 +78,82 @@ export default function SystemSettings() {
                     </button>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
-                    <p className="text-gray-500">User list and management table would appear here.</p>
-                </div>
+                {users.length === 0 ? (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
+                        <p className="text-gray-500">No users added yet. Click "Add User" to create a new user.</p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Name
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Academic Email
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Role
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Department
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Year
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {users
+                                    .filter(user => 
+                                        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+                                    )
+                                    .map((user) => (
+                                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-700">{user.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-700">{user.academicEmail}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
+                                                user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                                                user.role === 'doctor' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-green-100 text-green-700'
+                                            }`}>
+                                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{user.department}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">Year {user.year}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Academic Calendar Section */}
@@ -130,6 +222,13 @@ export default function SystemSettings() {
                     </button>
                 </div>
             </div>
+
+            {showAddUserModal && (
+                <AddUserModal
+                    onClose={() => setShowAddUserModal(false)}
+                    onSave={handleSaveUser}
+                />
+            )}
         </div>
     );
 }

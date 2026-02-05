@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import AddFeeModal from './AddFeeModal';
+import EditFeeModal from './EditFeeModal';
+import EditTuitionModal from './EditTuitionModal';
 
 export default function FeesManagement() {
-    const [tuitionRates] = useState([
+    const [tuitionRates, setTuitionRates] = useState([
         { id: 1, program: 'B.Sc. in Computer Science', fee: '$5,000' },
         { id: 2, program: 'B.Sc. in Mechanical Eng.', fee: '$5,500' },
         { id: 3, program: 'BBA', fee: '$4,500' }
@@ -14,15 +16,51 @@ export default function FeesManagement() {
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingFee, setEditingFee] = useState(null);
+    const [isEditTuitionModalOpen, setIsEditTuitionModalOpen] = useState(false);
+    const [editingTuition, setEditingTuition] = useState(null);
 
     const handleEditTuition = (item) => {
-        console.log('Edit tuition:', item);
-        // Add your edit logic here
+        setEditingTuition(item);
+        setIsEditTuitionModalOpen(true);
+    };
+
+    const handleEditTuitionModalClose = () => {
+        setIsEditTuitionModalOpen(false);
+        setEditingTuition(null);
+    };
+
+    const handleEditTuitionModalSubmit = (formData) => {
+        const updatedTuition = tuitionRates.map(tuition => 
+            tuition.id === editingTuition.id 
+                ? { ...tuition, program: formData.program, fee: `$${Number(formData.fee).toLocaleString()}` }
+                : tuition
+        );
+        setTuitionRates(updatedTuition);
+        setIsEditTuitionModalOpen(false);
+        setEditingTuition(null);
     };
 
     const handleEditFee = (item) => {
-        console.log('Edit fee:', item);
-        // Add your edit logic here
+        setEditingFee(item);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
+        setEditingFee(null);
+    };
+
+    const handleEditModalSubmit = (formData) => {
+        const updatedFees = campusFees.map(fee => 
+            fee.id === editingFee.id 
+                ? { ...fee, name: formData.feeName, amount: `$${formData.amount}`, type: formData.type }
+                : fee
+        );
+        setCampusFees(updatedFees);
+        setIsEditModalOpen(false);
+        setEditingFee(null);
     };
 
     const handleDeleteFee = (id) => {
@@ -156,6 +194,22 @@ export default function FeesManagement() {
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
                 onSubmit={handleModalSubmit}
+            />
+
+            {/* Edit Fee Modal */}
+            <EditFeeModal
+                isOpen={isEditModalOpen}
+                onClose={handleEditModalClose}
+                onSubmit={handleEditModalSubmit}
+                fee={editingFee}
+            />
+
+            {/* Edit Tuition Modal */}
+            <EditTuitionModal
+                isOpen={isEditTuitionModalOpen}
+                onClose={handleEditTuitionModalClose}
+                onSubmit={handleEditTuitionModalSubmit}
+                tuition={editingTuition}
             />
         </div>
     );

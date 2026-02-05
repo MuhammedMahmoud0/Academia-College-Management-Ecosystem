@@ -54,7 +54,25 @@ export default function DepartmentsPrograms() {
   };
 
   const handleEditProgram = (programId) => {
-    console.log('Edit program:', programId);
+    const program = selectedDepartment.programs.find(p => p.id === programId);
+    if (program) {
+      const newName = prompt('Edit program name:', program.name);
+      if (newName && newName.trim()) {
+        const updatedDepartments = departments.map(dept => {
+          if (dept.id === selectedDepartment.id) {
+            return {
+              ...dept,
+              programs: dept.programs.map(p => 
+                p.id === programId ? { ...p, name: newName.trim() } : p
+              ),
+            };
+          }
+          return dept;
+        });
+        setDepartments(updatedDepartments);
+        setSelectedDepartment(updatedDepartments.find(d => d.id === selectedDepartment.id));
+      }
+    }
   };
 
   const handleDeleteProgram = (programId) => {
