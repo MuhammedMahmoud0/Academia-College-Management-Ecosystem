@@ -24,9 +24,14 @@ export default function SemesterScheduling() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSection, setEditingSection] = useState(null);
 
   const handleEdit = (id) => {
-    console.log('Edit section:', id);
+    const section = sections.find(s => s.id === id);
+    if (section) {
+      setEditingSection(section);
+      setIsModalOpen(true);
+    }
   };
 
   const handleDelete = (id) => {
@@ -36,16 +41,34 @@ export default function SemesterScheduling() {
   };
 
   const handleSaveSection = (formData) => {
-    const newSection = {
-      id: sections.length + 1,
-      course: formData.course,
-      instructor: formData.instructor,
-      schedule: `${formData.days} ${formData.time}`,
-      location: formData.classroom,
-      enrolled: 0,
-      capacity: parseInt(formData.capacity) || 50,
-    };
-    setSections([...sections, newSection]);
+    if (editingSection) {
+      // Update existing section
+      setSections(sections.map(section => 
+        section.id === editingSection.id 
+          ? {
+              ...section,
+              course: formData.course,
+              instructor: formData.instructor,
+              schedule: `${formData.days} ${formData.time}`,
+              location: formData.classroom,
+              capacity: parseInt(formData.capacity) || 50,
+            }
+          : section
+      ));
+      setEditingSection(null);
+    } else {
+      // Add new section
+      const newSection = {
+        id: sections.length + 1,
+        course: formData.course,
+        instructor: formData.instructor,
+        schedule: `${formData.days} ${formData.time}`,
+        location: formData.classroom,
+        enrolled: 0,
+        capacity: parseInt(formData.capacity) || 50,
+      };
+      setSections([...sections, newSection]);
+    }
   };
 
   return (
@@ -143,8 +166,12 @@ export default function SemesterScheduling() {
       {/* Add Section Modal */}
       <AddSemesterModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingSection(null);
+        }}
         onSave={handleSaveSection}
+        editingSection={editingSection}
       />
     </div>
   );
