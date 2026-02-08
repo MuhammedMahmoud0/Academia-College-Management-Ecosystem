@@ -20,10 +20,10 @@ export default function DoctorDashboard() {
     ];
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
+     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
             {/* Welcome Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome, Dr. Evelyn Reed</h1>
+                 <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome, Dr. Evelyn Reed</h1>
                 <p className="text-gray-600">Here's your overview for the week.</p>
             </div>
 

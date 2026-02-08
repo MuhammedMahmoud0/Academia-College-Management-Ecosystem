@@ -24,7 +24,7 @@ export default function CourseManagementSetting() {
             <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
                 {/* Header */}
                 <div className="mb-6 md:mb-8">
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Course Management</h1>
+                 <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Course Management</h1>
                     <p className="text-sm md:text-base text-gray-500">Manage settings for your assigned courses.</p>
                 </div>
 

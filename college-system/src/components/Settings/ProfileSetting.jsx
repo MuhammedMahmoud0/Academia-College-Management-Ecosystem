@@ -47,7 +47,7 @@ export default function ProfileSetting() {
     <div className="w-full p-4 md:p-6 bg-white rounded-lg">
       {/* Header */}
       <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
+         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Profile Settings</h1>
         <p className="text-sm md:text-base text-gray-500">Update your photo and personal details.</p>
       </div>
 

@@ -49,7 +49,7 @@ export default function SecuritySetting() {
       {/* Change Password Section */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
         <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Change Password</h2>
+       <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Change Password</h1>
           <p className="text-sm md:text-base text-gray-500">Update your password for enhanced security.</p>
         </div>
 

@@ -7,7 +7,8 @@ import PaymentAgingChart from '../components/admin/AdminDashboard/PaymentAgingCh
 import ReportingToolCard from '../components/admin/AdminDashboard/ReportingToolCard';
 
 const AdminDashboard = () => {
-  const [selectedSemester, setSelectedSemester] = useState('This Semester');
+  
+  const [selectedSemester] = useState('This Semester');
 
   // Needs Attention Data
   const needsAttentionItems = [
@@ -96,10 +97,10 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+  <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-6">Admin Dashboard</h1>
         <div className="relative">
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
             <span className="text-sm text-gray-700">{selectedSemester}</span>

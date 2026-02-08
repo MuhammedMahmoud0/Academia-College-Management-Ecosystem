@@ -15,9 +15,9 @@ export default function LeaderBoardPage() {
     ];
 
     return (
-        <div className="w-full min-h-screen">
-            <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">Student Leaderboard</h1>
+      <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 mb-6">Student Leaderboard</h1>
                 
                 {/* Description and Filter Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

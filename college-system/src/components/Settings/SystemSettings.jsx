@@ -55,7 +55,7 @@ export default function SystemSettings() {
             {/* User Management Section */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
                 <div className="mb-6">
-                    <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">User Management</h2>
+                    <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">User Management</h1>
                     <p className="text-xs md:text-sm text-gray-500">Add, search, and manage user roles.</p>
                 </div>
 
@@ -159,7 +159,7 @@ export default function SystemSettings() {
             {/* Academic Calendar Section */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
                 <div className="mb-6">
-                    <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Academic Calendar</h2>
+                  <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Academic Calendar</h1>
                     <p className="text-xs md:text-sm text-gray-500">Set important dates for the semester.</p>
                 </div>
 
@@ -201,7 +201,7 @@ export default function SystemSettings() {
             {/* Site-wide Announcement Section */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
                 <div className="mb-6">
-                    <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">Site-wide Announcement</h2>
+                    <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Site-wide Announcement</h1>
                     <p className="text-xs md:text-sm text-gray-500">Publish an announcement to all users.</p>
                 </div>
 

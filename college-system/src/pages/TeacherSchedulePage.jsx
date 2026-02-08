@@ -58,13 +58,12 @@ export default function TeacherSchedulePage() {
   };
 
   return (
-    <div className="w-full overflow-hidden">
-      <div className="px-4 sm:px-6 md:px-8">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4">Weekly Schedule</h1>
-      </div>
+    <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 ">
+            {/* Page Title */}
+            <h1 className="text-3xl font-bold text-slate-900 mb-6">Weekely Schedule</h1>
 
-      {/* Responsive Grid Container */}
-      <div className="px-4 sm:px-6 md:px-8">
+            {/* Info Card */}
+               <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
         {/* Grid Container: Responsive Columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5 lg:gap-4 mb-6">
           {days.map((day) => (

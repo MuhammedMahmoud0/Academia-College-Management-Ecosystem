@@ -38,9 +38,9 @@ export default function CommunityPage() {
   ]
 
   return (
-    <div className="bg-gray-50 min-h-screen p-3 sm:p-4 lg:p-5">
+  <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900">
+      <h1 className="text-3xl font-bold text-slate-900 mb-2">
           Community Hub
         </h1>
         

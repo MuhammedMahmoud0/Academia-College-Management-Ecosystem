@@ -44,7 +44,7 @@ const StudentsPaymentPage = () => {
   };
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8 bg-gray-100 min-h-screen">
+       <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
       <div className="mb-6 sm:mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           <BalanceCard balance={balance} />
