@@ -53,12 +53,12 @@ export default function DoctorMaterialsPage () {
      };
    
      return (
-       <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-         {/* Header */}
-         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-             Course Materials
-           </h1>
+       <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+         <h1 className="text-3xl font-bold text-slate-900 mb-6">
+          Course Materials
+        </h1>
           
          </div>
           

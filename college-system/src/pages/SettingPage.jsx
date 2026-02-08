@@ -7,7 +7,7 @@ import SystemSettings from '../components/Settings/SystemSettings';
 export default function SettingPage() {
    const [activeTab, setActiveTab] = useState('profile');
       return (
-           <div className=" p-2 bg-gray-50 min-h-screen rounded-lg" >
+              <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
         
           {/* tabs */}
            <div className="flex flex-col sm:flex-row gap-2 mb-4 md:mb-6 overflow-x-auto">

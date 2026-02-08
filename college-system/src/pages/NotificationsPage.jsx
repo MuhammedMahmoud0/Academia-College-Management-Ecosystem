@@ -97,11 +97,12 @@ export default function NotificationsPage() {
   const groupedNotifications = groupByTime(filteredNotifications);
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 rounded-lg">
-      <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6">
+  
+       <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+   
         {/* Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+             <h1 className="text-3xl font-bold text-slate-900 mb-6">
             Notifications
           </h1>
           <div className="flex items-center gap-2 sm:gap-4">
@@ -169,6 +170,6 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
-    </div>
+   
   );
 }

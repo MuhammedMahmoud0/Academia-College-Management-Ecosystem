@@ -6,8 +6,9 @@ import RecentActivity from "../components/student/Student Analytics/RecentActivi
 
 export default function StudentAnalyticsPage() {
   return (
-    <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
-      <h1 className="text-xl md:text-2xl font-bold mb-4">Student Analytics</h1>
+   
+       <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+  <h1 className="text-3xl font-bold text-slate-900 mb-6">Student Analytics</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard title="GPA" value="3.8" />

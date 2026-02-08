@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import {React} from 'react';
 import AdminAttendanceStatsCard from '../components/admin/Attendance/AdminAttendanceStatsCard';
 import StudentsAttendanceTable from '../components/admin/Attendance/StudentsAttendanceTable';
 import DepartmentComparisonChart from '../components/admin/Attendance/DepartmentComparisonChart';
@@ -57,17 +57,17 @@ const AttendanceForAdmin = () => {
     { name: 'Lisa K.', rate: 92 }
   ];
 
-  const handleExportReport = () => {
-    console.log('Exporting attendance report...');
-    // Implement export functionality
-  };
+  // const handleExportReport = () => {
+  //   console.log('Exporting attendance report...');
+  //   // Implement export functionality
+  // };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
+    
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Attendance Management</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Attendance Management</h1>
           <p className="text-sm text-gray-600 mt-1">Monitor and analyze student attendance across all programs</p>
         </div>
 
@@ -100,7 +100,7 @@ const AttendanceForAdmin = () => {
           students={studentsData}
         />
       </div>
-    </div>
+   
   );
 };
 

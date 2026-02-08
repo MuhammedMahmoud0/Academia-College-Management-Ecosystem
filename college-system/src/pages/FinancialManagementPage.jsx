@@ -6,8 +6,8 @@
  export default function FinancialManagementPage() { 
      const [activeTab, setActiveTab] = useState('fees-management');
      return (
-          <div className="p-4 md:p-6 lg:p-8 bg-gray-50 min-h-screen rounded-lg" >
-       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Financial Management</h1>
+          <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
+  <h1 className="text-3xl font-bold text-slate-900 mb-6">Financial Management</h1>
          {/* tabs */}
           <div className="flex flex-col sm:flex-row gap-2 mb-4 md:mb-6 overflow-x-auto">
          <button

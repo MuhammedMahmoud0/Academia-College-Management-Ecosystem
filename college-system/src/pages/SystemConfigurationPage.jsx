@@ -31,10 +31,10 @@ const SystemConfigurationPage = () => {
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
-      <div className="max-w-7xl mx-auto">
+       <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
+     
         {/* Header */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">System Configuration</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-6">System Configuration</h1>
 
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow-sm mb-4 sm:mb-6">
@@ -66,7 +66,7 @@ const SystemConfigurationPage = () => {
           {ActiveComponent && <ActiveComponent />}
         </div>
       </div>
-    </div>
+    
   );
 };
 
