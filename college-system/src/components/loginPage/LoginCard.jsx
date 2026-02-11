@@ -1,19 +1,26 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login:", { email, password });
+    setError("");
     
-    // Navigate to dashboard after successful login
-    navigate("/dashboard/info");
+    try {
+      await login(email, password);
+      navigate("/dashboard/info");
+    } catch (error) {
+      setError(error.response?.data?.message || "Login failed. Please try again.");
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -70,6 +77,17 @@ const LoginCard = () => {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {error}
+          </motion.div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           {/* Email Input */}
@@ -121,14 +139,15 @@ const LoginCard = () => {
           {/* Login Button */}
           <motion.button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4 sm:mt-6 text-sm sm:text-base"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            disabled={isLoading}
+            className="w-full bg-indigo-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4 sm:mt-6 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={{ scale: isLoading ? 1 : 1.01 }}
+            whileTap={{ scale: isLoading ? 1 : 0.99 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </motion.button>
         </form>
       </motion.div>

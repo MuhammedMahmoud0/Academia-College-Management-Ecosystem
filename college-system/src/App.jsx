@@ -1,5 +1,11 @@
+// importing styles and dependencies
 import './App.css';
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+
+// Importing pages and components
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import MainLayoutPage from './pages/MainLayoutPage';
@@ -35,13 +41,14 @@ import FinancialManagementPage from './pages/FinancialManagementPage';
 function App() {
   return (
     <div className="App">
+      <AuthProvider>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Dashboard Routes with Layout */}
-        <Route path="/dashboard" element={<MainLayoutPage />}>
+        {/* Dashboard Routes with Layout - Protected */}
+        <Route path="/dashboard" element={<ProtectedRoute><MainLayoutPage /></ProtectedRoute>}>
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="info" element={<InfoPage />} />
           <Route path="courses" element={<CoursesGradesPage />} />
@@ -77,6 +84,7 @@ function App() {
           <Route index element={<InfoPage />} />
         </Route>
       </Routes>
+      </AuthProvider>
     </div>
   );
 }

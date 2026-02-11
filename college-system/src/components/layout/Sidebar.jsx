@@ -1,7 +1,10 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Sidebar({ isOpen, onClose }) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const menuItems = [
         {
@@ -313,6 +316,12 @@ export default function Sidebar({ isOpen, onClose }) {
 
     const isActive = (path) => location.pathname === path;
 
+    const handleLogout = () => {
+        logout();
+        onClose();
+        navigate('/login');
+    };
+
     return (
         <>
             {/* Overlay */}
@@ -360,6 +369,21 @@ export default function Sidebar({ isOpen, onClose }) {
                             </ul>
                         </div>
                     ))}
+
+                    {/* Logout Button as Last Item */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors w-full text-red-600 hover:bg-red-50"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span className="text-sm font-medium">Logout</span>
+                        </button>
+                    </div>
                 </nav>
             </aside>
         </>
