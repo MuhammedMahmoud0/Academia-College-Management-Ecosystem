@@ -6,10 +6,11 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/api': {
+      '/api/v1': {
         target: 'https://college-system-backend.onrender.com',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path
       }
     }
   }

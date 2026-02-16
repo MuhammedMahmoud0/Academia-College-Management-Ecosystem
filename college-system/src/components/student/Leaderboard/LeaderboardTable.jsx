@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -6,44 +6,31 @@ import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-// Generate student data
-const generateStudents = () => {
-  const students = [];
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const avatarColors = [
-    '#c7d2fe', '#ddd6fe', '#fae8ff', '#fce7f3', '#ffe4e6',
-    '#fed7aa', '#fef3c7', '#d9f99d', '#bbf7d0', '#a7f3d0',
-    '#99f6e4', '#a5f3fc', '#bae6fd', '#bfdbfe', '#dbeafe'
-  ];
-  
-  for (let i = 0; i < 100; i++) {
-    const letter = letters[i % 26];
-    const gpa = (4.0 - (i * 0.015)).toFixed(2);
-    students.push({
-      id: i + 1,
-      rank: i + 1,
-      name: `Student ${letter}${Math.floor(i / 26) || ''}${i}`,
-      studentId: `AC-123${456 + i}`,
-      year: (i % 4) + 1,
-      gpa: parseFloat(gpa),
-      avatar: letter,
-      avatarColor: avatarColors[i % avatarColors.length]
-    });
-  }
-  return students;
-};
+const avatarColors = [
+  '#c7d2fe', '#ddd6fe', '#fae8ff', '#fce7f3', '#ffe4e6',
+  '#fed7aa', '#fef3c7', '#d9f99d', '#bbf7d0', '#a7f3d0',
+  '#99f6e4', '#a5f3fc', '#bae6fd', '#bfdbfe', '#dbeafe'
+];
 
-const initialRows = generateStudents();
-
-export default function LeaderboardTable({ selectedYear }) {
-  const [rows] = useState(initialRows);
-  const [paginationModel, setPaginationModel] = useState({
-    pageSize: 20,
-    page: 0,
-  });
-
+export default function LeaderboardTable({ selectedYear, leaderboardData = [] }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Transform API data to table format
+  const rows = useMemo(() => {
+    return leaderboardData.map((item, index) => ({
+      id: item.studentId || index,
+      rank: item.rank,
+      name: item.name,
+      studentId: item.studentId,
+      year: item.level,
+      gpa: item.score,
+      badge: item.badge,
+      avatar: item.name?.charAt(0)?.toUpperCase() || '?',
+      avatarColor: avatarColors[index % avatarColors.length],
+      department: item.department
+    }));
+  }, [leaderboardData]);
 
   // Filter rows based on selected year and re-rank
   const filteredRows = useMemo(() => {
@@ -144,7 +131,7 @@ export default function LeaderboardTable({ selectedYear }) {
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => (
-          <span style={{ fontWeight: 700, color: '#111827' }}>{params.value.toFixed(2)}</span>
+          <span style={{ fontWeight: 700, color: '#111827' }}>{params.value?.toFixed(2) || 'N/A'}</span>
         ),
       },
     ];
@@ -154,6 +141,14 @@ export default function LeaderboardTable({ selectedYear }) {
   const processRowUpdate = (newRow) => {
     return newRow;
   };
+
+  if (!filteredRows || filteredRows.length === 0) {
+    return (
+      <Box className="bg-white rounded-2xl shadow-sm w-full p-8 text-center">
+        <p className="text-gray-500">No leaderboard data available</p>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -171,8 +166,11 @@ export default function LeaderboardTable({ selectedYear }) {
         columns={columns}
         processRowUpdate={processRowUpdate}
         pagination
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 20, page: 0 },
+          },
+        }}
         pageSizeOptions={[20, 50, 100]}
         autoHeight
         disableColumnMenu

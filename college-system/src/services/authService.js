@@ -31,7 +31,7 @@ export const getCurrentUser = async (token) => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem('auth_token');
   localStorage.removeItem('message');
   localStorage.removeItem('currentUser');
 };
