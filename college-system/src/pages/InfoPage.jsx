@@ -1,17 +1,93 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/student/info page/InfoCard';
+import { getStudentProfile } from '../services/infoService';
 
 export default function Info() {
-    const studentData = {
-        name: "John Doe",
-        major: "Computer Science",
-        studentId: "AC-123456",
-        year: "3rd Year",
-        gpa: "3.85",
-        email: "john.doe@academia.edu.eg",
-        phone: "+20 100 123 4567",
-        advisor: "Dr. Evelyn Reed",
-        address: "123 University St, Alexandria, Egypt"
+    const navigate = useNavigate();
+    const [studentData, setStudentData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        
+        fetchStudentProfile();
+    }, [navigate]);
+
+    const fetchStudentProfile = async () => {
+        try {
+            setLoading(true);
+            const response = await getStudentProfile();
+            const profile = response.studentProfile;
+            console.log(response.data);
+            // Transform API data to match component structure
+            const transformedData = {
+                name: profile.full_name || 'N/A',
+                major: profile.student_profiles?.departments?.name || 'N/A',
+                studentId: profile.student_profiles?.student_id || 'N/A',
+                year: profile.student_profiles?.year_level ? `${profile.student_profiles.year_level}${getYearSuffix(profile.student_profiles.year_level)} Year` : 'N/A',
+                gpa: profile.student_profiles?.cgpa ? profile.student_profiles?.cgpa.toFixed(2) : 'N/A',
+                email: profile.email || 'N/A',
+                phone: profile.phone || 'N/A',
+                address: profile.address || 'N/A'
+            };
+            
+            setStudentData(transformedData);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching student profile:', err);
+            if (err.response?.status === 401) {
+                localStorage.removeItem('auth_token');
+                navigate('/login');
+                return;
+            }
+            setError(err.response?.data?.message || 'Failed to load student information');
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const getYearSuffix = (year) => {
+        if (year === 1) return 'st';
+        if (year === 2) return 'nd';
+        if (year === 3) return 'rd';
+        return 'th';
+    };
+
+    if (loading) {
+        return (
+            <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-800">{error}</p>
+                    <button 
+                        onClick={fetchStudentProfile}
+                        className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!studentData) {
+        return null;
+    }
 
     return (
         <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
@@ -60,10 +136,6 @@ export default function Info() {
                             <InfoCard 
                                 label="Phone"
                                 value={studentData.phone}
-                            />
-                            <InfoCard 
-                                label="Faculty Advisor"
-                                value={studentData.advisor}
                             />
                         </div>
 
