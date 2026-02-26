@@ -1,32 +1,41 @@
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-
-export default function ScheduleCard({ course, timeColorMap }) {
-
-  const colors = timeColorMap[course.time] || timeColorMap.default;
+export default function ScheduleCard({ course }) {
+  // Modern color scheme
+  const colors = { 
+    bg: 'bg-gradient-to-br from-emerald-50 to-teal-50', 
+    border: 'border-emerald-500',
+    badge: 'bg-emerald-600',
+    text: 'text-emerald-900'
+  };
 
   return (
-    <div className={`h-full rounded-tr-lg rounded-br-lg shadow-lg hover:shadow-xl transition-shadow p-3 sm:p-4 md:p-5 border-l-4 md:border-l-[6px] mb-2 sm:mb-3 
-                     ${colors.bg} ${colors.border}`}>
-      
-      <div>
-        <h1 className={`text-sm sm:text-base md:text-lg font-bold ${colors.title} leading-tight mb-1`}>{course.name}</h1>
-        <h5 className="font-medium mb-2 sm:mb-3 text-gray-600 text-xs sm:text-sm">{course.code}</h5>
-
-        <div className="flex flex-col gap-1.5 sm:gap-2">
-          <div className="flex gap-2 items-center text-gray-700">
-            <AccessTimeIcon sx={{ fontSize: { xs: '18px', sm: '20px', md: '22px' } }} /> 
-            <div className="text-xs sm:text-sm md:text-base font-medium">{course.time}</div>
-          </div>
-
-          <div className="flex gap-2 items-center text-gray-700 mb-10">
-            <LocationOnIcon sx={{ fontSize: { xs: '18px', sm: '20px', md: '22px' } }} /> 
-            <div className="text-xs sm:text-sm md:text-base font-medium">{course.location}</div>
-          </div>
-       
-        </div>
+    <div className={`h-[120px] rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-3 border-l-4 ${colors.bg} ${colors.border} flex flex-col overflow-hidden`}>
+      {/* Time Badge */}
+      <div className="mb-2">
+        <span className={`inline-block px-2 py-0.5 text-xs font-semibold text-white rounded-full ${colors.badge}`}>
+          {course.time}
+        </span>
       </div>
 
+      {/* Course Info */}
+      <div className="mb-2 flex-shrink-0">
+        <h3 className={`text-sm font-bold ${colors.text} leading-tight mb-1 line-clamp-2`}>
+          {course.name}
+        </h3>
+        <p className="text-xs font-medium text-gray-600 truncate">
+          {course.code}
+        </p>
+      </div>
+
+      {/* Location */}
+      <div className="flex items-start gap-1.5 text-gray-700">
+        <svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span className="text-xs font-medium truncate">
+          {course.location}
+        </span>
+      </div>
     </div>
   );
 }

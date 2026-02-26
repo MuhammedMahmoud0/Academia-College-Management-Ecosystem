@@ -4,18 +4,18 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
   const [formData, setFormData] = useState({
     courseCode: '',
     courseName: '',
-    instructor: '',
     creditHours: '',
     department: 'Computer Science',
     prerequisites: [],
   });
+
+  const [prerequisiteInput, setPrerequisiteInput] = useState('');
 
   useEffect(() => {
     if (editingCourse) {
       setFormData({
         courseCode: editingCourse.code || '',
         courseName: editingCourse.name || '',
-        instructor: editingCourse.instructor || '',
         creditHours: editingCourse.credits?.toString() || '',
         department: editingCourse.department || 'Computer Science',
         prerequisites: editingCourse.prerequisites || [],
@@ -24,7 +24,6 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
       setFormData({
         courseCode: '',
         courseName: '',
-        instructor: '',
         creditHours: '',
         department: 'Computer Science',
         prerequisites: [],
@@ -37,12 +36,20 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePrerequisiteToggle = (prerequisite) => {
+  const handleAddPrerequisite = () => {
+    if (prerequisiteInput.trim() && !formData.prerequisites.includes(prerequisiteInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        prerequisites: [...prev.prerequisites, prerequisiteInput.trim()]
+      }));
+      setPrerequisiteInput('');
+    }
+  };
+
+  const handleRemovePrerequisite = (prerequisite) => {
     setFormData(prev => ({
       ...prev,
-      prerequisites: prev.prerequisites.includes(prerequisite)
-        ? prev.prerequisites.filter(p => p !== prerequisite)
-        : [...prev.prerequisites, prerequisite]
+      prerequisites: prev.prerequisites.filter(p => p !== prerequisite)
     }));
   };
 
@@ -55,11 +62,11 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
     setFormData({
       courseCode: '',
       courseName: '',
-      instructor: '',
       creditHours: '',
       department: 'Computer Science',
       prerequisites: [],
     });
+    setPrerequisiteInput('');
     onClose();
   };
 
@@ -115,21 +122,6 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
             </div>
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Instructor
-            </label>
-            <textarea
-              name="instructor"
-              value={formData.instructor}
-              onChange={handleInputChange}
-              rows="4"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-              placeholder="Enter instructor name..."
-            />
-          </div>
-
           {/* Credit Hours and Department */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -169,35 +161,49 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Prerequisites
             </label>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.prerequisites.includes('CS101')}
-                  onChange={() => handlePrerequisiteToggle('CS101')}
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">CS101: Introduction to Programming</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.prerequisites.includes('CS260')}
-                  onChange={() => handlePrerequisiteToggle('CS260')}
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">CS260: Data Structures & Algorithms</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.prerequisites.includes('EE200')}
-                  onChange={() => handlePrerequisiteToggle('EE200')}
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">EE200: Digital Logic Design</span>
-              </label>
+            <div className="flex gap-2 mb-2">
+              <input
+                type="text"
+                value={prerequisiteInput}
+                onChange={(e) => setPrerequisiteInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddPrerequisite();
+                  }
+                }}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="e.g., MATH101"
+              />
+              <button
+                type="button"
+                onClick={handleAddPrerequisite}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Add
+              </button>
             </div>
+            {formData.prerequisites.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.prerequisites.map((prerequisite, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
+                  >
+                    {prerequisite}
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePrerequisite(prerequisite)}
+                      className="hover:text-indigo-900"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
