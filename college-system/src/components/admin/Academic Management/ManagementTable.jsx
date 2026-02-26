@@ -5,30 +5,27 @@ export default function ManagementTable() {
   const [courses, setCourses] = useState([
     {
       id: 1,
-      name: 'Introduction to Programming',
       code: 'CS101',
-      department: 'Computer Science',
-      instructor: 'Dr. Evelyn Reed',
-      enrolled: 150,
+      name: 'Introduction to Programming',
       credits: 3,
+      department: 'Computer Science',
+      prerequisites: [],
     },
     {
       id: 2,
-      name: 'Data Structures & Algorithms',
       code: 'CS260',
-      department: 'Computer Science',
-      instructor: 'Dr. Evelyn Reed',
-      enrolled: 120,
+      name: 'Data Structures & Algorithms',
       credits: 3,
+      department: 'Computer Science',
+      prerequisites: ['CS101'],
     },
     {
       id: 3,
-      name: 'Digital Logic Design',
       code: 'EE200',
-      department: 'Engineering',
-      instructor: 'Dr. Olivia Garcia',
-      enrolled: 95,
+      name: 'Digital Logic Design',
       credits: 3,
+      department: 'Engineering',
+      prerequisites: [],
     },
   ]);
 
@@ -56,11 +53,11 @@ export default function ManagementTable() {
         course.id === editingCourse.id 
           ? {
               ...course,
-              name: formData.courseName,
               code: formData.courseCode,
-              department: formData.department,
-              instructor: formData.instructor,
+              name: formData.courseName,
               credits: parseInt(formData.creditHours) || 0,
+              department: formData.department,
+              prerequisites: formData.prerequisites,
             }
           : course
       ));
@@ -69,12 +66,11 @@ export default function ManagementTable() {
       // Add new course
       const newCourse = {
         id: courses.length + 1,
-        name: formData.courseName,
         code: formData.courseCode,
-        department: formData.department,
-        instructor: formData.instructor,
-        enrolled: 0,
+        name: formData.courseName,
         credits: parseInt(formData.creditHours) || 0,
+        department: formData.department,
+        prerequisites: formData.prerequisites,
       };
       setCourses([...courses, newCourse]);
     }
@@ -107,14 +103,11 @@ export default function ManagementTable() {
               <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Department
               </th>
-              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Instructor
-              </th>
-              <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Enrolled
-              </th>
               <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Credits
+              </th>
+              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Prerequisites
               </th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -134,14 +127,13 @@ export default function ManagementTable() {
                 <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-700">{course.department}</div>
                 </td>
-                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{course.instructor}</div>
-                </td>
-                <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{course.enrolled}</div>
-                </td>
                 <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-700">{course.credits}</div>
+                </td>
+                <td className="hidden lg:table-cell px-6 py-4">
+                  <div className="text-sm text-gray-700">
+                    {course.prerequisites.length > 0 ? course.prerequisites.join(', ') : 'None'}
+                  </div>
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">

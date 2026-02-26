@@ -2,21 +2,10 @@ import React from "react";
 import ScheduleCard from "../components/doctors/TeacherSchedule/ScheduleCard";
 
 export default function TeacherSchedulePage() {
-  // 1. Define your Color Map
-  const timeColorMap = {
-    "8:00 - 10:00":  { bg: "bg-sky-500/10",    border: "border-blue-600/70",   title: "text-blue-800" },
-    "10:00 - 12:00": { bg: "bg-green-500/10",  border: "border-green-600/70",  title: "text-green-800" },
-    "12:00 - 14:00": { bg: "bg-yellow-500/10", border: "border-yellow-600/70", title: "text-yellow-800" },
-    "14:00 - 16:00": { bg: "bg-purple-500/10", border: "border-purple-600/70", title: "text-purple-800" },
-    "16:00 - 18:00": { bg: "bg-red-500/10",    border: "border-red-600/70",    title: "text-red-800" },
-    "Online":        { bg: "bg-gray-100", border: "border-gray-500", title: "text-gray-800" },
-    default:         { bg: "bg-gray-100",      border: "border-gray-500",      title: "text-gray-800" },
-  };
-
-  // 2. Define the Grid Structure (7 Days)
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  // Define the Grid Structure (7 Days)
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   
-  // 3. Define Time Slots (Rows)
+  // Define Time Slots
   const timeSlots = [
     "8:00 - 10:00",
     "10:00 - 12:00",
@@ -26,9 +15,13 @@ export default function TeacherSchedulePage() {
     "Online",
   ];
   
-  // 4. Define the Schedule Data
-  // Organize courses by Day -> Time Slot
+  // Define the Schedule Data
   const scheduleData = {
+    Sunday: {
+      "8:00 - 10:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
+      "12:00 - 14:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
+      "16:00 - 18:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
+    },
     Monday: {
       "16:00 - 18:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
     },
@@ -50,51 +43,70 @@ export default function TeacherSchedulePage() {
     Saturday: {
       "Online": { name: "Operating System", code: "CS350", location: "Online Session" },
     },
-    Sunday: {
-      "8:00 - 10:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
-      "12:00 - 14:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
-      "16:00 - 18:00": { name: "Operating System", code: "CS350", location: "Hall C-105" },
-    },
   };
 
+  // Generate dates for the current week
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay);
+    
+    return days.map((_, index) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + index);
+      return date;
+    });
+  };
+
+  const weekDates = getCurrentWeekDates();
+
   return (
-    <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 ">
-            {/* Page Title */}
-            <h1 className="text-3xl font-bold text-slate-900 mb-6">Weekely Schedule</h1>
+    <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6">
+      {/* Page Title */}
+      <h1 className="text-3xl font-bold text-slate-900 mb-6">Weekly Schedule</h1>
 
-            {/* Info Card */}
-               <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-        {/* Grid Container: Responsive Columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 md:gap-5 lg:gap-4 mb-6">
-          {days.map((day) => (
-            <div key={day} className="flex flex-col gap-2 sm:gap-3">
-              {/* Column Header */}
-              <h1 className="font-bold text-center border-b-2 border-gray-500 pb-2 sm:pb-3 md:pb-4 mb-2 sm:mb-3 text-base sm:text-lg md:text-xl">
-                {day}
-              </h1>
+      {/* Schedule Card */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-4 md:p-6">
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
+            {days.map((day, dayIndex) => (
+              <div key={day} className="flex flex-col">
+                {/* Day Header */}
+                <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-t-lg px-3 py-3 mb-3">
+                  <h3 className="font-bold text-center text-base md:text-lg">
+                    {day}
+                  </h3>
+                  <p className="text-center text-xs text-gray-300 mt-1">
+                    {weekDates[dayIndex].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </p>
+                </div>
 
-              {/* Render exactly 5 Rows per column based on time slots */}
-              {timeSlots.map((timeSlot) => {
-                const course = scheduleData[day] && scheduleData[day][timeSlot];
-
-                return (
-                  <div key={`${day}-${timeSlot}`} className="h-full min-h-[100px] sm:min-h-[110px] md:min-h-[120px]">
-                    {course ? (
-                      <ScheduleCard 
-                        course={{ ...course, time: timeSlot }} 
-                        timeColorMap={timeColorMap} 
-                      />
-                    ) : (
-                      // Empty Placeholder to maintain grid shape
-                      <div className="border border-dashed border-gray-300 rounded-lg h-full flex items-center justify-center text-gray-400 text-sm">
-                        -
+                {/* Classes Container */}
+                <div className="flex flex-col gap-2.5">
+                  {timeSlots.map((timeSlot) => {
+                    const course = scheduleData[day] && scheduleData[day][timeSlot];
+                    
+                    return (
+                      <div key={`${day}-${timeSlot}`} className="h-[120px]">
+                        {course ? (
+                          <ScheduleCard course={{ ...course, time: timeSlot }} />
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg h-[120px] flex flex-col items-center justify-center text-gray-400">
+                            <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-xs">Free</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
