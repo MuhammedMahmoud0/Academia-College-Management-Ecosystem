@@ -1,79 +1,143 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddCourseModal from './AddCourseModal';
+import DeleteCourseModal from './DeleteCourseModal';
+import { getAllCourses, createCourse, updateCourse, deleteCourse } from '../../../services/courseService';
+import { useToast } from '../../../hooks/useToast';
 
 export default function ManagementTable() {
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      code: 'CS101',
-      name: 'Introduction to Programming',
-      credits: 3,
-      department: 'Computer Science',
-      prerequisites: [],
-    },
-    {
-      id: 2,
-      code: 'CS260',
-      name: 'Data Structures & Algorithms',
-      credits: 3,
-      department: 'Computer Science',
-      prerequisites: ['CS101'],
-    },
-    {
-      id: 3,
-      code: 'EE200',
-      name: 'Digital Logic Design',
-      credits: 3,
-      department: 'Engineering',
-      prerequisites: [],
-    },
-  ]);
-
+  const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, course: null });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const toast = useToast();
 
-  const handleEdit = (id) => {
-    const course = courses.find(c => c.id === id);
+  // Fetch all courses on mount
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getAllCourses();
+      setCourses(data.courses || []);
+    } catch (error) {
+      toast.error('Failed to load courses. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (code) => {
+    const course = courses.find(c => c.code === code);
     if (course) {
-      setEditingCourse(course);
+      // Normalize prerequisites to array of code strings for the modal
+      const normalizedCourse = {
+        ...course,
+        prerequisites: (course.prerequisites || []).map(p =>
+          typeof p === 'object' ? p.code : p
+        ),
+      };
+      setEditingCourse(normalizedCourse);
       setIsModalOpen(true);
     }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
-      setCourses(courses.filter(course => course.id !== id));
+  const handleDeleteClick = (code) => {
+    const course = courses.find(c => c.code === code);
+    if (course) setDeleteModal({ isOpen: true, course });
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteCourse(deleteModal.course.code);
+      setCourses(prev => prev.filter(c => c.code !== deleteModal.course.code));
+      toast.success('Course deleted successfully.');
+      setDeleteModal({ isOpen: false, course: null });
+    } catch (error) {
+      const msg = error?.response?.data?.message || 'Failed to delete course.';
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleSaveCourse = (formData) => {
-    if (editingCourse) {
-      // Update existing course
-      setCourses(courses.map(course => 
-        course.id === editingCourse.id 
-          ? {
-              ...course,
-              code: formData.courseCode,
-              name: formData.courseName,
-              credits: parseInt(formData.creditHours) || 0,
-              department: formData.department,
-              prerequisites: formData.prerequisites,
-            }
-          : course
-      ));
+  const handleSaveCourse = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      if (editingCourse) {
+        // PATCH — update name and prerequisites only
+        const payload = {
+          name: formData.courseName,
+          prerequisites: formData.prerequisites,
+        };
+        await updateCourse(editingCourse.code, payload);
+        // Update local state directly — no re-fetch needed
+        setCourses(prev => prev.map(c =>
+          c.code === editingCourse.code
+            ? {
+                ...c,
+                name: formData.courseName,
+                prerequisites: formData.prerequisites.map(code => ({ code, name: code })),
+              }
+            : c
+        ));
+        toast.success('Course updated successfully.');
+      } else {
+        // POST — create new course
+        const payload = {
+          code: formData.courseCode,
+          name: formData.courseName,
+          credits: parseInt(formData.creditHours) || 0,
+          department: formData.department,
+          prerequisites: formData.prerequisites,
+        };
+        await createCourse(payload);
+        // Add to local state directly — no re-fetch needed
+        const newCourse = {
+          code: formData.courseCode,
+          name: formData.courseName,
+          credits: parseInt(formData.creditHours) || 0,
+          department: formData.department,
+          prerequisites: formData.prerequisites.map(code => ({ code, name: code })),
+        };
+        setCourses(prev => [...prev, newCourse]);
+        toast.success('Course created successfully.');
+      }
+      // Close modal after successful save
+      setIsModalOpen(false);
       setEditingCourse(null);
-    } else {
-      // Add new course
-      const newCourse = {
-        id: courses.length + 1,
-        code: formData.courseCode,
-        name: formData.courseName,
-        credits: parseInt(formData.creditHours) || 0,
-        department: formData.department,
-        prerequisites: formData.prerequisites,
-      };
-      setCourses([...courses, newCourse]);
+    } catch (error) {
+      const msg = error?.response?.data?.message || 'Failed to save course.';
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  // Helper: render prerequisites as styled badge chips
+  const renderPrerequisites = (prerequisites) => {
+    if (!prerequisites || prerequisites.length === 0)
+      return <span className="text-sm text-gray-400 italic">None</span>;
+    return (
+      <div className="flex flex-wrap gap-1">
+        {prerequisites.map((p, i) => {
+          const code = typeof p === 'object' ? p.code : p;
+          return (
+            <span
+              key={i}
+              className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200"
+            >
+              {code}
+            </span>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -92,7 +156,17 @@ export default function ManagementTable() {
         </button>
       </div>
 
-      {/* Table */}
+      {/* Loading state */}
+      {isLoading ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+        </div>
+      ) : courses.length === 0 ? (
+        <div className="text-center py-16 text-gray-500">
+          No courses found. Click "Create New Course" to add one.
+        </div>
+      ) : (
+      /* Table */
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -116,7 +190,7 @@ export default function ManagementTable() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {courses.map((course) => (
-              <tr key={course.id} className="hover:bg-gray-50 transition-colors">
+              <tr key={course.code} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 md:px-6 py-4">
                   <div>
                     <div className="text-sm font-medium text-gray-900">{course.name}</div>
@@ -131,14 +205,12 @@ export default function ManagementTable() {
                   <div className="text-sm text-gray-700">{course.credits}</div>
                 </td>
                 <td className="hidden lg:table-cell px-6 py-4">
-                  <div className="text-sm text-gray-700">
-                    {course.prerequisites.length > 0 ? course.prerequisites.join(', ') : 'None'}
-                  </div>
+                  {renderPrerequisites(course.prerequisites)}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => handleEdit(course.id)}
+                      onClick={() => handleEdit(course.code)}
                       className="text-gray-400 hover:text-indigo-600 transition-colors"
                       title="Edit"
                     >
@@ -147,7 +219,7 @@ export default function ManagementTable() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleDelete(course.id)}
+                      onClick={() => handleDeleteClick(course.code)}
                       className="text-gray-400 hover:text-red-600 transition-colors"
                       title="Delete"
                     >
@@ -162,6 +234,16 @@ export default function ManagementTable() {
           </tbody>
         </table>
       </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteCourseModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, course: null })}
+        onConfirm={handleDeleteConfirm}
+        course={deleteModal.course}
+        isDeleting={isDeleting}
+      />
 
       {/* Add Course Modal */}
       <AddCourseModal
@@ -172,6 +254,8 @@ export default function ManagementTable() {
         }}
         onSave={handleSaveCourse}
         editingCourse={editingCourse}
+        isSubmitting={isSubmitting}
+        allCourses={courses}
       />
     </div>
   );

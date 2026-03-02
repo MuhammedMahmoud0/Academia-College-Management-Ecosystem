@@ -3,7 +3,7 @@ import LecturesMatrial from '../components/student/Student Matrials/LecturesMatr
 import ExternalResourses from '../components/student/Student Matrials/ExternalResourses';
 import { Search } from '@mui/icons-material';
 import { getMaterials, getMaterialsForCourse } from '../services/materialService';
-import { getStudentSchedule, extractCoursesFromSchedule } from '../services/scheduleService';
+import { getStudentCourses } from '../services/registrationService';
 
 export default function StudentMatrialsPage() {
   const [selectedCourse, setSelectedCourse] = useState(null); // Will be set after fetching schedule
@@ -31,11 +31,14 @@ export default function StudentMatrialsPage() {
     try {
       setLoadingSchedule(true);
       setError(null);
-      const scheduleData = await getStudentSchedule();
-      console.log('Student schedule:', scheduleData);
+      const data = await getStudentCourses();
       
-      const extractedCourses = extractCoursesFromSchedule(scheduleData);
-      console.log('Extracted courses:', extractedCourses);
+      // Map enrolled courses to the format the page expects
+      const extractedCourses = (data?.courses || []).map(course => ({
+        courseCode: course.code,
+        courseName: course.name,
+        lectureIds: [course.id],
+      }));
       
       setCourses(extractedCourses);
       
@@ -44,8 +47,8 @@ export default function StudentMatrialsPage() {
         setSelectedCourse(extractedCourses[0]);
       }
     } catch (err) {
-      console.error('Error fetching student schedule:', err);
-      setError('Failed to load your course schedule. Please try again.');
+      console.error('Error fetching student courses:', err);
+      setError('Failed to load your courses. Please try again.');
     } finally {
       setLoadingSchedule(false);
     }
@@ -58,12 +61,10 @@ export default function StudentMatrialsPage() {
       
       // Fetch materials for all lecture IDs of the selected course
       const data = await getMaterialsForCourse(selectedCourse.lectureIds);
-      console.log('Fetched materials:', data);
       
       // Handle both array and object responses
       const materialsArray = Array.isArray(data) ? data : (data?.materials || []);
       setMaterials(materialsArray);
-      console.log('Materials set:', materialsArray);
     } catch (err) {
       console.error('Error fetching materials:', err);
       setError('Failed to load materials. Please try again.');

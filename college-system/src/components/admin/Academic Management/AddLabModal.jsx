@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function AddLabModal({ isOpen, onClose, onSave, editingLab }) {
+export default function AddLabModal({ isOpen, onClose, onSave, editingLab, allOfferings = [], teachers = [], isSubmitting = false }) {
   const [formData, setFormData] = useState({
     offeringId: '',
     taId: '',
@@ -47,13 +47,13 @@ export default function AddLabModal({ isOpen, onClose, onSave, editingLab }) {
   };
 
   const handleSubmit = () => {
-    if (!formData.offeringId || !formData.taId || !formData.capacity || 
+    const needsOffering = !editingLab && !formData.offeringId;
+    if (needsOffering || !formData.taId || !formData.capacity ||
         !formData.startTime || !formData.endTime || !formData.location) {
       alert('Please fill in all required fields');
       return;
     }
     onSave(formData);
-    handleClose();
   };
 
   const handleClose = () => {
@@ -100,33 +100,58 @@ export default function AddLabModal({ isOpen, onClose, onSave, editingLab }) {
 
         {/* Modal Body */}
         <div className="p-4 md:p-6 space-y-4">
-          {/* Offering ID and TA ID */}
+          {/* Course Offering (create only) and TA */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {!editingLab && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Course Offering <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="offeringId"
+                  value={formData.offeringId}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  <option value="">Select offering...</option>
+                  {allOfferings.map(o => (
+                    <option key={o.offering_id} value={o.offering_id}>
+                      {o.course_code} — {o.course_name} ({o.semester} {o.year})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {editingLab && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Course
+                </label>
+                <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 text-sm">
+                  {editingLab.courseCode} — {editingLab.courseName}
+                </div>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Offering ID <span className="text-red-500">*</span>
+                Teaching Assistant <span className="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                name="offeringId"
-                value={formData.offeringId}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder="e.g., 1"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                TA ID <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+              <select
                 name="taId"
                 value={formData.taId}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder="e.g., 550e8400-e29b-41d4-a716-446655440000"
-              />
+              >
+                <option value="">Select TA...</option>
+                {teachers.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.name || `${t.firstName ?? ''} ${t.lastName ?? ''}`.trim()}
+                  </option>
+                ))}
+              </select>
+              {editingLab && editingLab.instructor && (
+                <p className="text-xs text-gray-400 mt-1">Current: {editingLab.instructor}</p>
+              )}
             </div>
           </div>
 
@@ -245,14 +270,22 @@ export default function AddLabModal({ isOpen, onClose, onSave, editingLab }) {
         <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 md:p-6 border-t border-gray-200 bg-gray-50">
           <button
             onClick={handleClose}
-            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="w-full sm:w-auto px-4 py-2 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors text-sm md:text-base"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors text-sm md:text-base disabled:opacity-50"
           >
+            {isSubmitting && (
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            )}
             {editingLab ? 'Save Changes' : 'Add Lab/Tutorial'}
           </button>
         </div>

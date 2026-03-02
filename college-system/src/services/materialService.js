@@ -31,7 +31,14 @@ export const getMaterials = async (params = {}) => {
       Authorization: `Bearer ${token}`,
     },
     params,
+    validateStatus: (status) => status < 500, // Treat 404 as valid response, not error
   });
+  
+  // If 404 (no materials found), return empty array
+  if (response.status === 404) {
+    return [];
+  }
+  
   return response.data;
 };
 
@@ -51,24 +58,19 @@ export const getMaterialsForCourse = async (lectureIds = []) => {
   }
 
   // For multiple lecture IDs, fetch materials for each and combine
-  try {
-    const promises = lectureIds.map(lectureId => 
-      getMaterials({ lecture_id: lectureId })
-    );
-    
-    const results = await Promise.all(promises);
-    
-    // Combine all results and remove duplicates by material ID
-    const allMaterials = results.flat();
-    const uniqueMaterials = Array.from(
-      new Map(allMaterials.map(m => [m.id, m])).values()
-    );
-    
-    return uniqueMaterials;
-  } catch (error) {
-    console.error('Error fetching materials for course:', error);
-    throw error;
-  }
+  const promises = lectureIds.map(lectureId => 
+    getMaterials({ lecture_id: lectureId })
+  );
+  
+  const results = await Promise.all(promises);
+  
+  // Combine all results and remove duplicates by material ID
+  const allMaterials = results.flat();
+  const uniqueMaterials = Array.from(
+    new Map(allMaterials.map(m => [m.id, m])).values()
+  );
+  
+  return uniqueMaterials;
 };
 
 /**

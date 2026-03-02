@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse }) {
+export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse, isSubmitting = false, allCourses = [] }) {
   const [formData, setFormData] = useState({
     courseCode: '',
     courseName: '',
@@ -9,7 +9,7 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
     prerequisites: [],
   });
 
-  const [prerequisiteInput, setPrerequisiteInput] = useState('');
+  const [selectedPrereq, setSelectedPrereq] = useState('');
 
   useEffect(() => {
     if (editingCourse) {
@@ -36,13 +36,18 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Courses available to pick as prerequisites (exclude self and already-added)
+  const availablePrereqs = allCourses.filter(
+    c => c.code !== formData.courseCode && !formData.prerequisites.includes(c.code)
+  );
+
   const handleAddPrerequisite = () => {
-    if (prerequisiteInput.trim() && !formData.prerequisites.includes(prerequisiteInput.trim())) {
+    if (selectedPrereq && !formData.prerequisites.includes(selectedPrereq)) {
       setFormData(prev => ({
         ...prev,
-        prerequisites: [...prev.prerequisites, prerequisiteInput.trim()]
+        prerequisites: [...prev.prerequisites, selectedPrereq],
       }));
-      setPrerequisiteInput('');
+      setSelectedPrereq('');
     }
   };
 
@@ -54,8 +59,8 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
   };
 
   const handleSubmit = () => {
+    // Parent is responsible for closing the modal after a successful save
     onSave(formData);
-    handleClose();
   };
 
   const handleClose = () => {
@@ -66,7 +71,7 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
       department: 'Computer Science',
       prerequisites: [],
     });
-    setPrerequisiteInput('');
+    setSelectedPrereq('');
     onClose();
   };
 
@@ -162,23 +167,29 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
               Prerequisites
             </label>
             <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={prerequisiteInput}
-                onChange={(e) => setPrerequisiteInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddPrerequisite();
-                  }
-                }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="e.g., MATH101"
-              />
+              {availablePrereqs.length === 0 ? (
+                <p className="flex-1 px-3 py-2 text-sm text-gray-400 border border-gray-200 rounded-lg bg-gray-50">
+                  {allCourses.length === 0 ? 'No courses available' : 'All courses already added'}
+                </p>
+              ) : (
+                <select
+                  value={selectedPrereq}
+                  onChange={(e) => setSelectedPrereq(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                >
+                  <option value="">Select a course...</option>
+                  {availablePrereqs.map(c => (
+                    <option key={c.code} value={c.code}>
+                      {c.code} — {c.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <button
                 type="button"
                 onClick={handleAddPrerequisite}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                disabled={!selectedPrereq}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add
               </button>
@@ -211,15 +222,23 @@ export default function AddCourseModal({ isOpen, onClose, onSave, editingCourse 
         <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 md:p-6 border-t border-gray-200">
           <button
             onClick={handleClose}
-            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="w-full sm:w-auto px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Save Course
+            {isSubmitting && (
+              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            )}
+            {isSubmitting ? 'Saving...' : 'Save Course'}
           </button>
         </div>
       </div>

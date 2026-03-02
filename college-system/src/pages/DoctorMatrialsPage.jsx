@@ -42,10 +42,8 @@ export default function DoctorMaterialsPage () {
        setLoadingSchedule(true);
        setError(null);
        const scheduleData = await getTeacherSchedule();
-       console.log('Teacher schedule:', scheduleData);
        
        const extractedCourses = extractCoursesFromSchedule(scheduleData);
-       console.log('Extracted courses:', extractedCourses);
        
        setCourses(extractedCourses);
        
@@ -68,12 +66,10 @@ export default function DoctorMaterialsPage () {
        
        // Fetch materials for all lecture IDs of the selected course
        const data = await getMaterialsForCourse(selectedCourse.lectureIds);
-       console.log('Fetched materials:', data);
        
        // Handle both array and object responses
        const materialsArray = Array.isArray(data) ? data : (data?.materials || []);
        setMaterials(materialsArray);
-       console.log('Materials set:', materialsArray);
      } catch (err) {
        console.error('Error fetching materials:', err);
        setError('Failed to load materials. Please try again.');
@@ -87,10 +83,6 @@ export default function DoctorMaterialsPage () {
    // If url is null/empty, it's a file material; otherwise it's a link
    const lectures = materials.filter(m => !m.url);
    const externalResources = materials.filter(m => m.url);
-   
-   console.log('Total materials:', materials.length);
-   console.log('Lectures:', lectures.length);
-   console.log('External resources:', externalResources.length);
 
    // Filter materials based on search query
    const filteredLectures = lectures.filter(lecture =>

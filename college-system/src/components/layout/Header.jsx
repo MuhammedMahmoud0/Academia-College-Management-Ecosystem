@@ -1,6 +1,8 @@
+import { useAuth } from '../../hooks/useAuth';
 import Avatar from '@mui/material/Avatar';
+
 export default function Header({ onMenuToggle }) {
-    const user_data = localStorage.getItem('currentUser');
+    const { user, isLoading } = useAuth();
 
     return (
         <header className="bg-white border-b border-gray-200 h-16 fixed top-0 left-0 right-0 z-50">
@@ -54,15 +56,23 @@ export default function Header({ onMenuToggle }) {
                 {/* Right side - User Profile */}
                 <div className="flex items-center gap-3">
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-sm font-semibold text-slate-900">{user_data ? JSON.parse(user_data).name : ""}</span>
+                        <span className="text-sm font-semibold text-slate-900">
+                            {user?.name || "Guest User"}
+                        </span>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
-                        <Avatar 
-                            src={user_data ? JSON.parse(user_data).avatar_url : ""} 
-                            alt="User Avatar" 
-                            className="w-10 h-10"
-                        />
-                    </div>
+                    <Avatar 
+                        src={user?.avatar_url || ''} 
+                        alt={user?.name || "User Avatar"}
+                        sx={{
+                            width: 40,
+                            height: 40,
+                            bgcolor: user?.avatar_url ? undefined : '#4f46e5',
+                            fontSize: '1rem',
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        {!user?.avatar_url && user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </Avatar>
                 </div>
             </div>
         </header>

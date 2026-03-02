@@ -46,6 +46,23 @@ export const getStudentSchedule = async () => {
 };
 
 /**
+ * GET /schedule
+ * @param {number} weekOffset  0 = current week, 1 = next week, -1 = previous week
+ * @returns {Promise<{ schedule: Array<{ day: string, date: string, classes: Array }> }>}
+ */
+export const getStudentScheduleByWeek = async (weekOffset = 0) => {
+  const token = getAuthToken();
+  // Only send the `week` param when it's non-zero; passing 0 causes a 500 on
+  // some backend versions that don't handle an explicit zero offset.
+  const params = weekOffset !== 0 ? { week: weekOffset } : undefined;
+  const response = await api.get('/schedule', {
+    params,
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data; // { schedule: [{ day, date, classes: [...] }] }
+};
+
+/**
  * Extract unique courses from teacher schedule
  * Groups lectures by course and day
  * @param {Object} scheduleData - Response from getTeacherSchedule

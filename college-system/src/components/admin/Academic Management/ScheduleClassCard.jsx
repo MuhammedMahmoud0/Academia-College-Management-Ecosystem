@@ -17,7 +17,7 @@ export default function ScheduleClassCard({ classData, onEdit, onDelete }) {
       };
 
   return (
-    <div className={`relative h-[140px] rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-3 border-l-4 ${colors.bg} ${colors.border} group flex flex-col overflow-hidden`}>
+    <div className={`relative h-[165px] rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-3 border-l-4 ${colors.bg} ${colors.border} group flex flex-col overflow-hidden`}>
       {/* Action Buttons - Show on Hover */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <button
