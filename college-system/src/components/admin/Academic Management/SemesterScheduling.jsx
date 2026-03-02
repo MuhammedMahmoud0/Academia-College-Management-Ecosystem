@@ -1,177 +1,204 @@
 import { useState } from 'react';
-import AddSemesterModal from './AddSemesterModal';
+import ScheduleClassCard from './ScheduleClassCard';
+import AddLectureModal from './AddLectureModal';
+import AddLabModal from './AddLabModal';
 
 export default function SemesterScheduling() {
-  const [sections, setSections] = useState([
-    {
-      id: 1,
-      course: 'CS101',
-      instructor: 'Dr. Evelyn Reed',
-      schedule: 'Sun, Tue 10:00-12:00',
-      location: 'Hall A-101',
-      enrolled: 150,
-      capacity: 150,
-    },
-    {
-      id: 2,
-      course: 'CS240',
-      instructor: 'Dr. Evelyn Reed',
-      schedule: 'Mon, Wed 14:00-16:00',
-      location: 'Hall B-201',
-      enrolled: 120,
-      capacity: 120,
-    },
-  ]);
+  const [scheduleData, setScheduleData] = useState({
+    schedule: [
+      {
+        day: 'Sunday',
+        date: '2025-12-14',
+        classes: [],
+      },
+      {
+        day: 'Monday',
+        date: '2025-12-15',
+        classes: [
+          {
+            courseId: 'CS301',
+            courseCode: 'CS301',
+            courseName: 'Database Systems',
+            startTime: '09:00:00',
+            endTime: '10:30:00',
+            location: 'Building A, Room 201',
+            instructor: 'Dr. Sarah Johnson',
+            type: 'lecture',
+          },
+          {
+            courseId: 'CS301',
+            courseCode: 'CS301',
+            courseName: 'Database Systems',
+            startTime: '14:00:00',
+            endTime: '16:00:00',
+            location: 'Lab 5',
+            instructor: 'TA Mike Brown',
+            type: 'lab',
+          },
+        ],
+      },
+      {
+        day: 'Tuesday',
+        date: '2025-12-16',
+        classes: [],
+      },
+      {
+        day: 'Wednesday',
+        date: '2025-12-17',
+        classes: [],
+      },
+      {
+        day: 'Thursday',
+        date: '2025-12-18',
+        classes: [],
+      },
+      {
+        day: 'Friday',
+        date: '2025-12-19',
+        classes: [],
+      },
+      {
+        day: 'Saturday',
+        date: '2025-12-20',
+        classes: [],
+      },
+    ],
+  });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSection, setEditingSection] = useState(null);
+  const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
+  const [isLabModalOpen, setIsLabModalOpen] = useState(false);
+  const [editingLecture, setEditingLecture] = useState(null);
+  const [editingLab, setEditingLab] = useState(null);
 
-  const handleEdit = (id) => {
-    const section = sections.find(s => s.id === id);
-    if (section) {
-      setEditingSection(section);
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this section?')) {
-      setSections(sections.filter(section => section.id !== id));
-    }
-  };
-
-  const handleSaveSection = (formData) => {
-    if (editingSection) {
-      // Update existing section
-      setSections(sections.map(section => 
-        section.id === editingSection.id 
-          ? {
-              ...section,
-              course: formData.course,
-              instructor: formData.instructor,
-              schedule: `${formData.days} ${formData.time}`,
-              location: formData.classroom,
-              capacity: parseInt(formData.capacity) || 50,
-            }
-          : section
-      ));
-      setEditingSection(null);
+  const handleEditClass = (classData) => {
+    if (classData.type === 'lecture') {
+      setEditingLecture(classData);
+      setIsLectureModalOpen(true);
     } else {
-      // Add new section
-      const newSection = {
-        id: sections.length + 1,
-        course: formData.course,
-        instructor: formData.instructor,
-        schedule: `${formData.days} ${formData.time}`,
-        location: formData.classroom,
-        enrolled: 0,
-        capacity: parseInt(formData.capacity) || 50,
-      };
-      setSections([...sections, newSection]);
+      setEditingLab(classData);
+      setIsLabModalOpen(true);
     }
+  };
+
+  const handleDeleteClass = (classData) => {
+    if (window.confirm(`Are you sure you want to delete this ${classData.type}?${classData.type === 'lecture' ? ' This will delete the entire section.' : ''}`)) {
+      setScheduleData(prev => ({
+        schedule: prev.schedule.map(day => ({
+          ...day,
+          classes: day.classes.filter(c => 
+            !(c.courseId === classData.courseId && 
+              c.startTime === classData.startTime && 
+              c.day === classData.day)
+          ),
+        })),
+      }));
+    }
+  };
+
+  const handleSaveLecture = (formData) => {
+    // Add or update lecture logic here
+    console.log('Save Lecture:', formData);
+    // You would typically make an API call here
+    setEditingLecture(null);
+  };
+
+  const handleSaveLab = (formData) => {
+    // Add or update lab logic here
+    console.log('Save Lab:', formData);
+    // You would typically make an API call here
+    setEditingLab(null);
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 md:p-6 border-b border-gray-200">
-        <h2 className="text-lg md:text-xl font-semibold text-gray-800">Fall 2025 Schedule</h2>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base w-full sm:w-auto"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Schedule New Section
-        </button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 md:p-6 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-gray-50">
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800">Fall 2025 Schedule</h2>
+          <p className="text-sm text-gray-500 mt-1">Manage lectures and lab sessions</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <button 
+            onClick={() => setIsLectureModalOpen(true)}
+            className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Lecture
+          </button>
+          <button 
+            onClick={() => setIsLabModalOpen(true)}
+            className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm md:text-base shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Lab
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Course
-              </th>
-              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Instructor
-              </th>
-              <th className="hidden md:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Schedule
-              </th>
-              <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Location
-              </th>
-              <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Enrollment
-              </th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {sections.map((section) => (
-              <tr key={section.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 md:px-6 py-4">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{section.course}</div>
-                    <div className="md:hidden text-xs text-gray-500 mt-1">{section.schedule}</div>
+      {/* Schedule Grid */}
+      <div className="p-4 md:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
+          {scheduleData.schedule.map((dayData) => (
+            <div key={dayData.day} className="flex flex-col">
+              {/* Day Header */}
+              <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-t-lg px-3 py-3 mb-3">
+                <h3 className="font-bold text-center text-base md:text-lg">
+                  {dayData.day}
+                </h3>
+                <p className="text-center text-xs text-gray-300 mt-1">
+                  {new Date(dayData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </p>
+              </div>
+
+              {/* Classes Container */}
+              <div className="flex flex-col gap-2.5">
+                {dayData.classes.length > 0 ? (
+                  dayData.classes.map((classData, index) => (
+                    <div key={`${classData.courseId}-${classData.startTime}-${index}`} className="h-[140px]">
+                      <ScheduleClassCard
+                        classData={classData}
+                        onEdit={handleEditClass}
+                        onDelete={handleDeleteClass}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg h-[150px] flex flex-col items-center justify-center text-gray-400">
+                    <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">No classes</span>
                   </div>
-                </td>
-                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{section.instructor}</div>
-                </td>
-                <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{section.schedule}</div>
-                </td>
-                <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{section.location}</div>
-                </td>
-                <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">
-                    {section.enrolled} / {section.capacity}
-                  </div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => handleEdit(section.id)}
-                      className="text-gray-400 hover:text-indigo-600 transition-colors"
-                      title="Edit"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(section.id)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
-                      title="Delete"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Add Section Modal */}
-      <AddSemesterModal
-        isOpen={isModalOpen}
+      {/* Modals */}
+      <AddLectureModal
+        isOpen={isLectureModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
-          setEditingSection(null);
+          setIsLectureModalOpen(false);
+          setEditingLecture(null);
         }}
-        onSave={handleSaveSection}
-        editingSection={editingSection}
+        onSave={handleSaveLecture}
+        editingLecture={editingLecture}
+      />
+
+      <AddLabModal
+        isOpen={isLabModalOpen}
+        onClose={() => {
+          setIsLabModalOpen(false);
+          setEditingLab(null);
+        }}
+        onSave={handleSaveLab}
+        editingLab={editingLab}
       />
     </div>
   );

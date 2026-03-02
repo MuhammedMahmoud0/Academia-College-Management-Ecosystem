@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/student/info page/InfoCard';
 import { getStudentProfile } from '../services/infoService';
+import Avatar from '@mui/material/Avatar';
 
 export default function Info() {
     const navigate = useNavigate();
@@ -34,7 +35,8 @@ export default function Info() {
                 gpa: profile.student_profiles?.cgpa ? profile.student_profiles?.cgpa.toFixed(2) : 'N/A',
                 email: profile.email || 'N/A',
                 phone: profile.phone || 'N/A',
-                address: profile.address || 'N/A'
+                address: profile.address || 'N/A',
+                avatar_url: profile.avatar_url || null
             };
             
             setStudentData(transformedData);
@@ -99,8 +101,12 @@ export default function Info() {
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Profile Picture */}
                     <div className="flex-shrink-0">
-                        <div className="w-40 h-40 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <span className="text-6xl font-bold text-indigo-600">JD</span>
+                        <div className="w-40 h-40 rounded-full flex items-center justify-center">
+                            <Avatar
+                                alt={studentData.name}
+                                src={studentData.avatar_url || "/static/images/avatar/1.jpg"}
+                                sx={{ width: 150, height: 150 }}
+                            />
                         </div>
                     </div>
 

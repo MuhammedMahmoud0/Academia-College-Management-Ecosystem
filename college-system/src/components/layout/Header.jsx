@@ -1,4 +1,7 @@
+import Avatar from '@mui/material/Avatar';
 export default function Header({ onMenuToggle }) {
+    const user_data = localStorage.getItem('currentUser');
+
     return (
         <header className="bg-white border-b border-gray-200 h-16 fixed top-0 left-0 right-0 z-50">
             <div className="h-full px-4 md:px-6 flex items-center justify-between">
@@ -51,10 +54,14 @@ export default function Header({ onMenuToggle }) {
                 {/* Right side - User Profile */}
                 <div className="flex items-center gap-3">
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-sm font-semibold text-slate-900">John Doe</span>
+                        <span className="text-sm font-semibold text-slate-900">{user_data ? JSON.parse(user_data).name : ""}</span>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
-                        JD
+                        <Avatar 
+                            src={user_data ? JSON.parse(user_data).avatar_url : ""} 
+                            alt="User Avatar" 
+                            className="w-10 h-10"
+                        />
                     </div>
                 </div>
             </div>
