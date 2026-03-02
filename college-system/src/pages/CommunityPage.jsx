@@ -3,39 +3,146 @@ import Navigation from '../components/student/Community Page/Navigation';
 import PostCard from '../components/student/Community Page/PostCard';
 import UpcomingEvents from '../components/student/Community Page/UpcomingEvents';
 import Suggested from '../components/student/Community Page/Suggested';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ImageIcon from '@mui/icons-material/Image';
+import { getCommunityFeed } from '../services/communityService';
+import { useAuth } from '../hooks/useAuth';
 
 export default function CommunityPage() {
+  const { isAuthenticated } = useAuth();
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const posts=[
-    {
-      id: 1,
-      author: 'Admin Office',
-      avatar: 'AO',
-      time: 'Pinned',
-      content: 'Mid-term exam schedules have been posted. Please check the "Exams" page for your detailed timetable.',
-      likes: 152,
-      comments: 12,
-      isPinned: true,
-      bgColor: '#a78bfa'
-    },
-    {
-      id: 2,
-      author: 'Sarah Johnson',
-      avatar: 'SJ',
-      time: '2h ago',
-      content: 'Just finished the final project for CS350! It was tough but learned so much about operating systems. Huge thanks to everyone in our study group!',
-      likes: 45,
-      comments: 8,
-      image: true,
-      bgColor: '#8b5cf6'
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchPosts();
     }
-  ]
+  }, [isAuthenticated]);
+
+  const fetchPosts = async (pageNum = 1) => {
+    try {
+      setLoading(true);
+      const data = await getCommunityFeed(pageNum, 10);
+      
+      // Transform API data to match component structure
+      const transformedPosts = data.posts.map(post => ({
+        id: post.id,
+        author: post.author_name,
+        avatar: post.author_avatar || getInitials(post.author_name),
+        time: formatTime(post.created_at),
+        content: post.content,
+        likes: post.likes_count,
+        comments: post.comments_count,
+        isPinned: post.is_pinned,
+        image: post.image_url,
+        imageUrl: post.image_url,
+        bgColor: getRandomColor(),
+        groupName: post.group_name,
+        recentComments: post.recent_comments || []
+      }));
+
+      if (pageNum === 1) {
+        setPosts(transformedPosts);
+      } else {
+        setPosts(prev => [...prev, ...transformedPosts]);
+      }
+      
+      setHasMore(transformedPosts.length === 10);
+      setPage(pageNum);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      
+      // Provide specific error messages
+      if (err.response?.status === 403) {
+        setError('You do not have permission to view posts.');
+      } else if (err.response?.status >= 500) {
+        setError('Server error. Please try again later.');
+      } else if (err.response?.status === 401) {
+        setError('Session expired. Please refresh the page.');
+      } else {
+        setError('Unable to connect to server. Showing sample posts.');
+      }
+      
+      // Fallback to mock data on first load
+      if (pageNum === 1) {
+        const mockPosts = getMockPosts();
+        setPosts(mockPosts);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMockPosts = () => {
+    return [
+      {
+        id: 1,
+        author: 'Admin Office',
+        avatar: 'AO',
+        time: 'Pinned',
+        content: 'Mid-term exam schedules have been posted. Please check the "Exams" page for your detailed timetable.',
+        likes: 152,
+        comments: 12,
+        isPinned: true,
+        bgColor: '#a78bfa'
+      },
+      {
+        id: 2,
+        author: 'Sarah Johnson',
+        avatar: 'SJ',
+        time: '2h ago',
+        content: 'Just finished the final project for CS350! It was tough but learned so much about operating systems. Huge thanks to everyone in our study group!',
+        likes: 45,
+        comments: 8,
+        imageUrl: 'https://via.placeholder.com/600x400',
+        bgColor: '#8b5cf6'
+      }
+    ];
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const getRandomColor = () => {
+    const colors = ['#a78bfa', '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchPosts(page + 1);
+    }
+  };
 
   return (
   <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
@@ -161,9 +268,44 @@ export default function CommunityPage() {
           </div>
 
           {/* Posts */}
-          {posts.map(post => (
-            <PostCard key={post.id} post={post} />
-          ))}
+          {loading && posts.length === 0 ? (
+            <div className="bg-white rounded-xl p-8 shadow-sm text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading posts...</p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 rounded-xl p-6 shadow-sm text-center">
+              <p className="text-red-600">{error}</p>
+              <button 
+                onClick={() => fetchPosts(1)}
+                className="mt-4 bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="bg-white rounded-xl p-8 shadow-sm text-center">
+              <p className="text-gray-600">No posts yet. Be the first to post!</p>
+            </div>
+          ) : (
+            <>
+              {posts.map(post => (
+                <PostCard key={post.id} post={post} />
+              ))}
+              
+              {hasMore && (
+                <div className="text-center py-4">
+                  <button
+                    onClick={loadMore}
+                    disabled={loading}
+                    className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Loading...' : 'Load More'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Right Sidebar - Desktop */}
