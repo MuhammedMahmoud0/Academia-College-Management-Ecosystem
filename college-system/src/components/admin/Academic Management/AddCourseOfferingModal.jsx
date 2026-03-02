@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editingOffering }) {
+export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editingOffering, allCourses = [], isSubmitting = false }) {
   const [formData, setFormData] = useState({
     course_code: '',
     semester: 'Fall',
@@ -29,20 +29,12 @@ export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editin
   };
 
   const handleSubmit = () => {
-    if (!formData.course_code || !formData.semester || !formData.year) {
-      alert('Please fill in all fields');
-      return;
-    }
+    if (!formData.course_code || !formData.semester || !formData.year) return;
     onSave(formData);
-    handleClose();
   };
 
   const handleClose = () => {
-    setFormData({
-      course_code: '',
-      semester: 'Fall',
-      year: new Date().getFullYear(),
-    });
+    setFormData({ course_code: '', semester: 'Fall', year: new Date().getFullYear() });
     onClose();
   };
 
@@ -58,7 +50,8 @@ export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editin
           </h3>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            disabled={isSubmitting}
+            className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -68,19 +61,32 @@ export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editin
 
         {/* Modal Body */}
         <div className="p-4 md:p-6 space-y-4">
-          {/* Course Code */}
+          {/* Course Select */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Course Code
+              Course
             </label>
-            <input
-              type="text"
-              name="course_code"
-              value={formData.course_code}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="e.g., CS101"
-            />
+            {editingOffering ? (
+              // In edit mode show the course as read-only (only semester/year can change)
+              <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-700">
+                <span className="font-semibold text-indigo-600">{editingOffering.course_code}</span>
+                {' — '}{editingOffering.course_name}
+              </div>
+            ) : (
+              <select
+                name="course_code"
+                value={formData.course_code}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              >
+                <option value="">Select a course...</option>
+                {allCourses.map(c => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} — {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Semester and Year */}
@@ -112,7 +118,7 @@ export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editin
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 placeholder="e.g., 2026"
                 min="2020"
-                max="2030"
+                max="2035"
               />
             </div>
           </div>
@@ -122,15 +128,23 @@ export default function AddCourseOfferingModal({ isOpen, onClose, onSave, editin
         <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 md:p-6 border-t border-gray-200">
           <button
             onClick={handleClose}
-            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="w-full sm:w-auto px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base"
+            disabled={isSubmitting || (!editingOffering && !formData.course_code)}
+            className="w-full sm:w-auto px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {editingOffering ? 'Save Changes' : 'Create Offering'}
+            {isSubmitting && (
+              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            )}
+            {isSubmitting ? 'Saving...' : editingOffering ? 'Save Changes' : 'Create Offering'}
           </button>
         </div>
       </div>

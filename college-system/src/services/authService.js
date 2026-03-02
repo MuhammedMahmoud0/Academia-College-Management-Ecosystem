@@ -26,8 +26,12 @@ export const getCurrentUser = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  localStorage.setItem('currentUser', JSON.stringify(response.data));
-  return response.data;
+  
+  // Handle different response structures from backend
+  const userData = response.data.user || response.data;
+  
+  localStorage.setItem('currentUser', JSON.stringify(userData));
+  return userData;
 };
 
 export const logout = () => {
