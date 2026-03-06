@@ -59,7 +59,27 @@ export const getSuggestedGroups = async () => {
   return response.data;
 };
 
+/**
+ * Get all upcoming community events
+ * @returns {Promise} Promise with events data
+ */
+export const getCommunityEvents = async () => {
+  const response = await api.get('/community/events');
+  return response.data;
+};
+
+/**
+ * Get groups that the current user has joined
+ * @returns {Promise} Promise with user's groups data
+ */
+export const getMyGroups = async () => {
+  const response = await api.get('/community/groups/my');
+  return response.data;
+};
+
 export default {
   getCommunityFeed,
-  getSuggestedGroups
+  getSuggestedGroups,
+  getCommunityEvents,
+  getMyGroups
 };

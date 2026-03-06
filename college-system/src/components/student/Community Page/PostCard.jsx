@@ -11,7 +11,9 @@ export default function PostCard({ post }) {
     ? post.avatar 
     : post.avatar;
   
-  const hasValidImage = post.imageUrl && !imageError;
+  // Ignore blob URLs as they're temporary and will fail on reload
+  const isValidImageUrl = post.imageUrl && !post.imageUrl.startsWith('blob:');
+  const hasValidImage = isValidImageUrl && !imageError;
 
   return (
     <div className={`bg-white rounded-xl p-4 sm:p-5 shadow-sm ${post.isPinned ? 'border-2 border-amber-400' : ''}`}>
@@ -60,11 +62,11 @@ export default function PostCard({ post }) {
 
       {/* Image if exists */}
       {hasValidImage && (
-        <div className="rounded-lg overflow-hidden mb-5">
+        <div className="rounded-lg overflow-hidden mb-5 bg-gray-50 flex items-center justify-center">
           <img 
             src={post.imageUrl}
             alt="post image" 
-            className="w-full h-auto max-h-96 object-cover"
+            className="w-full h-auto max-h-[600px] object-contain"
             onError={() => setImageError(true)}
           />
         </div>
