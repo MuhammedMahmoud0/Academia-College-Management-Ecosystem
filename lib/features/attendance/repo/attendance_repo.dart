@@ -1,0 +1,22 @@
+import 'package:college_project/core/constants/endpoints.dart';
+import 'package:college_project/core/data/network/api_client.dart';
+import 'package:college_project/features/attendance/model/attendance_model.dart';
+
+class AttendanceRepo {
+  final _api = ApiClient();
+
+  Future<AttendanceModel> scanAttendance(String code) async {
+    final response = await _api.post(
+      Endpoints.scanAttendance,
+      data: {"qrCode": code},
+    );
+    return AttendanceModel.fromJson(response.data);
+  }
+
+  Future<List<AttendanceModel>> getAttendanceHistory() async {
+    final response = await _api.get(Endpoints.attendanceHistory);
+    return (response.data as List)
+        .map((e) => AttendanceModel.fromJson(e))
+        .toList();
+  }
+}

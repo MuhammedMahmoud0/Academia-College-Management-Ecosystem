@@ -170,6 +170,16 @@ class S {
     );
   }
 
+  /// `Community`
+  String get community {
+    return Intl.message(
+      'Community',
+      name: 'community',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `ID Card`
   String get idCard {
     return Intl.message(
@@ -1005,6 +1015,106 @@ class S {
     return Intl.message(
       'Please enter a valid email',
       name: 'pleaseEnterAValidEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Attendance`
+  String get attendance {
+    return Intl.message(
+      'Attendance',
+      name: 'attendance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View your attendance history`
+  String get viewAttendanceHistory {
+    return Intl.message(
+      'View your attendance history',
+      name: 'viewAttendanceHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan QR`
+  String get scanQr {
+    return Intl.message(
+      'Scan QR',
+      name: 'scanQr',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Attendance History`
+  String get attendanceHistory {
+    return Intl.message(
+      'Attendance History',
+      name: 'attendanceHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan Attendance`
+  String get scanAttendance {
+    return Intl.message(
+      'Scan Attendance',
+      name: 'scanAttendance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Present`
+  String get present {
+    return Intl.message(
+      'Present',
+      name: 'present',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Absent`
+  String get absent {
+    return Intl.message(
+      'Absent',
+      name: 'absent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Late`
+  String get late {
+    return Intl.message(
+      'Late',
+      name: 'late',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Excused`
+  String get excused {
+    return Intl.message(
+      'Excused',
+      name: 'excused',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No attendance records found`
+  String get noAttendanceRecords {
+    return Intl.message(
+      'No attendance records found',
+      name: 'noAttendanceRecords',
       desc: '',
       args: [],
     );

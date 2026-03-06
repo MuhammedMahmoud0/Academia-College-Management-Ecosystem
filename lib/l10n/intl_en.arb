@@ -12,6 +12,7 @@
   "leaderboard": "Leaderboard",
   "materials": "Materials",
   "schedule": "Schedule",
+  "community": "Community",
   "idCard": "ID Card",
   "notifications": "Notifications",
   "noNewNotifications": "No new notifications",
@@ -109,5 +110,15 @@
   "pleaseEnterYourEmail": "Please enter your email",
   "pleaseEnterYourPassword": "Please enter your password",
   "passwordMustBeAtLeastSixCharacters": "Password must be at least 6 characters",
-  "pleaseEnterAValidEmail": "Please enter a valid email"
+  "pleaseEnterAValidEmail": "Please enter a valid email",
+  "attendance": "Attendance",
+  "viewAttendanceHistory": "View your attendance history",
+  "scanQr": "Scan QR",
+  "attendanceHistory": "Attendance History",
+  "scanAttendance": "Scan Attendance",
+  "present": "Present",
+  "absent": "Absent",
+  "late": "Late",
+  "excused": "Excused",
+  "noAttendanceRecords": "No attendance records found"
 }

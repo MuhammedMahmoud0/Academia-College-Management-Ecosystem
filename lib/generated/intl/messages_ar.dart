@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "absent": MessageLookupByLibrary.simpleMessage("غائب"),
         "academicInformation":
             MessageLookupByLibrary.simpleMessage("المعلومات الأكاديمية"),
         "addCourse": MessageLookupByLibrary.simpleMessage("إضافة مقرر"),
@@ -33,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "appTitle": MessageLookupByLibrary.simpleMessage("أكاديميا"),
         "appearance": MessageLookupByLibrary.simpleMessage("المظهر"),
         "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
+        "attendance": MessageLookupByLibrary.simpleMessage("الحضور"),
+        "attendanceHistory": MessageLookupByLibrary.simpleMessage("سجل الحضور"),
         "availableCourses":
             MessageLookupByLibrary.simpleMessage("المقررات المتاحة"),
         "camera": MessageLookupByLibrary.simpleMessage("الكاميرا"),
@@ -40,6 +43,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("تغيير كلمة المرور"),
         "chooseImageSource":
             MessageLookupByLibrary.simpleMessage("اختر مصدر الصورة"),
+        "community": MessageLookupByLibrary.simpleMessage("المجتمع"),
         "completed": MessageLookupByLibrary.simpleMessage("مكتملة"),
         "completedCredits":
             MessageLookupByLibrary.simpleMessage("الساعات المكتملة"),
@@ -70,6 +74,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "error": MessageLookupByLibrary.simpleMessage("خطأ"),
         "examSchedule": MessageLookupByLibrary.simpleMessage("جدول الامتحانات"),
         "exams": MessageLookupByLibrary.simpleMessage("الامتحانات"),
+        "excused": MessageLookupByLibrary.simpleMessage("معذور"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور؟"),
         "full": MessageLookupByLibrary.simpleMessage("مكتمل"),
@@ -86,6 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "inProgress": MessageLookupByLibrary.simpleMessage("قيد التقدم"),
         "instructor": MessageLookupByLibrary.simpleMessage("المحاضر"),
         "language": MessageLookupByLibrary.simpleMessage("اللغة"),
+        "late": MessageLookupByLibrary.simpleMessage("متأخر"),
         "leaderboard": MessageLookupByLibrary.simpleMessage("لوحة المتصدرين"),
         "level": MessageLookupByLibrary.simpleMessage("المستوى"),
         "lightMode": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
@@ -97,6 +103,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "missed": MessageLookupByLibrary.simpleMessage("فائتة"),
         "myProfile": MessageLookupByLibrary.simpleMessage("ملفي الشخصي"),
         "nationalId": MessageLookupByLibrary.simpleMessage("الرقم القومي"),
+        "noAttendanceRecords":
+            MessageLookupByLibrary.simpleMessage("لا توجد سجلات حضور"),
         "noExamsFound": m0,
         "noNewNotifications":
             MessageLookupByLibrary.simpleMessage("لا توجد إشعارات جديدة"),
@@ -122,6 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("يرجى إدخال بريدك الإلكتروني"),
         "pleaseEnterYourPassword":
             MessageLookupByLibrary.simpleMessage("يرجى إدخال كلمة المرور"),
+        "present": MessageLookupByLibrary.simpleMessage("حاضر"),
         "profile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
         "quickActions": MessageLookupByLibrary.simpleMessage("إجراءات سريعة"),
         "recentGrades": MessageLookupByLibrary.simpleMessage("الدرجات الأخيرة"),
@@ -134,6 +143,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "removeCourse": MessageLookupByLibrary.simpleMessage("إزالة مقرر"),
         "retry": MessageLookupByLibrary.simpleMessage("إعادة المحاولة"),
         "saveChanges": MessageLookupByLibrary.simpleMessage("حفظ التغييرات"),
+        "scanAttendance": MessageLookupByLibrary.simpleMessage("تسجيل الحضور"),
+        "scanQr": MessageLookupByLibrary.simpleMessage("مسح QR"),
         "schedule": MessageLookupByLibrary.simpleMessage("الجدول"),
         "scheduleHeader": MessageLookupByLibrary.simpleMessage("الجدول"),
         "searchCoursesOrCodes":
@@ -150,6 +161,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "upcoming": MessageLookupByLibrary.simpleMessage("قادمة"),
         "upcomingExams":
             MessageLookupByLibrary.simpleMessage("الامتحانات القادمة"),
+        "viewAttendanceHistory":
+            MessageLookupByLibrary.simpleMessage("عرض سجل الحضور"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("مرحباً بك"),
         "youHaveNewNotifications": m1
       };

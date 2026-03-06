@@ -13,6 +13,7 @@
   "materials": "المواد",
   "schedule": "الجدول",
   "idCard": "البطاقة الجامعية",
+  "community": "المجتمع",
   "notifications": "الإشعارات",
   "noNewNotifications": "لا توجد إشعارات جديدة",
   "youHaveNewNotifications": "لديك {count} إشعار(ات) جديدة",
@@ -95,5 +96,15 @@
   "pleaseEnterYourEmail": "يرجى إدخال بريدك الإلكتروني",
   "pleaseEnterYourPassword": "يرجى إدخال كلمة المرور",
   "passwordMustBeAtLeastSixCharacters": "يجب أن تكون كلمة المرور على الأقل 6 أحرف",
-  "pleaseEnterAValidEmail": "يرجى إدخال بريد إلكتروني صحيح"
+  "pleaseEnterAValidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+  "attendance": "الحضور",
+  "viewAttendanceHistory": "عرض سجل الحضور",
+  "scanQr": "مسح QR",
+  "attendanceHistory": "سجل الحضور",
+  "scanAttendance": "تسجيل الحضور",
+  "present": "حاضر",
+  "absent": "غائب",
+  "late": "متأخر",
+  "excused": "معذور",
+  "noAttendanceRecords": "لا توجد سجلات حضور"
 }

@@ -177,6 +177,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+
                   _buildAcademicCard(
                     S.of(context).currentSemester,
                     'Spring 2025',
@@ -210,6 +211,15 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  _buildActionButton(
+                    S.of(context).idCard,
+                    Icons.badge_rounded,
+                    () {
+                      context.push(AppRoutes.studentIdScreen);
+                    },
+                    isDark: context.watch<AppCubit>().isDarkMode,
+                  ),
+                  const SizedBox(height: 12),
                   _buildActionButton(
                     S.of(context).editProfile,
                     Icons.edit_outlined,

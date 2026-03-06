@@ -3,6 +3,8 @@ import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/core/routing/app_routes.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
+import 'package:college_project/features/attendance/cubit/attendance_cubit.dart';
+import 'package:college_project/features/attendance/cubit/attendance_states.dart';
 import 'package:college_project/features/home/cubit/home_cubit.dart';
 import 'package:college_project/features/home/cubit/home_states.dart';
 import 'package:college_project/features/home/models/student_model.dart';
@@ -10,6 +12,7 @@ import 'package:college_project/features/home/widgets/notifications_preview.dart
 import 'package:college_project/features/home/widgets/profile_card.dart';
 import 'package:college_project/features/home/widgets/quick_actions_row.dart';
 import 'package:college_project/features/home/widgets/recent_grades.dart';
+import 'package:college_project/features/home/widgets/attendance_card.dart';
 import 'package:college_project/features/home/widgets/upcoming_exam_card.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +24,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => HomeCubit(), child: const HomeView());
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HomeCubit()..loadHomeData()),
+        BlocProvider(create: (_) => AttendanceCubit()),
+      ],
+      child: const HomeView(),
+    );
   }
 }
 
@@ -34,21 +43,35 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   @override
-  void initState() {
-    super.initState();
-    context.read<HomeCubit>().loadHomeData();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeStates>(
-      builder: (context, state) {
-        return _buildContent(
-          context,
-          state,
-          context.watch<AppCubit>().isDarkMode,
-        );
+    return BlocListener<AttendanceCubit, AttendanceStates>(
+      listener: (context, state) {
+        if (state is AttendanceLoadedState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.attendance.msg!),
+              backgroundColor: AppColors.successColor,
+            ),
+          );
+        }
+        if (state is AttendanceErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: AppColors.errorColor,
+            ),
+          );
+        }
       },
+      child: BlocBuilder<HomeCubit, HomeStates>(
+        builder: (context, state) {
+          return _buildContent(
+            context,
+            state,
+            context.watch<AppCubit>().isDarkMode,
+          );
+        },
+      ),
     );
   }
 }
@@ -248,7 +271,7 @@ Widget _buildHomeContent(
                     actions: [
                       QuickAction(
                         label: S.of(context).leaderboard,
-                        icon: Icons.leaderboard_rounded,
+                        icon: Icons.leaderboard_outlined,
                         color: AppColors.primaryColor,
                         onTap: () => GoRouter.of(
                           context,
@@ -256,7 +279,7 @@ Widget _buildHomeContent(
                       ),
                       QuickAction(
                         label: S.of(context).materials,
-                        icon: Icons.menu_book_rounded,
+                        icon: Icons.menu_book_outlined,
                         color: AppColors.successColor,
                         onTap: () => GoRouter.of(
                           context,
@@ -264,21 +287,38 @@ Widget _buildHomeContent(
                       ),
                       QuickAction(
                         label: S.of(context).schedule,
-                        icon: Icons.calendar_month_rounded,
+                        icon: Icons.calendar_month_outlined,
                         color: AppColors.warningColor,
                         onTap: () => GoRouter.of(
                           context,
                         ).pushNamed(AppRoutes.studentSchedule),
                       ),
                       QuickAction(
-                        label: S.of(context).idCard,
-                        icon: Icons.badge_rounded,
+                        label: S.of(context).community,
+                        icon: Icons.chat_bubble_outline,
                         color: AppColors.infoColor,
                         onTap: () => GoRouter.of(
                           context,
-                        ).pushNamed(AppRoutes.studentIdScreen),
+                        ).pushNamed(AppRoutes.communityScreen),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 24),
+                  AttendanceCard(
+                    isDark: isDark,
+                    onCardTap: () => GoRouter.of(
+                      context,
+                    ).pushNamed(AppRoutes.attendanceScreen),
+                    onScanQrTap: () async {
+                      String? code = await GoRouter.of(
+                        context,
+                      ).pushNamed(AppRoutes.qrScannerScreen);
+
+                      if (code != null) {
+                        debugPrint("Code is: $code");
+                        context.read<AttendanceCubit>().scanAttendance(code);
+                      }
+                    },
                   ),
                   const SizedBox(height: 28),
                   NotificationsPreview(

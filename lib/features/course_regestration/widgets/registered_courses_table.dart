@@ -1,12 +1,12 @@
 import 'package:college_project/core/styles/app_colors.dart';
-import 'package:college_project/features/course_regestration/models/course_model.dart';
+import 'package:college_project/features/course_regestration/models/registration_response_model.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisteredCoursesTable extends StatelessWidget {
-  final List<Course> courses;
-  final Function(String) onRemove;
+  final List<CourseOffering> courses;
+  final Function(CourseOffering) onRemove;
   final bool isDark;
 
   const RegisteredCoursesTable({
@@ -77,7 +77,11 @@ class RegisteredCoursesTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableRow(Course course) {
+  Widget _buildTableRow(CourseOffering course) {
+    final enrolledLecture = course.enrolledLecture;
+    final instructor = enrolledLecture?.instructor ?? '';
+    final schedule = enrolledLecture?.scheduleText ?? '';
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -93,7 +97,7 @@ class RegisteredCoursesTable extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  course.title,
+                  course.courseName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -103,7 +107,7 @@ class RegisteredCoursesTable extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  course.code,
+                  course.courseCode,
                   style: TextStyle(
                     color: AppColors.getSubtitleColor(isDark),
                     fontSize: 10.sp,
@@ -115,7 +119,7 @@ class RegisteredCoursesTable extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Text(
-              course.credits.split(' ')[0],
+              '${course.creditHours}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
@@ -127,7 +131,7 @@ class RegisteredCoursesTable extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              course.instructor.replaceFirst('Dr. ', ''),
+              instructor.replaceFirst('Dr. ', '').replaceFirst('Eng. ', ''),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -140,7 +144,7 @@ class RegisteredCoursesTable extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              course.time,
+              schedule,
               textAlign: TextAlign.center,
               maxLines: 2,
               style: TextStyle(
@@ -150,7 +154,7 @@ class RegisteredCoursesTable extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => onRemove(course.code),
+            onTap: () => onRemove(course),
             child: Container(
               padding: EdgeInsets.all(4.w),
               decoration: BoxDecoration(

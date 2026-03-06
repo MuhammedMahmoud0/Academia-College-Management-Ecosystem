@@ -50,7 +50,6 @@ class ExamFilterBar extends StatelessWidget {
         tabs: const [
           Tab(text: 'Upcoming'),
           Tab(text: 'Completed'),
-          Tab(text: 'Missed'),
         ],
       ),
     );

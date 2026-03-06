@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "absent": MessageLookupByLibrary.simpleMessage("Absent"),
         "academicInformation":
             MessageLookupByLibrary.simpleMessage("Academic Information"),
         "addCourse": MessageLookupByLibrary.simpleMessage("Add Course"),
@@ -33,6 +34,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "appTitle": MessageLookupByLibrary.simpleMessage("Academia"),
         "appearance": MessageLookupByLibrary.simpleMessage("Appearance"),
         "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
+        "attendance": MessageLookupByLibrary.simpleMessage("Attendance"),
+        "attendanceHistory":
+            MessageLookupByLibrary.simpleMessage("Attendance History"),
         "availableCourses":
             MessageLookupByLibrary.simpleMessage("Available Courses"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
@@ -40,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "chooseImageSource":
             MessageLookupByLibrary.simpleMessage("Choose Image Source"),
+        "community": MessageLookupByLibrary.simpleMessage("Community"),
         "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "completedCredits":
             MessageLookupByLibrary.simpleMessage("Completed Credits"),
@@ -68,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "examSchedule": MessageLookupByLibrary.simpleMessage("Exam Schedule"),
         "exams": MessageLookupByLibrary.simpleMessage("Exams"),
+        "excused": MessageLookupByLibrary.simpleMessage("Excused"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
         "full": MessageLookupByLibrary.simpleMessage("Full"),
@@ -84,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "inProgress": MessageLookupByLibrary.simpleMessage("IN PROGRESS"),
         "instructor": MessageLookupByLibrary.simpleMessage("INSTRUCTOR"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
+        "late": MessageLookupByLibrary.simpleMessage("Late"),
         "leaderboard": MessageLookupByLibrary.simpleMessage("Leaderboard"),
         "level": MessageLookupByLibrary.simpleMessage("Level"),
         "lightMode": MessageLookupByLibrary.simpleMessage("Light Mode"),
@@ -95,6 +102,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "missed": MessageLookupByLibrary.simpleMessage("Missed"),
         "myProfile": MessageLookupByLibrary.simpleMessage("My Profile"),
         "nationalId": MessageLookupByLibrary.simpleMessage("National ID"),
+        "noAttendanceRecords":
+            MessageLookupByLibrary.simpleMessage("No attendance records found"),
         "noExamsFound": m0,
         "noNewNotifications":
             MessageLookupByLibrary.simpleMessage("No new notifications"),
@@ -120,6 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "pleaseEnterYourPassword":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
+        "present": MessageLookupByLibrary.simpleMessage("Present"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "quickActions": MessageLookupByLibrary.simpleMessage("Quick Actions"),
         "recentGrades": MessageLookupByLibrary.simpleMessage("Recent Grades"),
@@ -132,6 +142,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "removeCourse": MessageLookupByLibrary.simpleMessage("Remove Course"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "saveChanges": MessageLookupByLibrary.simpleMessage("Save Changes"),
+        "scanAttendance":
+            MessageLookupByLibrary.simpleMessage("Scan Attendance"),
+        "scanQr": MessageLookupByLibrary.simpleMessage("Scan QR"),
         "schedule": MessageLookupByLibrary.simpleMessage("Schedule"),
         "scheduleHeader": MessageLookupByLibrary.simpleMessage("SCHEDULE"),
         "searchCoursesOrCodes":
@@ -147,6 +160,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "today": MessageLookupByLibrary.simpleMessage("Today"),
         "upcoming": MessageLookupByLibrary.simpleMessage("Upcoming"),
         "upcomingExams": MessageLookupByLibrary.simpleMessage("Upcoming Exams"),
+        "viewAttendanceHistory": MessageLookupByLibrary.simpleMessage(
+            "View your attendance history"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome Back!"),
         "youHaveNewNotifications": m1
       };

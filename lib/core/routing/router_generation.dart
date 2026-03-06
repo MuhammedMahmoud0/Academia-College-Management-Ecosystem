@@ -1,7 +1,13 @@
 import 'package:college_project/core/routing/app_routes.dart';
+import 'package:college_project/features/attendance/attendance_history_screen.dart';
+import 'package:college_project/features/attendance/widget/qr_scanner_screen.dart';
 import 'package:college_project/features/auth/login_screen.dart';
+import 'package:college_project/features/community/community_screen.dart';
+import 'package:college_project/features/community/groups/groups_screen.dart';
 import 'package:college_project/features/leaderboard/leaderboard_screen.dart';
+import 'package:college_project/features/material/cubit/materials_cubit.dart';
 import 'package:college_project/features/material/material_screen.dart';
+import 'package:college_project/features/material/widgets/pdf_screen.dart';
 import 'package:college_project/features/notifications/notification_screen.dart';
 import 'package:college_project/features/settings/edit_profile_screen.dart';
 import 'package:college_project/features/settings/settings_screen.dart';
@@ -9,6 +15,7 @@ import 'package:college_project/features/splash/splash_screen.dart';
 import 'package:college_project/features/student_id/student_id_screen.dart';
 import 'package:college_project/features/student_schedule/student_schedule_screen.dart';
 import 'package:college_project/layout/home_layout.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterGenerationConfig {
@@ -64,6 +71,32 @@ class RouterGenerationConfig {
         path: AppRoutes.editProfileScreen,
         name: AppRoutes.editProfileScreen,
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.communityScreen,
+        name: AppRoutes.communityScreen,
+        builder: (context, state) => const CommunityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.groupsScreen,
+        name: AppRoutes.groupsScreen,
+        builder: (context, state) => const GroupsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.attendanceScreen,
+        name: AppRoutes.attendanceScreen,
+        builder: (context, state) => const AttendanceHistoryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.qrScannerScreen,
+        name: AppRoutes.qrScannerScreen,
+        builder: (context, state) => const QrScannerScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.pdfScreenRoute,
+        name: AppRoutes.pdfScreenRoute,
+        builder: (context, state) =>
+            PdfScreen(pdfUrl: state.extra as String? ?? ''),
       ),
     ],
   );

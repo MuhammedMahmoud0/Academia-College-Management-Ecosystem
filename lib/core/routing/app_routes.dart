@@ -9,4 +9,9 @@ class AppRoutes {
   static const String notificationScreen = '/notificationScreen';
   static const String settingsScreen = '/settingsScreen';
   static const String editProfileScreen = '/editProfileScreen';
+  static const String communityScreen = '/communityScreen';
+  static const String groupsScreen = '/groupsScreen';
+  static const String attendanceScreen = '/attendanceScreen';
+  static const String qrScannerScreen = '/qrScannerScreen';
+  static const String pdfScreenRoute = '/pdfScreen';
 }

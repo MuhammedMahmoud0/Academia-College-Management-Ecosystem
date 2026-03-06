@@ -1,123 +1,170 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:college_project/core/routing/app_routes.dart';
+import 'package:college_project/core/styles/app_colors.dart';
+import 'package:college_project/features/material/cubit/materials_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../models/material_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/materials_response_model.dart';
 
-class MaterialCard extends StatelessWidget {
-  final StudyMaterial material;
-  final Color primaryColor;
-  final VoidCallback? onTap;
+class MaterialCard extends StatefulWidget {
+  final MaterialModel material;
+  const MaterialCard({super.key, required this.material});
 
-  const MaterialCard({
-    super.key,
-    required this.material,
-    required this.primaryColor,
-    this.onTap,
-  });
+  @override
+  State<MaterialCard> createState() => _MaterialCardState();
+}
+
+class _MaterialCardState extends State<MaterialCard> {
+  bool isLoad = false;
+
+  Future<void> _handleTap(BuildContext context) async {
+    if (!isLoad) {
+      isLoad = true;
+      setState(() {});
+      if (widget.material.isLink && widget.material.url != null) {
+        final uri = Uri.parse(widget.material.url!);
+        await launchUrl(uri);
+      } else {
+        // navigate to pdf screen
+        String url = await context.read<MaterialsCubit>().getDownloadMaterial(
+          materialId: widget.material.id,
+        );
+        debugPrint(url);
+        GoRouter.of(context).pushNamed(AppRoutes.pdfScreenRoute, extra: url);
+      }
+    }
+    isLoad = false;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool isPdf = material.type == StudyMaterialType.pdf;
+    bool isFile = widget.material.isFile;
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Icon Box
-          Container(
-            height: 48.h,
-            width: 48.w,
-            decoration: BoxDecoration(
-              color: (isPdf
-                  ? Colors.red.shade50
-                  : primaryColor.withOpacity(0.08)),
-              borderRadius: BorderRadius.circular(12.r),
+    return GestureDetector(
+      onTap: () => _handleTap(context),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(
-              isPdf ? Icons.picture_as_pdf_rounded : Icons.language_rounded,
-              color: isPdf ? Colors.red : primaryColor,
-              size: 24.sp,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Icon Box
+            Container(
+              height: 48.h,
+              width: 48.w,
+              decoration: BoxDecoration(
+                color: isFile
+                    ? Colors.red.shade50
+                    : AppColors.primaryColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Icon(
+                isFile ? Icons.picture_as_pdf_rounded : Icons.language_rounded,
+                color: isFile ? Colors.red : AppColors.primaryColor,
+                size: 24.sp,
+              ),
             ),
-          ),
-          SizedBox(width: 12.w),
+            SizedBox(width: 12.w),
 
-          // Info Section
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            // Info Section
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.material.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.sp,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      Text(
+                        widget.material.formattedDate,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      if (isFile)
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 6.w),
+                          width: 3.w,
+                          height: 3.h,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      Text(
+                        isFile ? widget.material.displaySize : '',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.grey.shade500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  /*
                 Text(
-                  material.title,
+                  material.displayUrl,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                    color: Colors.black87,
+                    fontSize: 10.sp,
+                    color: Colors.grey.shade500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4.h),
-                Row(
-                  children: [
-                    Text(
-                      material.date,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 6.w),
-                      width: 3.w,
-                      height: 3.h,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    Text(
-                      material.sizeOrUrl,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+             */
+                ],
+              ),
             ),
-          ),
 
-          // Action Button
-          GestureDetector(
-            onTap: onTap,
-            child: Container(
+            // Action Button
+            Container(
               padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FE),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF8F9FE),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                isPdf
-                    ? Icons.file_download_outlined
-                    : Icons.open_in_new_rounded,
-                color: Colors.grey.shade700,
-                size: 20.sp,
-              ),
+              child: isLoad
+                  ? SizedBox(
+                      height: 20.h,
+                      width: 20.w,
+                      child: CircularProgressIndicator(strokeWidth: 2.5.w),
+                    )
+                  : Icon(
+                      isFile
+                          ? Icons.arrow_forward_ios_rounded
+                          : Icons.open_in_new_rounded,
+                      color: Colors.grey.shade700,
+                      size: 20.sp,
+                    ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
