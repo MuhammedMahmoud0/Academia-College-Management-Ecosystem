@@ -4,14 +4,15 @@ import PostCard from '../components/student/Community Page/PostCard';
 import UpcomingEvents from '../components/student/Community Page/UpcomingEvents';
 import Suggested from '../components/student/Community Page/Suggested';
 import { useState, useEffect } from 'react';
-import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ImageIcon from '@mui/icons-material/Image';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import { getCommunityFeed } from '../services/communityService';
+import { getStudentProfile } from '../services/infoService';
 import { useAuth } from '../hooks/useAuth';
 
 export default function CommunityPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -19,12 +20,25 @@ export default function CommunityPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [newPostContent, setNewPostContent] = useState('');
+  const [studentProfile, setStudentProfile] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchPosts();
+      fetchStudentProfile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
+
+  const fetchStudentProfile = async () => {
+    try {
+      const data = await getStudentProfile();
+      setStudentProfile(data.studentProfile);
+    } catch (error) {
+      console.error('Error fetching student profile:', error);
+    }
+  };
 
   const fetchPosts = async (pageNum = 1) => {
     try {
@@ -32,21 +46,27 @@ export default function CommunityPage() {
       const data = await getCommunityFeed(pageNum, 10);
       
       // Transform API data to match component structure
-      const transformedPosts = data.posts.map(post => ({
-        id: post.id,
-        author: post.author_name,
-        avatar: post.author_avatar || getInitials(post.author_name),
-        time: formatTime(post.created_at),
-        content: post.content,
-        likes: post.likes_count,
-        comments: post.comments_count,
-        isPinned: post.is_pinned,
-        image: post.image_url,
-        imageUrl: post.image_url,
-        bgColor: getRandomColor(),
-        groupName: post.group_name,
-        recentComments: post.recent_comments || []
-      }));
+      const transformedPosts = data.posts.map(post => {
+        // Check if author_avatar is a valid URL (starts with http/https)
+        const isValidAvatarUrl = post.author_avatar && (post.author_avatar.startsWith('http://') || post.author_avatar.startsWith('https://'));
+        
+        return {
+          id: post.id,
+          author: post.author_name,
+          author_avatar: isValidAvatarUrl ? post.author_avatar : null,
+          avatar: getInitials(post.author_name),
+          time: formatTime(post.created_at),
+          content: post.content,
+          likes: post.likes_count,
+          comments: post.comments_count,
+          isPinned: post.is_pinned,
+          image: post.image_url,
+          imageUrl: post.image_url,
+          bgColor: getRandomColor(),
+          groupName: post.group_name,
+          recentComments: post.recent_comments || []
+        };
+      });
 
       if (pageNum === 1) {
         setPosts(transformedPosts);
@@ -239,16 +259,27 @@ export default function CommunityPage() {
         <div className="flex flex-col gap-4 lg:gap-5">
           {/* Create Post */}
           <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm">
-            <div className="flex gap-3 items-center">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-400 flex items-center justify-center text-white font-semibold text-sm shrink-0">
-                JD
+            <div className="flex gap-3 items-start">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-400 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden">
+                {studentProfile?.avatar_url ? (
+                  <img src={studentProfile.avatar_url} alt={studentProfile.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  getInitials(studentProfile?.full_name || user?.name || 'User')
+                )}
               </div>
-              <input
-                type="text"
-                placeholder="What's on your mind, John?"
-                className="flex-1 border-none outline-none text-sm sm:text-base bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg"
+              <textarea
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+                placeholder={`What's on your mind, ${studentProfile?.full_name?.split(' ')[0] || user?.name?.split(' ')[0] || 'there'}?`}
+                className="flex-1 border-none outline-none text-sm sm:text-base bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg resize-none min-h-[44px] max-h-[200px]"
+                rows={1}
+                onInput={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
               />
             </div>
+            
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 pt-4 border-t border-gray-200 sm:justify-between sm:items-center">
               <div className="flex gap-4 sm:gap-5 justify-center sm:justify-start">
                 <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
@@ -261,7 +292,10 @@ export default function CommunityPage() {
                   <span><SignalCellularAltIcon /></span>
                 </button>
               </div>
-              <button className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors w-full sm:w-auto">
+              <button
+                disabled={!newPostContent.trim()}
+                className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors w-full sm:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
                 Post
               </button>
             </div>

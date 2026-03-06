@@ -1,13 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import GroupIcon from '@mui/icons-material/Group';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
+
 export default function Navigation() {
+  const navigate = useNavigate();
+
   const navItems = [
-    { icon: <GroupIcon />, label: 'My Groups' },
-    { icon: <DateRangeIcon />, label: 'Events' },
-    { icon: <TurnedInIcon />, label: 'Saved Posts' },
-    { icon: <InsertCommentIcon />, label: 'Messages' }
+    { icon: <GroupIcon />, label: 'My Groups', path: '/dashboard/my-groups' },
+    { icon: <DateRangeIcon />, label: 'Events', path: '/dashboard/events' },
   ];
 
   return (
@@ -19,6 +21,7 @@ export default function Navigation() {
         {navItems.map((item, index) => (
           <button
             key={index}
+            onClick={() => navigate(item.path)}
             className="flex items-center gap-3 px-3 py-2.5 border-none bg-transparent rounded-lg cursor-pointer text-sm text-gray-700 text-left transition-colors hover:bg-gray-50 w-full"
           >
             <span className="text-lg">{item.icon}</span>
