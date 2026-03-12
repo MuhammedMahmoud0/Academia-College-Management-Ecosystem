@@ -30,6 +30,8 @@ class Endpoints {
   static String communityJoinGroup(String groupId) =>
       "/community/groups/$groupId/join";
 
+  static const String attendanceActiveSession =
+      "/attendance/sessions/my-active";
   static const String scanAttendance = "/attendance/scan";
   static const String attendanceHistory = "/attendance/history";
 

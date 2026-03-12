@@ -4,6 +4,7 @@ import 'package:college_project/features/exams/exams_dashboard_screen.dart';
 import 'package:college_project/features/home/home_screen.dart';
 import 'package:college_project/features/home/models/student_model.dart';
 import 'package:college_project/features/settings/profile_screen.dart';
+import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class Constants {
@@ -22,4 +23,6 @@ class Constants {
 
   static var userImg =
       'https://pbnfvqohslrvyblgqzaz.supabase.co/storage/v1/object/public/avatars/general/user_img.jpg';
+
+  static int availableMeters = 10;
 }

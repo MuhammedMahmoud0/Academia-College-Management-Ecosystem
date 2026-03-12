@@ -53,6 +53,7 @@ dependencies:
   mobile_scanner: ^7.2.0
   url_launcher: ^6.2.5
   flutter_cached_pdfview: ^0.4.3
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

@@ -7,12 +7,14 @@ class AttendanceCard extends StatelessWidget {
   final bool isDark;
   final VoidCallback onCardTap;
   final VoidCallback onScanQrTap;
+  final bool isScanPressed;
 
   const AttendanceCard({
     super.key,
     required this.isDark,
     required this.onCardTap,
     required this.onScanQrTap,
+    required this.isScanPressed,
   });
 
   @override
@@ -80,7 +82,7 @@ class AttendanceCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                _buildScanButton(context),
+                _buildScanButton(context, isScanPressed),
               ],
             ),
           ),
@@ -89,7 +91,7 @@ class AttendanceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildScanButton(BuildContext context) {
+  Widget _buildScanButton(BuildContext context, bool isScanPressed) {
     return GestureDetector(
       onTap: onScanQrTap,
       child: Container(
@@ -105,24 +107,33 @@ class AttendanceCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.qr_code_scanner_rounded,
-              color: AppColors.primaryColor,
-              size: 22,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              S.of(context).scanQr,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.primaryColor,
-                fontWeight: FontWeight.bold,
+        child: isScanPressed
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.qr_code_scanner_rounded,
+                    color: AppColors.primaryColor,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    S.of(context).scanQr,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

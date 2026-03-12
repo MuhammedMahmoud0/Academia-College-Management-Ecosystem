@@ -65,7 +65,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   controller: mobileScannerController,
 
                   onDetect: (capture) {
-                    mobileScannerController.dispose();
+                    mobileScannerController.stop();
                     Navigator.pop(context, capture.barcodes[0].rawValue);
                   },
                 ),

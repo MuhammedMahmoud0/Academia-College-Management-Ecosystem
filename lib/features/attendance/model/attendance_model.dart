@@ -7,7 +7,7 @@ class AttendanceModel {
 
   factory AttendanceModel.fromJson(Map<String, dynamic> json) {
     return AttendanceModel(
-      msg: json['msg'],
+      msg: json['message'],
       status: json['status'],
       sessionId: json['sessionId'],
       error: json['error'],

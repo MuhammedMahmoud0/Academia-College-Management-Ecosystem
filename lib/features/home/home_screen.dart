@@ -42,25 +42,197 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  bool isScanPressed = false;
+
+  void _showAttendanceResultDialog(
+    BuildContext context, {
+    required bool isSuccess,
+    required String message,
+  }) {
+    final isDark = context.read<AppCubit>().isDarkMode;
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (_, __, ___) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, __, ___) {
+        final curve = CurvedAnimation(parent: anim, curve: Curves.easeOutBack);
+        return ScaleTransition(
+          scale: curve,
+          child: AlertDialog(
+            backgroundColor: isDark
+                ? AppColors.darkCardBackground
+                : AppColors.lightCardBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: (isSuccess
+                            ? AppColors.successColor
+                            : AppColors.errorColor)
+                        .withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuccess
+                        ? Icons.check_circle_rounded
+                        : Icons.error_rounded,
+                    color: isSuccess
+                        ? AppColors.successColor
+                        : AppColors.errorColor,
+                    size: 44,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  isSuccess ? 'Attendance Recorded!' : 'Scan Failed',
+                  style: AppTextStyles.heading2.copyWith(
+                    color: AppColors.getTextColor(isDark),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.getSubtitleColor(isDark),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSuccess
+                          ? AppColors.successColor
+                          : AppColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      isSuccess ? 'Done' : 'OK',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showScanningDialog(BuildContext context) {
+    final isDark = context.read<AppCubit>().isDarkMode;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          backgroundColor: isDark
+              ? AppColors.darkCardBackground
+              : AppColors.lightCardBackground,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              const SizedBox(
+                width: 56,
+                height: 56,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                  strokeWidth: 3,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Recording Attendance...',
+                style: AppTextStyles.heading3.copyWith(
+                  color: AppColors.getTextColor(isDark),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Please wait while we verify your scan',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.getSubtitleColor(isDark),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AttendanceCubit, AttendanceStates>(
-      listener: (context, state) {
+      listener: (context, state) async {
+        if (state is AttendanceLoadingState) {
+          setState(() => isScanPressed = true);
+        }
+        if (state is AttendanceScanningState) {
+          setState(() => isScanPressed = false);
+          _showScanningDialog(context);
+        }
         if (state is AttendanceLoadedState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.attendance.msg!),
-              backgroundColor: AppColors.successColor,
-            ),
+          setState(() => isScanPressed = false);
+          // Dismiss scanning dialog if open
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          _showAttendanceResultDialog(
+            context,
+            isSuccess: true,
+            message: state.attendance.msg ?? 'Attendance recorded successfully',
           );
         }
         if (state is AttendanceErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: AppColors.errorColor,
-            ),
+          setState(() => isScanPressed = false);
+          // Dismiss scanning dialog if open
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          _showAttendanceResultDialog(
+            context,
+            isSuccess: false,
+            message: state.error,
           );
+        }
+        if (state is AttendanceActiveSessionsLoadedState) {
+          setState(() => isScanPressed = false);
+          String? code = await GoRouter.of(
+            context,
+          ).pushNamed(AppRoutes.qrScannerScreen);
+
+          if (code != null) {
+            debugPrint("Code is: $code");
+            context.read<AttendanceCubit>().scanAttendance(code);
+          }
         }
       },
       child: BlocBuilder<HomeCubit, HomeStates>(
@@ -69,6 +241,7 @@ class _HomeViewState extends State<HomeView> {
             context,
             state,
             context.watch<AppCubit>().isDarkMode,
+            isScanPressed,
           );
         },
       ),
@@ -76,7 +249,12 @@ class _HomeViewState extends State<HomeView> {
   }
 }
 
-Widget _buildContent(BuildContext context, HomeStates state, bool isDark) {
+Widget _buildContent(
+  BuildContext context,
+  HomeStates state,
+  bool isDark,
+  bool isScanPressed,
+) {
   if (state is HomeLoadingState) {
     return _buildLoadingState(isDark);
   }
@@ -107,6 +285,7 @@ Widget _buildContent(BuildContext context, HomeStates state, bool isDark) {
       notifications: notifications,
       isRefreshing: state is HomeRefreshingState,
       isDark: isDark,
+      isScanPressed: isScanPressed,
     );
   }
 
@@ -174,6 +353,7 @@ Widget _buildHomeContent(
   required notifications,
   required bool isRefreshing,
   required bool isDark,
+  required bool isScanPressed,
 }) {
   final cubit = context.read<HomeCubit>();
 
@@ -306,18 +486,13 @@ Widget _buildHomeContent(
                   const SizedBox(height: 24),
                   AttendanceCard(
                     isDark: isDark,
+                    isScanPressed: isScanPressed,
                     onCardTap: () => GoRouter.of(
                       context,
                     ).pushNamed(AppRoutes.attendanceScreen),
                     onScanQrTap: () async {
-                      String? code = await GoRouter.of(
-                        context,
-                      ).pushNamed(AppRoutes.qrScannerScreen);
-
-                      if (code != null) {
-                        debugPrint("Code is: $code");
-                        context.read<AttendanceCubit>().scanAttendance(code);
-                      }
+                      if (isScanPressed) return;
+                      await context.read<AttendanceCubit>().getActiveSessions();
                     },
                   ),
                   const SizedBox(height: 28),

@@ -1,5 +1,6 @@
 import 'package:college_project/core/constants/endpoints.dart';
 import 'package:college_project/core/data/network/api_client.dart';
+import 'package:college_project/features/attendance/model/active_sessions_model.dart';
 import 'package:college_project/features/attendance/model/attendance_model.dart';
 
 class AttendanceRepo {
@@ -18,5 +19,10 @@ class AttendanceRepo {
     return (response.data as List)
         .map((e) => AttendanceModel.fromJson(e))
         .toList();
+  }
+
+  Future<ActiveSessionsResponseModel> getAttendanceActiveSession() async {
+    final response = await _api.get(Endpoints.attendanceActiveSession);
+    return ActiveSessionsResponseModel.fromJson(response.data);
   }
 }
