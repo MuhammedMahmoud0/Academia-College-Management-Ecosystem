@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-// Use proxy in development, full URL in production
-const BASE_URL = import.meta.env.DEV
-  ? '/api/v1'
-  : import.meta.env.VITE_API_URL;
+const BASE_URL = '/api/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
