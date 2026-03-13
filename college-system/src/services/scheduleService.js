@@ -60,6 +60,20 @@ export const getStudentScheduleByWeek = async (weekOffset = 0) => {
 };
 
 /**
+ * Get student's exam schedule (Student can view their own exams only)
+ * @returns {Promise} Object containing exam schedule data
+ */
+export const getStudentExamSchedule = async () => {
+  const token = getAuthToken();
+  const response = await api.get('/exams/schedule', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; // { success, count, data: [...] }
+};
+
+/**
  * Extract unique courses from teacher schedule
  * Groups lectures by course and day
  * @param {Object} scheduleData - Response from getTeacherSchedule
