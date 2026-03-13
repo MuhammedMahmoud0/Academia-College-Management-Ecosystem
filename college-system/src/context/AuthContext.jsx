@@ -65,8 +65,18 @@ export const AuthProvider = ({ children }) => {
             setUser(userData);
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
-          // Keep cached user data if API call fails
+          // If token is invalid/expired, clear auth and force re-login.
+          if (error?.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('message');
+            localStorage.removeItem('currentUser');
+            setToken(null);
+            setUser(null);
+            setIsAuthenticated(false);
+            return;
+          }
+
+          // Keep cached user data for non-auth related errors.
         }
       }
     };

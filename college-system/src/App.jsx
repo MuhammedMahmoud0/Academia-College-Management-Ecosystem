@@ -40,6 +40,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import CourseDetailPage from './components/doctors/DoctorDashboard/CourseDetailPage';
 import LiveAttendancePage from './components/doctors/DoctorDashboard/LiveAttendancePage';
 import FinancialManagementPage from './pages/FinancialManagementPage';
+import StudentAttendanceDetails from './pages/StudentAttendanceDetails';
 function App() {
   return (
     <div className="App">
@@ -79,6 +80,7 @@ function App() {
           <Route path="system-configuration" element={<SystemConfigurationPage />} />
           <Route path="settings" element={<SettingPage />} />
           <Route path="financial-management" element={<FinancialManagementPage />} />
+          <Route path="student-attendance-details" element={<StudentAttendanceDetails />} />
           {/* Doctor Routes */}
           <Route path="doctor" element={<DoctorDashboard />} />
           <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
