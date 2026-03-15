@@ -42,12 +42,16 @@ export default function Info() {
             setStudentData(transformedData);
             setError(null);
         } catch (err) {
-            console.error('Error fetching student profile:', err);
             if (err.response?.status === 401) {
                 localStorage.removeItem('auth_token');
                 navigate('/login');
                 return;
             }
+            if (err.response?.status === 403) {
+                setError('Your account cannot access student profile data.');
+                return;
+            }
+            console.error('Error fetching student profile:', err);
             setError(err.response?.data?.message || 'Failed to load student information');
         } finally {
             setLoading(false);

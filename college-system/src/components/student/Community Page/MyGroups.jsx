@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PeopleIcon from '@mui/icons-material/People';
-import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
-import { getMyGroups } from '../../../services/communityService';
+import GroupModal from './GroupModal';
+import { deleteGroup, getMyGroups, updateGroup } from '../../../services/communityService';
 
 export default function MyGroups() {
   const navigate = useNavigate();
@@ -15,6 +16,12 @@ export default function MyGroups() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [isSavingGroup, setIsSavingGroup] = useState(false);
+  const [groupModalError, setGroupModalError] = useState('');
+  const [deletingGroupId, setDeletingGroupId] = useState(null);
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   useEffect(() => {
     fetchGroups();
@@ -31,6 +38,95 @@ export default function MyGroups() {
     
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenEditGroupModal = (group) => {
+    setOpenActionMenuId(null);
+    setSelectedGroup(group);
+    setGroupModalError('');
+    setShowGroupModal(true);
+  };
+
+  const toggleActionMenu = (groupId) => {
+    setOpenActionMenuId((prev) => (prev === groupId ? null : groupId));
+  };
+
+  const handleCloseGroupModal = () => {
+    if (!isSavingGroup) {
+      setShowGroupModal(false);
+      setGroupModalError('');
+      setSelectedGroup(null);
+    }
+  };
+
+  const handleGroupSubmit = async (payload) => {
+    try {
+      setIsSavingGroup(true);
+      setGroupModalError('');
+
+      if (!selectedGroup?.id) {
+        setGroupModalError('Please select a group to edit.');
+        return;
+      }
+
+      await updateGroup(selectedGroup.id, payload);
+
+      setShowGroupModal(false);
+      setSelectedGroup(null);
+      await fetchGroups();
+    } catch (err) {
+      console.error('Error saving group:', err);
+
+      if (err?.response?.status === 401) {
+        setGroupModalError('Your session expired. Please login again.');
+      } else if (err?.response?.status === 403) {
+        setGroupModalError('Only admin or super admin can edit groups.');
+      } else if (err?.response?.status >= 500) {
+        setGroupModalError('Server error while saving group. Please try again shortly.');
+      } else {
+        const apiMessage =
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.response?.data?.details;
+        setGroupModalError(apiMessage || 'Failed to save group. Please try again.');
+      }
+    } finally {
+      setIsSavingGroup(false);
+    }
+  };
+
+  const handleDeleteGroup = async (group) => {
+    setOpenActionMenuId(null);
+    const confirmed = window.confirm(`Delete group "${group?.name || 'this group'}"? This action cannot be undone.`);
+    if (!confirmed || !group?.id) {
+      return;
+    }
+
+    try {
+      setDeletingGroupId(group.id);
+      await deleteGroup(group.id);
+      await fetchGroups();
+    } catch (err) {
+      console.error('Error deleting group:', err);
+
+      if (err?.response?.status === 401) {
+        window.alert('Your session expired. Please login again.');
+      } else if (err?.response?.status === 403) {
+        window.alert('Only admin or super admin can delete groups.');
+      } else if (err?.response?.status === 404) {
+        window.alert('Group not found. It may already be deleted.');
+      } else if (err?.response?.status >= 500) {
+        window.alert('Server error while deleting group. Please try again shortly.');
+      } else {
+        const apiMessage =
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.response?.data?.details;
+        window.alert(apiMessage || 'Failed to delete group. Please try again.');
+      }
+    } finally {
+      setDeletingGroupId(null);
     }
   };
 
@@ -67,8 +163,8 @@ export default function MyGroups() {
     return colors[index % colors.length];
   };
 
-  const filteredGroups = groups.filter(group =>
-    group.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredGroups = groups.filter((group) =>
+    (group.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -139,10 +235,6 @@ export default function MyGroups() {
             <div>
               <p className="text-gray-600">Manage and access the communities you belong to.</p>
             </div>
-            <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2">
-              <AddIcon fontSize="small" />
-              Create Group
-            </button>
           </div>
 
           {/* Search and Filter */}
@@ -171,7 +263,41 @@ export default function MyGroups() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredGroups.map((group, index) => (
-                <div key={group.id} className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                <div key={group.id} className="relative bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                  <div className="absolute right-4 top-4">
+                    <button
+                      onClick={() => toggleActionMenu(group.id)}
+                      className="rounded-lg p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                      aria-label="Group actions"
+                    >
+                      <MoreVertIcon fontSize="small" />
+                    </button>
+
+                    {openActionMenuId === group.id ? (
+                      <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                        <button
+                          onClick={() => setOpenActionMenuId(null)}
+                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                        >
+                          View Group
+                        </button>
+                        <button
+                          onClick={() => handleOpenEditGroupModal(group)}
+                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteGroup(group)}
+                          disabled={deletingGroupId === group.id}
+                          className="block w-full px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {deletingGroupId === group.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+
                   {/* Group Icon */}
                   <div className="flex items-start gap-4 mb-4">
                     <div 
@@ -210,10 +336,6 @@ export default function MyGroups() {
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <span className="text-xs text-gray-500">{formatTimeAgo(group.joined_at)}</span>
-                    <button className="text-indigo-600 font-medium text-sm hover:text-indigo-700 flex items-center gap-1">
-                      View Group
-                      <span>→</span>
-                    </button>
                   </div>
                 </div>
               ))}
@@ -228,6 +350,16 @@ export default function MyGroups() {
           )}
         </div>
       </div>
+
+      <GroupModal
+        isOpen={showGroupModal}
+        onClose={handleCloseGroupModal}
+        onSubmit={handleGroupSubmit}
+        mode="edit"
+        initialValues={selectedGroup}
+        isSubmitting={isSavingGroup}
+        submitError={groupModalError}
+      />
     </div>
   );
 }
