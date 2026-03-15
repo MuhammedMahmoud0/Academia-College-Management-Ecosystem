@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-// Use proxy in development, full URL in production
-const BASE_URL = import.meta.env.DEV 
-  ? '/api/v1' 
-  : import.meta.env.VITE_API_URL;
+const BASE_URL = '/api/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -60,6 +57,20 @@ export const getStudentScheduleByWeek = async (weekOffset = 0) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data; // { schedule: [{ day, date, classes: [...] }] }
+};
+
+/**
+ * Get student's exam schedule (Student can view their own exams only)
+ * @returns {Promise} Object containing exam schedule data
+ */
+export const getStudentExamSchedule = async () => {
+  const token = getAuthToken();
+  const response = await api.get('/exams/schedule', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; // { success, count, data: [...] }
 };
 
 /**

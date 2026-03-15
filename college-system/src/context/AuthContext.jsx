@@ -92,6 +92,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error('Error fetching user data:', error);
           // If token is invalid/expired, clear auth state to stop repeated unauthorized calls.
+          // If token is invalid/expired, clear auth and force re-login.
           if (error?.response?.status === 401) {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('message');
@@ -99,7 +100,10 @@ export const AuthProvider = ({ children }) => {
             setToken(null);
             setUser(null);
             setIsAuthenticated(false);
+            return;
           }
+
+          // Keep cached user data for non-auth related errors.
         }
       }
     };

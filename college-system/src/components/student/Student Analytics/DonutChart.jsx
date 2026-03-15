@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell } from 'recharts';
+import { Link } from 'react-router-dom';
 
 export default function DonutChart({
   percentage = 92,
@@ -79,6 +80,9 @@ export default function DonutChart({
           <div style={{ fontSize: dimensions.textFontSize, color: '#9CA3AF' }}>
             {attended}/{total} classes
           </div>
+        </div>
+        <div style={{ position: 'absolute', bottom: '10px', fontSize: '12px', color: '#6B7280' }}>
+          <Link to="/dashboard/student-attendance-details" className='text-gray-800 font-semibold text-sm underline '>show more details</Link>
         </div>
       </div>
     </div>
