@@ -36,7 +36,9 @@ export default function CommunityPage() {
       const data = await getStudentProfile();
       setStudentProfile(data.studentProfile);
     } catch (error) {
-      console.error('Error fetching student profile:', error);
+      if (error?.response?.status !== 403) {
+        console.error('Error fetching student profile:', error);
+      }
     }
   };
 
@@ -47,24 +49,32 @@ export default function CommunityPage() {
       
       // Transform API data to match component structure
       const transformedPosts = data.posts.map(post => {
-        // Check if author_avatar is a valid URL (starts with http/https)
-        const isValidAvatarUrl = post.author_avatar && (post.author_avatar.startsWith('http://') || post.author_avatar.startsWith('https://'));
-        
+        const authorName = post.users?.full_name ?? post.author_name ?? 'Unknown';
+        const authorAvatar = post.users?.avatar_url ?? post.author_avatar ?? null;
+        const isValidAvatarUrl = authorAvatar && (authorAvatar.startsWith('http://') || authorAvatar.startsWith('https://'));
+
         return {
           id: post.id,
-          author: post.author_name,
-          author_avatar: isValidAvatarUrl ? post.author_avatar : null,
-          avatar: getInitials(post.author_name),
+          author: authorName,
+          author_avatar: isValidAvatarUrl ? authorAvatar : null,
+          avatar: getInitials(authorName),
           time: formatTime(post.created_at),
           content: post.content,
-          likes: post.likes_count,
-          comments: post.comments_count,
+          likes: post._count?.post_likes ?? post.likes_count ?? 0,
+          comments: post._count?.post_comments ?? post.comments_count ?? 0,
           isPinned: post.is_pinned,
           image: post.image_url,
           imageUrl: post.image_url,
           bgColor: getRandomColor(),
-          groupName: post.group_name,
-          recentComments: post.recent_comments || []
+          groupName: post.community_groups?.name ?? post.group_name ?? null,
+          isLikedByMe: post.is_liked_by_me ?? false,
+          recentComments: (post.recent_comments ?? []).map(c => ({
+            id: c.id,
+            content: c.content,
+            created_at: c.created_at,
+            author_name: c.author_name ?? 'Unknown',
+            author_avatar: c.author_avatar ?? null,
+          }))
         };
       });
 

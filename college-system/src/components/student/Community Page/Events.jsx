@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
-import { getCommunityEvents } from '../../../services/communityService';
+import EventModal from './EventModal';
+import { deleteCommunityEvent, getCommunityEvents, updateCommunityEvent } from '../../../services/communityService';
 import Eventimage from '../../../assets/events/tech event.jpg';
 
 export default function Events() {
@@ -18,7 +17,11 @@ export default function Events() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [goingEventIds, setGoingEventIds] = useState([]);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isSavingEvent, setIsSavingEvent] = useState(false);
+  const [eventModalError, setEventModalError] = useState('');
+  const [deletingEventId, setDeletingEventId] = useState(null);
 
   useEffect(() => {
     fetchEvents();
@@ -35,6 +38,90 @@ export default function Events() {
     
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenEditEventModal = (event) => {
+    setSelectedEvent(event);
+    setEventModalError('');
+    setShowEventModal(true);
+  };
+
+  const handleCloseCreateEventModal = () => {
+    if (!isSavingEvent) {
+      setShowEventModal(false);
+      setEventModalError('');
+      setSelectedEvent(null);
+    }
+  };
+
+  const handleEventSubmit = async (payload) => {
+    try {
+      setIsSavingEvent(true);
+      setEventModalError('');
+
+      if (!selectedEvent?.id) {
+        setEventModalError('Please select an event to edit.');
+        return;
+      }
+
+      await updateCommunityEvent(selectedEvent.id, payload);
+
+      setShowEventModal(false);
+      setSelectedEvent(null);
+      setActiveTab('upcoming');
+      await fetchEvents();
+    } catch (err) {
+      console.error('Error saving event:', err);
+
+      if (err?.response?.status === 401) {
+        setEventModalError('Your session expired. Please login again.');
+      } else if (err?.response?.status === 403) {
+        setEventModalError('Only admin or super admin can manage events.');
+      } else if (err?.response?.status >= 500) {
+        setEventModalError('Server error while saving event. Please try again shortly.');
+      } else {
+        const apiMessage =
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.response?.data?.details;
+        setEventModalError(apiMessage || 'Failed to save event. Please try again.');
+      }
+    } finally {
+      setIsSavingEvent(false);
+    }
+  };
+
+  const handleDeleteEvent = async (event) => {
+    const confirmed = window.confirm(`Delete event "${event?.title || 'this event'}"? This action cannot be undone.`);
+    if (!confirmed || !event?.id) {
+      return;
+    }
+
+    try {
+      setDeletingEventId(event.id);
+      await deleteCommunityEvent(event.id);
+      await fetchEvents();
+    } catch (err) {
+      console.error('Error deleting event:', err);
+
+      if (err?.response?.status === 401) {
+        window.alert('Your session expired. Please login again.');
+      } else if (err?.response?.status === 403) {
+        window.alert('Only admin or super admin can delete events.');
+      } else if (err?.response?.status === 404) {
+        window.alert('Event not found. It may already be deleted.');
+      } else if (err?.response?.status >= 500) {
+        window.alert('Server error while deleting event. Please try again shortly.');
+      } else {
+        const apiMessage =
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.response?.data?.details;
+        window.alert(apiMessage || 'Failed to delete event. Please try again.');
+      }
+    } finally {
+      setDeletingEventId(null);
     }
   };
 
@@ -60,19 +147,9 @@ export default function Events() {
         eventDate.setHours(0, 0, 0, 0);
         return eventDate < now;
       });
-    } else if (activeTab === 'going') {
-      filtered = filtered.filter(event => goingEventIds.includes(event.id));
     }
 
     return filtered;
-  };
-
-  const toggleGoing = (eventId) => {
-    setGoingEventIds(prev => 
-      prev.includes(eventId) 
-        ? prev.filter(id => id !== eventId)
-        : [...prev, eventId]
-    );
   };
 
   const filteredEvents = getFilteredEvents();
@@ -86,7 +163,6 @@ export default function Events() {
 
   const tabs = [
     { id: 'upcoming', label: 'Upcoming' },
-    { id: 'going', label: 'Going' },
     { id: 'past', label: 'Past' }
   ];
 
@@ -158,10 +234,6 @@ export default function Events() {
             <div>
               <p className="text-gray-600">Discover and join upcoming campus activities.</p>
             </div>
-            <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2">
-              <AddIcon fontSize="small" />
-              Create Event
-            </button>
           </div>
 
           {/* Search and Filter */}
@@ -249,24 +321,28 @@ export default function Events() {
                         <CalendarTodayIcon fontSize="small" />
                         <span>{event.location}</span>
                       </div>
-                      
-                      {/* Going Button */}
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          toggleGoing(event.id);
+                          handleOpenEditEventModal(event);
                         }}
-                        className={`w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-                          goingEventIds.includes(event.id)
-                            ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-                            : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-600 hover:text-blue-600'
-                        }`}
+                        className="mb-3 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-indigo-500 hover:text-indigo-600"
                       >
-                        {goingEventIds.includes(event.id) && (
-                          <CheckCircleIcon fontSize="small" />
-                        )}
-                        {goingEventIds.includes(event.id) ? 'Going' : 'Mark as Going'}
+                        Edit Event
                       </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteEvent(event);
+                        }}
+                        disabled={deletingEventId === event.id}
+                        className="w-full rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {deletingEventId === event.id ? 'Deleting...' : 'Delete Event'}
+                      </button>
+                      
                     </div>
                   </div>
                 );
@@ -282,6 +358,16 @@ export default function Events() {
           )}
         </div>
       </div>
+
+      <EventModal
+        isOpen={showEventModal}
+        onClose={handleCloseCreateEventModal}
+        onSubmit={handleEventSubmit}
+        mode="edit"
+        initialValues={selectedEvent}
+        isSubmitting={isSavingEvent}
+        submitError={eventModalError}
+      />
     </div>
   );
 }

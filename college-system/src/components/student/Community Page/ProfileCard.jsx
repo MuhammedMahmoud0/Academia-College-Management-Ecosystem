@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getStudentProfile } from '../../../services/infoService';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function ProfileCard() {
+  const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -9,17 +11,22 @@ export default function ProfileCard() {
     const fetchProfile = async () => {
       try {
         const data = await getStudentProfile();
-        console.log('Fetched student profile:', data);
         setUser(data);
       } catch (error) {
-        console.error('Error fetching student profile:', error);
+        // Student profile endpoint may be forbidden for non-student roles.
+        if (error?.response?.status !== 403) {
+          console.error('Error fetching student profile:', error);
+        }
+        if (authUser?.name) {
+          setUser({ studentProfile: { full_name: authUser.name } });
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [authUser]);
 
   const getInitials = (name) => {
     if (!name) return 'U';

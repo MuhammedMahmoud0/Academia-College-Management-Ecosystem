@@ -9,6 +9,24 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const isUsableToken = (value) => {
+    if (!value || typeof value !== 'string') return false;
+    const normalized = value.trim().toLowerCase();
+    return normalized !== 'undefined' && normalized !== 'null' && normalized.length > 0;
+  };
+
+  const extractToken = (data) => {
+    return (
+      data?.token ||
+      data?.access_token ||
+      data?.accessToken ||
+      data?.data?.token ||
+      data?.data?.access_token ||
+      data?.data?.accessToken ||
+      null
+    );
+  };
+
   // Check if user is already logged in (on app load)
   useEffect(() => {
     const savedToken = localStorage.getItem('auth_token');
@@ -23,9 +41,12 @@ export const AuthProvider = ({ children }) => {
       }
     }
     
-    if (savedToken) {
+    if (isUsableToken(savedToken)) {
       setToken(savedToken);
       setIsAuthenticated(true);
+    } else if (savedToken) {
+      // Clean up invalid token strings such as "undefined" or "null".
+      localStorage.removeItem('auth_token');
     }
     setIsLoading(false);
   }, []);
@@ -35,8 +56,12 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const data = await loginAPI(email, password);
-      const newToken = data.token;
+      const newToken = extractToken(data);
       const message = data.message;
+
+      if (!isUsableToken(newToken)) {
+        throw new Error('Login succeeded but no valid token was returned by the server.');
+      }
       
       // Store token
       localStorage.setItem('auth_token', newToken);
@@ -65,6 +90,8 @@ export const AuthProvider = ({ children }) => {
             setUser(userData);
           }
         } catch (error) {
+          console.error('Error fetching user data:', error);
+          // If token is invalid/expired, clear auth state to stop repeated unauthorized calls.
           // If token is invalid/expired, clear auth and force re-login.
           if (error?.response?.status === 401) {
             localStorage.removeItem('auth_token');
