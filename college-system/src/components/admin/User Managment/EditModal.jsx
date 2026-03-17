@@ -1,22 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { getDepartments } from '../../../services/userManagement';
+import { useToast } from '../../../hooks/useToast';
 
-export default function EditModal({ user, onClose, onSave }) {
+export default function EditModal({ user, onClose, onSave, isSaving = false }) {
+    const isStudent = Boolean(user?.student_profiles?.student_id || user?.studentId);
+    const toast = useToast();
+    const getDepartmentId = (department) => String(department?.department_id || department?.id || '');
+    const getDepartmentName = (department) => department?.name || department?.department_name || 'Unnamed Department';
+
+    const [departments, setDepartments] = useState([]);
+    const [isLoadingDepartments, setIsLoadingDepartments] = useState(true);
+
+    const initialDepartmentId = useMemo(() => {
+        return (
+            user?.student_profiles?.department_id
+            || user?.doctor_profiles?.department_id
+            || user?.faculty_profiles?.department_id
+            || ''
+        );
+    }, [user]);
+
+    const initialDepartmentName = useMemo(() => {
+        return (
+            user?.student_profiles?.departments?.name
+            || user?.doctor_profiles?.departments?.name
+            || user?.faculty_profiles?.departments?.name
+            || user?.department
+            || user?.major
+            || ''
+        );
+    }, [user]);
+
     const [formData, setFormData] = useState({
-        name: user?.name || '',
+        name: user?.full_name || user?.name || '',
         email: user?.email || '',
-        department: user?.department || user?.major || '',
-        status: user?.status || 'Active',
+        role: user?.role || '',
+        phone: user?.phone || '',
+        national_id: user?.national_id || '',
+        address: user?.address || '',
+        department_id: initialDepartmentId,
+        department_name: initialDepartmentName,
+        avatar: null,
     });
 
+    useEffect(() => {
+        const loadDepartments = async () => {
+            try {
+                setIsLoadingDepartments(true);
+                const response = await getDepartments();
+                const departmentsList = response?.departments || response?.data || [];
+                setDepartments(departmentsList);
+
+                if (!initialDepartmentId && initialDepartmentName) {
+                    const matchedDepartment = departmentsList.find(
+                        (department) => getDepartmentName(department)?.toLowerCase() === initialDepartmentName.toLowerCase()
+                    );
+
+                    if (getDepartmentId(matchedDepartment)) {
+                        setFormData((prev) => ({
+                            ...prev,
+                            department_id: getDepartmentId(matchedDepartment),
+                        }));
+                    }
+                }
+            } catch (error) {
+                const message = error?.response?.data?.message || 'Failed to load departments.';
+                toast.error(message);
+            } finally {
+                setIsLoadingDepartments(false);
+            }
+        };
+
+        loadDepartments();
+    }, [initialDepartmentId, initialDepartmentName, toast]);
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, files } = e.target;
+
+        if (name === 'avatar') {
+            setFormData((prev) => ({
+                ...prev,
+                avatar: files?.[0] || null,
+            }));
+            return;
+        }
+
+        if (name === 'department_id') {
+            const selectedDepartment = departments.find((department) => getDepartmentId(department) === value);
+            setFormData((prev) => ({
+                ...prev,
+                department_id: value,
+                department_name: getDepartmentName(selectedDepartment),
+            }));
+            return;
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ ...user, ...formData });
-        onClose();
+        onSave({
+            ...user,
+            ...formData,
+            full_name: formData.name,
+            department: formData.department_name,
+        });
     };
 
     return (
@@ -26,7 +115,7 @@ export default function EditModal({ user, onClose, onSave }) {
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-semibold text-gray-900">
-                                Edit {user?.studentId ? 'Student' : 'Doctor'}
+                                Edit {isStudent ? 'Student' : 'Doctor/Faculty'}
                             </h2>
                             <button
                                 type="button"
@@ -68,34 +157,102 @@ export default function EditModal({ user, onClose, onSave }) {
                                 />
                             </div>
 
+                            {!isStudent && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Role
+                                    </label>
+                                    <select
+                                        name="role"
+                                        value={formData.role}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        disabled={isSaving}
+                                    >
+                                        <option value="doctor">Doctor</option>
+                                        <option value="teaching_assistant">Teaching Assistant</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Phone
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="01234567890"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        National ID
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="national_id"
+                                        value={formData.national_id}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="30001011234567"
+                                    />
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {user?.studentId ? 'Major' : 'Department'}
+                                    Address
                                 </label>
                                 <input
                                     type="text"
-                                    name="department"
-                                    value={formData.department}
+                                    name="address"
+                                    value={formData.address}
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
+                                    placeholder="Alexandria, Egypt"
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Status
+                                    {isStudent ? 'Major' : 'Department'}
                                 </label>
                                 <select
-                                    name="status"
-                                    value={formData.status}
+                                    name="department_id"
+                                    value={formData.department_id}
                                     onChange={handleChange}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    disabled={isLoadingDepartments || isSaving}
                                 >
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="On Leave">On Leave</option>
+                                    <option value="">
+                                        {isLoadingDepartments ? 'Loading departments...' : 'Select department'}
+                                    </option>
+                                    {departments.map((department) => (
+                                        <option key={getDepartmentId(department)} value={getDepartmentId(department)}>
+                                            {getDepartmentName(department)}
+                                        </option>
+                                    ))}
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Avatar
+                                </label>
+                                <input
+                                    type="file"
+                                    name="avatar"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    disabled={isSaving}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                             </div>
                         </div>
                     </div>
@@ -104,15 +261,17 @@ export default function EditModal({ user, onClose, onSave }) {
                         <button
                             type="button"
                             onClick={onClose}
+                            disabled={isSaving}
                             className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                            disabled={isSaving}
+                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            Save Changes
+                            {isSaving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </form>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 
-export default function DropDownMenu({ user, onEdit, onResetPassword, onDelete, profileLink }) {
+export default function DropDownMenu({ user, onEdit, onResetPassword, onDelete, onChangeRole, profileLink }) {
     const menuRef = useRef(null);
     const [shouldOpenUpward, setShouldOpenUpward] = useState(false);
 
@@ -42,6 +42,14 @@ export default function DropDownMenu({ user, onEdit, onResetPassword, onDelete, 
                 >
                     Reset Password
                 </button>
+                {typeof onChangeRole === 'function' && (
+                    <button
+                        onClick={() => onChangeRole(user)}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        Change Role
+                    </button>
+                )}
                 <button
                     onClick={() => onDelete(user.id)}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
