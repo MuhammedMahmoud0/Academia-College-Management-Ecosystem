@@ -1,32 +1,39 @@
 import { useState } from 'react';
+import { useToast } from '../../../hooks/useToast';
 
-export default function ResetPasswordModal({ user, onClose, onConfirm }) {
+export default function ResetPasswordModal({ user, onClose, onConfirm, isSubmitting = false }) {
     const [formData, setFormData] = useState({
-        currentPassword: '',
-        newPassword: '',
+        password: '',
         confirmPassword: ''
     });
+    const toast = useToast();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (formData.newPassword !== formData.confirmPassword) {
-            alert('New passwords do not match!');
+
+        if (isSubmitting) {
             return;
         }
         
-        if (formData.newPassword.length < 6) {
-            alert('Password must be at least 6 characters long!');
+        if (formData.password !== formData.confirmPassword) {
+            toast.error('New passwords do not match.');
+            return;
+        }
+        
+        if (formData.password.length < 6) {
+            toast.error('Password must be at least 6 characters long.');
             return;
         }
 
-        onConfirm(user);
-        onClose();
+        const isSuccess = await onConfirm(formData.password);
+        if (isSuccess) {
+            onClose();
+        }
     };
 
     return (
@@ -55,26 +62,12 @@ export default function ResetPasswordModal({ user, onClose, onConfirm }) {
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Current Password
-                                </label>
-                                <input
-                                    type="password"
-                                    name="currentPassword"
-                                    value={formData.currentPassword}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     New Password
                                 </label>
                                 <input
                                     type="password"
-                                    name="newPassword"
-                                    value={formData.newPassword}
+                                    name="password"
+                                    value={formData.password}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                     required
@@ -99,9 +92,10 @@ export default function ResetPasswordModal({ user, onClose, onConfirm }) {
                         <div className="flex justify-end mt-8">
                             <button
                                 type="submit"
+                                disabled={isSubmitting}
                                 className="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-md"
                             >
-                                Update Password
+                                {isSubmitting ? 'Updating...' : 'Update Password'}
                             </button>
                         </div>
                     </div>
