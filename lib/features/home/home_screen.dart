@@ -18,6 +18,7 @@ import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:college_project/features/home/widgets/chatbot_bottom_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -76,10 +77,11 @@ class _HomeViewState extends State<HomeView> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: (isSuccess
-                            ? AppColors.successColor
-                            : AppColors.errorColor)
-                        .withValues(alpha: 0.12),
+                    color:
+                        (isSuccess
+                                ? AppColors.successColor
+                                : AppColors.errorColor)
+                            .withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -358,6 +360,11 @@ Widget _buildHomeContent(
   final cubit = context.read<HomeCubit>();
 
   return Scaffold(
+    floatingActionButton: FloatingActionButton(
+      onPressed: () => showChatbotSheet(context, isDark: isDark),
+      backgroundColor: AppColors.primaryColor,
+      child: const Icon(Icons.support_agent_rounded, color: Colors.white),
+    ),
     body: RefreshIndicator(
       onRefresh: () => cubit.refreshHomeData(),
       color: AppColors.primaryColor,
