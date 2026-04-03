@@ -42,6 +42,10 @@ import LiveAttendancePage from './components/doctors/DoctorDashboard/LiveAttenda
 import FinancialManagementPage from './pages/FinancialManagementPage';
 import StudentAttendanceDetails from './pages/StudentAttendanceDetails';
 import ExamsManagment from './pages/ExamsManagment';
+import TasksPage from './pages/Tasks';
+import TaskSubmissionsPage from './pages/TaskSubmissions';
+import Tasks_student from './pages/Tasks_student';
+
 function App() {
   return (
     <div className="App">
@@ -61,7 +65,10 @@ function App() {
           <Route path="teachers" element={<TeacherSchedulePage />} />
           <Route path="students" element={<StudentSchedulePage />} />
           <Route path="register" element={<StudentRegistrationPage />} />
-          <Route path="tasks" element={<div className="text-2xl">Daily Tasks Page</div>} />
+          {/* Tasks Route - Updated to use the robust TasksPage replacing placeholder */}
+          <Route path="tasks" element={<TasksPage />} />
+          <Route path="tasks/:taskId/submissions" element={<TaskSubmissionsPage />} />
+          <Route path="student-tasks" element={<Tasks_student />} />
           <Route path="material" element={<StudentMatrialsPage />} />
           <Route path="doctormaterial" element={<DoctorMatrialsPage />} />
           <Route path="analytics" element={<StudentAnalyticsPage />} />
