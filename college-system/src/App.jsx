@@ -45,6 +45,8 @@ import ExamsManagment from './pages/ExamsManagment';
 import TasksPage from './pages/Tasks';
 import TaskSubmissionsPage from './pages/TaskSubmissions';
 import Tasks_student from './pages/Tasks_student';
+import AdminAlertsPage from './pages/AdminAlertsPage';
+import AdminActivityPage from './pages/AdminActivityPage';
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
         {/* Dashboard Routes with Layout - Protected */}
         <Route path="/dashboard" element={<ProtectedRoute><MainLayoutPage /></ProtectedRoute>}>
           <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/alerts" element={<AdminAlertsPage />} />
+          <Route path="admin/activity" element={<AdminActivityPage />} />
           <Route path="info" element={<InfoPage />} />
           <Route path="courses" element={<CoursesGradesPage />} />
           <Route path="exams" element={<ExamSchedulePage />} />
