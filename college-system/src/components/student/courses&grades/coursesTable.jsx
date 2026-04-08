@@ -1,88 +1,80 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { BookOpen } from 'lucide-react';
 
-const columns = [
-  { field: 'courseCode', headerName: 'Course Code', flex: 1 },
-  { field: 'courseName', headerName: 'Course Name', flex: 1 },
-  { field: 'credits', headerName: 'Credits', flex: 1},
-  { field: 'semester', headerName: 'Semester', flex: 1 },
-  {
-    field: 'grade',
-    headerName: 'Grade',
-    flex: 1,
-    renderCell: (params) => (
-      <span
-        style={{
-          backgroundColor:
-            params.value === 'A' || params.value === 'A-' ? '#d9fdd3' :
-            params.value === 'B+' || params.value === 'B' ? '#d3e3fd' :
-            '#f3f3f3',
-          color: '#222',
-          padding: '4px 10px',
-          borderRadius: '12px',
-          fontWeight: '600',
-        }}
-      >
-        {params.value}
-      </span>
-    ),
-  },
-];
+const getGradeColor = (grade) => {
+  if (!grade || grade === 'N/A') return 'bg-gray-100 text-gray-700';
+  if (['A+', 'A', 'A-'].includes(grade)) return 'bg-[#d9fdd3] text-green-900 border-none';
+  if (['B+', 'B', 'B-'].includes(grade)) return 'bg-[#d3e3fd] text-blue-900 border-none';
+  if (['C+', 'C', 'C-'].includes(grade)) return 'bg-yellow-100 text-yellow-900 border-none';
+  if (['D', 'F'].includes(grade)) return 'bg-red-100 text-red-900 border-none';
+  return 'bg-gray-100 text-gray-800 border-none';
+};
 
-const rows = [
-  { id: 1, courseCode: 'CS101', courseName: 'Introduction to Programming', credits: 3, semester: 'Fall 2024', grade: 'A' },
-  { id: 2, courseCode: 'MA203', courseName: 'Calculus II', credits: 4, semester: 'Fall 2024', grade: 'B+' },
-  { id: 3, courseCode: 'PHY201', courseName: 'General Physics I', credits: 4, semester: 'Fall 2024', grade: 'A-' },
-  { id: 4, courseCode: 'CS240', courseName: 'Data Structures & Algorithms', credits: 3, semester: 'Spring 2025', grade: 'A' },
-  { id: 5, courseCode: 'CS350', courseName: 'Operating Systems', credits: 3, semester: 'Spring 2025', grade: 'B' },
-  { id: 6, courseCode: 'EE200', courseName: 'Digital Logic Design', credits: 3, semester: 'Spring 2025', grade: 'A-' },
-];
+const getStatusColor = (status) => {
+  if (status === 'completed') return 'text-green-700 bg-green-50';
+  if (status === 'enrolled') return 'text-blue-700 bg-blue-50';
+  if (status === 'withdrawn') return 'text-red-700 bg-red-50';
+  return 'text-gray-600 bg-gray-50';
+};
 
+export default function GradesTable({ courses = [] }) {
+  if (!courses.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-500 bg-white">
+         <BookOpen className="w-10 h-10 text-gray-300 mb-3" />
+         <p className="text-base">No courses found</p>
+      </div>
+    );
+  }
 
-export default function GradesTable() {
   return (
-    <Box 
-      className="bg-white p-4 rounded-lg shadow-md w-full" 
-      sx={{ 
-        height: { xs: 500, sm: 450, md: 450 },
-        width: '100%',
-        overflow: 'auto'
-      }}
-    >
-      <DataGrid
-        rows={rows}
-        columns={columns }
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
-            },
-          },
-        }}
-        sx={{ 
-          textAlign: 'left',
-          border: 'none',
-          minWidth: { xs: '600px', sm: '100%' },
-          '& .MuiDataGrid-cell': {
-            borderBottom: 'none',
-            fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: 'none',
-            backgroundColor: '#f8fafc',
-            fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
-          },
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: '#f8fafc',
-          },
-          '& .MuiDataGrid-footerContainer': {
-            borderTop: 'none',
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-      />
-    </Box>
+    <div className="w-full overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-slate-50 border-b border-gray-200">
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Course Code</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Course Name</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Instructor</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Credits</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Semester</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Grade</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {courses.map((course, idx) => (
+            <tr 
+              key={course.id || idx} 
+              className="hover:bg-gray-50 transition-colors"
+            >
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-800">
+                {course.code}
+              </td>
+              <td className="py-4 px-5">
+                <div className="text-sm text-gray-800 font-medium">{course.name}</div>
+                <div className="mt-1">
+                  <span className={`text-[0.65rem] uppercase font-bold tracking-wider px-2 py-0.5 rounded ${getStatusColor(course.status)}`}>
+                    {course.status}
+                  </span>
+                </div>
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-600">
+                {course.instructor}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-700">
+                {course.credits}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-600">
+                {course.semester} {course.year}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap">
+                <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-semibold rounded-full ${getGradeColor(course.grade)}`}>
+                  {course.grade}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

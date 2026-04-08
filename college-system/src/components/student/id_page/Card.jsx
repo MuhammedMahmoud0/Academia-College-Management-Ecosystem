@@ -1,26 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import QRCode from 'react-qr-code';
+import Barcode from 'react-barcode';
+import { getDigitalIdFront, getDigitalIdBack } from '../../../services/idCard';
 import './IDCard.css';
 
 const Card = () => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [frontData, setFrontData] = useState(null);
+  const [backData, setBackData] = useState(null);
 
-  const studentData = {
-    name: "John Doe",
-    id: "AC-123456",
-    level: "3rd Year",
-    department: "Data Science",
-    initials: "JD",
-    issued: "Sep 2023",
-    expiry: "Jul 2027",
-    college: "Academia College",
-    subtitle: "STUDENT IDENTITY"
+  useEffect(() => {
+    const fetchIdData = async () => {
+      try {
+        const [frontRes, backRes] = await Promise.all([
+          getDigitalIdFront(),
+          getDigitalIdBack()
+        ]);
+        setFrontData(frontRes);
+        setBackData(backRes);
+      } catch (error) {
+        console.error('Error fetching digital ID data:', error);
+      }
+    };
+    fetchIdData();
+  }, []);
+
+  const studentData = frontData ? {
+    name: frontData.holder.full_name,
+    id: frontData.holder.student_id,
+    level: frontData.holder.level,
+    department: frontData.holder.department,
+    initials: (frontData.holder.full_name || '').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+    issued: frontData.card_validity.issued_date,
+    expiry: frontData.card_validity.expires_date,
+    college: frontData.system_name,
+    subtitle: frontData.identity_label
+  } : {
+    name: "Loading...",
+    id: "Loading...",
+    level: "Loading...",
+    department: "Loading...",
+    initials: "??",
+    issued: "...",
+    expiry: "...",
+    college: "Loading...",
+    subtitle: "..."
   };
 
-  const privileges = [
-    { icon: "📚", text: "Library Access" },
-    { icon: "🔬", text: "CS & Engineering Labs" },
-    { icon: "💪", text: "Gym & Sports Facilities" }
-  ];
+  const getIcon = (text) => {
+    if (text.includes("Library")) return "📚";
+    if (text.includes("Lab")) return "🔬";
+    if (text.includes("Gym") || text.includes("Sports")) return "💪";
+    return "✔️";
+  };
+  const privileges = backData?.access_privileges?.map(text => ({ icon: getIcon(text), text })) || [];
 
   const handleCardClick = () => {
     setIsFlipped(!isFlipped);
@@ -81,67 +114,34 @@ const Card = () => {
             <div className="h-full flex flex-col justify-between p-4 sm:p-5 md:p-6">
               <div className="w-[calc(100%+2rem)] sm:w-[calc(100%+2.5rem)] md:w-[calc(100%+3rem)] h-[40px] sm:h-[45px] md:h-[50px] bg-gray-800 -mt-4 sm:-mt-5 md:-mt-6 -mx-4 sm:-mx-5 md:-mx-6 mb-3 sm:mb-4"></div>
               <div className="flex gap-2 sm:gap-3 md:gap-4 items-center flex-1">
-                <div className="bg-black p-1.5 sm:p-2 rounded-lg w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] md:w-[90px] md:h-[90px] flex items-center justify-center flex-shrink-0">
-                  <svg className="w-full h-full" viewBox="0 0 80 80" fill="white">
-                    <rect x="0" y="0" width="12" height="12"/>
-                    <rect x="16" y="0" width="12" height="12"/>
-                    <rect x="32" y="0" width="12" height="12"/>
-                    <rect x="52" y="0" width="12" height="12"/>
-                    <rect x="68" y="0" width="12" height="12"/>
-                    
-                    <rect x="0" y="16" width="12" height="12"/>
-                    <rect x="68" y="16" width="12" height="12"/>
-                    
-                    <rect x="0" y="32" width="12" height="12"/>
-                    <rect x="16" y="32" width="12" height="12"/>
-                    <rect x="32" y="32" width="12" height="12"/>
-                    <rect x="52" y="32" width="12" height="12"/>
-                    <rect x="68" y="32" width="12" height="12"/>
-                    
-                    <rect x="0" y="52" width="12" height="12"/>
-                    <rect x="32" y="52" width="12" height="12"/>
-                    <rect x="68" y="52" width="12" height="12"/>
-                    
-                    <rect x="0" y="68" width="12" height="12"/>
-                    <rect x="16" y="68" width="12" height="12"/>
-                    <rect x="32" y="68" width="12" height="12"/>
-                    <rect x="52" y="68" width="12" height="12"/>
-                    <rect x="68" y="68" width="12" height="12"/>
-                  </svg>
+                <div className="bg-white p-1.5 sm:p-2 rounded-lg w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] md:w-[90px] md:h-[90px] flex items-center justify-center flex-shrink-0">
+                  {backData?.qr_code ? (
+                    <QRCode
+                      value={`Student ID: ${backData.qr_code.student_id}\nNational ID: ${backData.qr_code.national_id}`}
+                      size={256}
+                      style={{ height: "100%", width: "100%" }}
+                      viewBox={`0 0 256 256`}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200"></div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[0.55rem] sm:text-[0.6rem] md:text-[0.65rem] text-gray-200 leading-relaxed m-0">This card is for the use of the person named and should be carried at all times. If found, please return to the college.</p>
                 </div>
               </div>
-              <div className="bg-gray-200 flex justify-center mt-2 w-full max-w-[180px] sm:max-w-[200px] p-1.5 sm:p-2 rounded-lg mx-auto">
-                <svg className="w-full h-auto" viewBox="0 0 200 60" fill="black">
-                  <rect x="0" y="0" width="4" height="60"/>
-                  <rect x="8" y="0" width="2" height="60"/>
-                  <rect x="14" y="0" width="6" height="60"/>
-                  <rect x="24" y="0" width="2" height="60"/>
-                  <rect x="30" y="0" width="4" height="60"/>
-                  <rect x="38" y="0" width="2" height="60"/>
-                  <rect x="44" y="0" width="6" height="60"/>
-                  <rect x="54" y="0" width="4" height="60"/>
-                  <rect x="62" y="0" width="2" height="60"/>
-                  <rect x="68" y="0" width="6" height="60"/>
-                  <rect x="78" y="0" width="2" height="60"/>
-                  <rect x="84" y="0" width="4" height="60"/>
-                  <rect x="92" y="0" width="6" height="60"/>
-                  <rect x="102" y="0" width="2" height="60"/>
-                  <rect x="108" y="0" width="4" height="60"/>
-                  <rect x="116" y="0" width="2" height="60"/>
-                  <rect x="122" y="0" width="6" height="60"/>
-                  <rect x="132" y="0" width="4" height="60"/>
-                  <rect x="140" y="0" width="2" height="60"/>
-                  <rect x="146" y="0" width="6" height="60"/>
-                  <rect x="156" y="0" width="2" height="60"/>
-                  <rect x="162" y="0" width="4" height="60"/>
-                  <rect x="170" y="0" width="6" height="60"/>
-                  <rect x="180" y="0" width="2" height="60"/>
-                  <rect x="186" y="0" width="4" height="60"/>
-                  <rect x="194" y="0" width="6" height="60"/>
-                </svg>
+              <div className="bg-white flex justify-center mt-2 w-full max-w-[220px] sm:max-w-[250px] p-2 rounded-lg mx-auto">
+                {backData?.barcode ? (
+                  <Barcode 
+                    value={backData.barcode.access ? "ACCESS-GRANTED" : "ACCESS-DENIED"} 
+                    height={40} 
+                    displayValue={false} 
+                    margin={0} 
+                    background="transparent"
+                  />
+                ) : (
+                   <div className="w-[180px] h-[40px] bg-gray-200"></div>
+                )}
               </div>
               <p className="text-center text-[0.6rem] sm:text-[0.7rem] text-gray-200 mt-1">Library & Service Barcode</p>
             </div>
@@ -170,14 +170,6 @@ const Card = () => {
           ))}
         </div>
       </div>
-
-      <button className="bg-transparent border-none text-red-500 text-xs sm:text-sm cursor-pointer flex items-center gap-2 p-2 hover:opacity-80 transition-opacity">
-        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="8" cy="8" r="7" stroke="#EF4444" strokeWidth="1.5"/>
-          <path d="M8 4V9M8 11V12" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
-        Report Card Lost or Stolen
-      </button>
     </div>
   );
 };

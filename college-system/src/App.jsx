@@ -39,6 +39,8 @@ import SystemConfigurationPage from './pages/SystemConfigurationPage';
 import DoctorDashboard from './pages/DoctorDashboard';
 import CourseDetailPage from './components/doctors/DoctorDashboard/CourseDetailPage';
 import LiveAttendancePage from './components/doctors/DoctorDashboard/LiveAttendancePage';
+import GradesManagementPage from './components/doctors/DoctorDashboard/GradesManagementPage';
+import LowGradeAlertsPage from './components/doctors/DoctorDashboard/LowGradeAlertsPage';
 import FinancialManagementPage from './pages/FinancialManagementPage';
 import StudentAttendanceDetails from './pages/StudentAttendanceDetails';
 import ExamsManagment from './pages/ExamsManagment';
@@ -47,6 +49,7 @@ import TaskSubmissionsPage from './pages/TaskSubmissions';
 import Tasks_student from './pages/Tasks_student';
 import AdminAlertsPage from './pages/AdminAlertsPage';
 import AdminActivityPage from './pages/AdminActivityPage';
+import DoctorAlertsPage from './pages/DoctorAlertsPage';
 
 function App() {
   return (
@@ -96,8 +99,11 @@ function App() {
           <Route path="exams-management" element={<ExamsManagment />} />
           {/* Doctor Routes */}
           <Route path="doctor" element={<DoctorDashboard />} />
+          <Route path="doctor/alerts" element={<DoctorAlertsPage />} />
           <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
           <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
+          <Route path="doctor/course/:courseId/alerts" element={<LowGradeAlertsPage />} />
+          <Route path="doctor/course/:courseId/grades" element={<GradesManagementPage />} />
           <Route path="doctor/course/:courseId/attendance" element={<LiveAttendancePage />} />
           
           <Route index element={<InfoPage />} />
