@@ -9,9 +9,11 @@ import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
 import GroupModal from './GroupModal';
 import { deleteGroup, getMyGroups, updateGroup } from '../../../services/communityService';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function MyGroups() {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [groups, setGroups] = useState([]);
@@ -35,7 +37,7 @@ export default function MyGroups() {
     } catch (err) {
       console.error('Error fetching groups:', err);
       // Fallback to mock data on error
-    
+
     } finally {
       setLoading(false);
     }
@@ -96,8 +98,27 @@ export default function MyGroups() {
     }
   };
 
+  const handleLeaveGroup = async (group) => {
+    setOpenActionMenuId(null);
+
+    const confirmed = window.confirm(`Are you sure you want to exit the group "${group?.name || 'this group'}"?`);
+    if (!confirmed || !group?.id) {
+      return;
+    }
+
+    // UI-only behavior for now
+    console.log(`User initiated exit from group: ${group?.name || group?.id}`);
+    window.alert('Leave group UI behavior triggered (no actual API call made).');
+  };
+
   const handleDeleteGroup = async (group) => {
     setOpenActionMenuId(null);
+
+    if (!isAdminUser) {
+      window.alert('Only admin or super admin can delete groups.');
+      return;
+    }
+
     const confirmed = window.confirm(`Delete group "${group?.name || 'this group'}"? This action cannot be undone.`);
     if (!confirmed || !group?.id) {
       return;
@@ -132,7 +153,7 @@ export default function MyGroups() {
 
   const formatTimeAgo = (dateStr) => {
     if (!dateStr) return 'Recently';
-    
+
     try {
       const date = new Date(dateStr);
       const now = new Date();
@@ -167,6 +188,14 @@ export default function MyGroups() {
     (group.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const normalizedRole = String(
+    authUser?.role || authUser?.user_role || authUser?.userType || authUser?.type || ''
+  )
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+  const isAdminUser = normalizedRole === 'admin' || normalizedRole === 'super_admin';
+
   return (
     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
       {/* Header */}
@@ -181,7 +210,7 @@ export default function MyGroups() {
           </button>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">My Groups</h1>
         </div>
-        
+
         {/* Mobile Menu Button */}
         <button
           onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
@@ -197,7 +226,7 @@ export default function MyGroups() {
       {/* Left Sidebar Overlay - Mobile/Tablet */}
       {leftSidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div 
+          <div
             className="absolute inset-0 bg-black bg-opacity-10"
             onClick={() => setLeftSidebarOpen(false)}
           ></div>
@@ -263,10 +292,25 @@ export default function MyGroups() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredGroups.map((group, index) => (
-                <div key={group.id} className="relative bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                <div
+                  key={group.id}
+                  onClick={() => navigate(`/dashboard/my-groups/${group.id}/posts`)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/dashboard/my-groups/${group.id}/posts`);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  className="relative w-full text-left bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+                >
                   <div className="absolute right-4 top-4">
                     <button
-                      onClick={() => toggleActionMenu(group.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleActionMenu(group.id);
+                      }}
                       className="rounded-lg p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
                       aria-label="Group actions"
                     >
@@ -275,24 +319,38 @@ export default function MyGroups() {
 
                     {openActionMenuId === group.id ? (
                       <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                        {isAdminUser ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEditGroupModal(group);
+                            }}
+                            className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                          >
+                            Edit
+                          </button>
+                        ) : null}
+                        {isAdminUser ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteGroup(group);
+                            }}
+                            disabled={deletingGroupId === group.id}
+                            className="block w-full px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {deletingGroupId === group.id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        ) : null}
                         <button
-                          onClick={() => setOpenActionMenuId(null)}
-                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                        >
-                          View Group
-                        </button>
-                        <button
-                          onClick={() => handleOpenEditGroupModal(group)}
-                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteGroup(group)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLeaveGroup(group);
+                          }}
                           disabled={deletingGroupId === group.id}
-                          className="block w-full px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {deletingGroupId === group.id ? 'Deleting...' : 'Delete'}
+                          Exit
                         </button>
                       </div>
                     ) : null}
@@ -300,7 +358,7 @@ export default function MyGroups() {
 
                   {/* Group Icon */}
                   <div className="flex items-start gap-4 mb-4">
-                    <div 
+                    <div
                       className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
                       style={{ backgroundColor: getGroupColor(index) }}
                     >

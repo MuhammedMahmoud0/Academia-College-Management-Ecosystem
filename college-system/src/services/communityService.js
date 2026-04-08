@@ -123,6 +123,20 @@ export const getMyGroups = async () => {
 };
 
 /**
+ * Get posts for a specific community group
+ * @param {number|string} groupId - Group ID
+ * @param {number} page - Page number for pagination (default: 1)
+ * @param {number} limit - Number of posts per page (default: 10)
+ * @returns {Promise} Promise with group posts data
+ */
+export const getGroupPosts = async (groupId, page = 1, limit = 10) => {
+  const response = await api.get(`/community/groups/${groupId}/posts`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+/**
  * Create a new community group
  * @param {Object} groupData - Group payload
  * @param {string} groupData.name - Group name
@@ -144,6 +158,7 @@ export const joinCommunityGroup = async (groupId) => {
   const response = await api.post(`/community/groups/${groupId}/join`);
   return response.data;
 };
+
 
 /**
  * Update an existing community group
@@ -190,6 +205,66 @@ export const addComment = async (postId, content) => {
   return response.data;
 };
 
+/**
+ * Create a new community post
+ * @param {Object} postData - Post payload
+ * @param {string} postData.content - Post content
+ * @param {string} [postData.image_url] - Optional post image URL
+ * @param {number|string} [postData.group_id] - Optional group ID
+ * @returns {Promise} Promise with created post data
+ */
+export const createCommunityPost = async (postData) => {
+  const response = await api.post('/community/posts', postData);
+  return response.data;
+};
+
+/**
+ * Get all posts by a specific user
+ * @param {string} userId - User ID whose posts to retrieve
+ * @param {number} page - Page number for pagination (default: 1)
+ * @param {number} limit - Number of posts per page (default: 10)
+ * @returns {Promise} Promise with user posts data
+ */
+export const getUserPosts = async (userId, page = 1, limit = 10) => {
+  const response = await api.get(`/community/posts/user/${userId}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+/**
+ * Get all comments for a post
+ * @param {number} postId - The ID of the post
+ * @returns {Promise} Promise with comments data { post_id, comments, total }
+ */
+export const getPostComments = async (postId) => {
+  const response = await api.get(`/community/posts/${postId}/comments`);
+  return response.data;
+};
+
+/**
+ * Update an existing community post
+ * @param {number|string} postId - Post ID
+ * @param {Object} postData - Post payload
+ * @param {string} [postData.content] - Updated post content
+ * @param {string} [postData.image_url] - Updated image URL
+ * @returns {Promise} Promise with updated post data
+ */
+export const updatePost = async (postId, postData) => {
+  const response = await api.patch(`/community/posts/${postId}`, postData);
+  return response.data;
+};
+
+/**
+ * Delete a community post
+ * @param {number|string} postId - Post ID
+ * @returns {Promise} Promise with delete result
+ */
+export const deletePost = async (postId) => {
+  const response = await api.delete(`/community/posts/${postId}`);
+  return response.data;
+};
+
 export default {
   getCommunityFeed,
   getSuggestedGroups,
@@ -198,10 +273,16 @@ export default {
   updateCommunityEvent,
   deleteCommunityEvent,
   getMyGroups,
+  getGroupPosts,
   createGroup,
   joinCommunityGroup,
   updateGroup,
   deleteGroup,
   likePost,
-  addComment
+  addComment,
+  createCommunityPost,
+  getUserPosts,
+  getPostComments,
+  updatePost,
+  deletePost
 };
