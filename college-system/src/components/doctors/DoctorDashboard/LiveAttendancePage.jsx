@@ -266,6 +266,11 @@ export default function LiveAttendancePage() {
             <div className="mb-6">
                 <Link
                     to={`/dashboard/doctor/course/${courseId}`}
+                    state={{ 
+                        courseCode: location.state?.courseCode || courseId, 
+                        courseName, 
+                        lectureId: location.state?.lectureId 
+                    }}
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 w-fit"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

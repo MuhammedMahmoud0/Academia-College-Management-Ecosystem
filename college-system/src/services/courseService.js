@@ -47,3 +47,11 @@ export const deleteCourse = async (code) => {
   });
   return response.data;
 };
+
+// GET /courses/student — Get student's enrolled courses and grades
+export const getStudentCourses = async () => {
+  const response = await api.get('/courses/student', {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
