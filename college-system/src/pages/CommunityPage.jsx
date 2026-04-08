@@ -3,16 +3,17 @@ import Navigation from '../components/student/Community Page/Navigation';
 import PostCard from '../components/student/Community Page/PostCard';
 import UpcomingEvents from '../components/student/Community Page/UpcomingEvents';
 import Suggested from '../components/student/Community Page/Suggested';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ImageIcon from '@mui/icons-material/Image';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
-import { getCommunityFeed } from '../services/communityService';
+import { createCommunityPost, getCommunityFeed, getMyGroups } from '../services/communityService';
 import { getStudentProfile } from '../services/infoService';
 import { useAuth } from '../hooks/useAuth';
 
 export default function CommunityPage() {
   const { isAuthenticated, user } = useAuth();
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -22,14 +23,38 @@ export default function CommunityPage() {
   const [hasMore, setHasMore] = useState(true);
   const [newPostContent, setNewPostContent] = useState('');
   const [studentProfile, setStudentProfile] = useState(null);
+  const [isPosting, setIsPosting] = useState(false);
+  const [createPostError, setCreatePostError] = useState('');
+  const [myGroups, setMyGroups] = useState([]);
+  const [selectedGroupId, setSelectedGroupId] = useState('');
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+  const imageFileInputRef = useRef(null);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchPosts();
       fetchStudentProfile();
+      fetchMyGroups();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
+
+  const fetchMyGroups = async () => {
+    try {
+      const data = await getMyGroups();
+      const groups = data?.groups || [];
+      setMyGroups(groups);
+
+      if (groups.length > 0) {
+        setSelectedGroupId(String(groups[0].id));
+      }
+    } catch (err) {
+      console.error('Error fetching my groups:', err);
+      setMyGroups([]);
+      setSelectedGroupId('');
+    }
+  };
 
   const fetchStudentProfile = async () => {
     try {
@@ -48,35 +73,7 @@ export default function CommunityPage() {
       const data = await getCommunityFeed(pageNum, 10);
       
       // Transform API data to match component structure
-      const transformedPosts = data.posts.map(post => {
-        const authorName = post.users?.full_name ?? post.author_name ?? 'Unknown';
-        const authorAvatar = post.users?.avatar_url ?? post.author_avatar ?? null;
-        const isValidAvatarUrl = authorAvatar && (authorAvatar.startsWith('http://') || authorAvatar.startsWith('https://'));
-
-        return {
-          id: post.id,
-          author: authorName,
-          author_avatar: isValidAvatarUrl ? authorAvatar : null,
-          avatar: getInitials(authorName),
-          time: formatTime(post.created_at),
-          content: post.content,
-          likes: post._count?.post_likes ?? post.likes_count ?? 0,
-          comments: post._count?.post_comments ?? post.comments_count ?? 0,
-          isPinned: post.is_pinned,
-          image: post.image_url,
-          imageUrl: post.image_url,
-          bgColor: getRandomColor(),
-          groupName: post.community_groups?.name ?? post.group_name ?? null,
-          isLikedByMe: post.is_liked_by_me ?? false,
-          recentComments: (post.recent_comments ?? []).map(c => ({
-            id: c.id,
-            content: c.content,
-            created_at: c.created_at,
-            author_name: c.author_name ?? 'Unknown',
-            author_avatar: c.author_avatar ?? null,
-          }))
-        };
-      });
+      const transformedPosts = (data.posts || []).map(transformPost);
 
       if (pageNum === 1) {
         setPosts(transformedPosts);
@@ -108,6 +105,148 @@ export default function CommunityPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const transformPost = (post) => {
+    const authorName = post?.users?.full_name ?? post?.author_name ?? user?.name ?? 'Unknown';
+    const authorAvatar = post?.users?.avatar_url ?? post?.author_avatar ?? null;
+    const isValidAvatarUrl = authorAvatar && (authorAvatar.startsWith('http://') || authorAvatar.startsWith('https://'));
+
+    return {
+      id: post?.id ?? `tmp-${Date.now()}`,
+      author: authorName,
+      author_id: post?.author_id ?? post?.users?.id ?? null,
+      author_avatar: isValidAvatarUrl ? authorAvatar : null,
+      avatar: getInitials(authorName),
+      time: formatTime(post?.created_at ?? new Date().toISOString()),
+      content: post?.content ?? '',
+      likes: post?._count?.post_likes ?? post?.likes_count ?? 0,
+      comments: post?._count?.post_comments ?? post?.comments_count ?? 0,
+      isPinned: Boolean(post?.is_pinned),
+      image: post?.image_url ?? null,
+      imageUrl: post?.image_url ?? null,
+      bgColor: getRandomColor(),
+      groupName: post?.community_groups?.name ?? post?.group_name ?? null,
+      groupId: post?.group_id ?? post?.community_groups?.id ?? null,
+      isLikedByMe: post?.is_liked_by_me ?? false,
+      recentComments: (post?.recent_comments ?? []).map((c) => ({
+        id: c.id,
+        content: c.content,
+        created_at: c.created_at,
+        author_name: c.author_name ?? 'Unknown',
+        author_avatar: c.author_avatar ?? null,
+      }))
+    };
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const MAX_SIZE = 800;
+
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.7 quality
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error('Failed to load image for compression.'));
+        img.src = event.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to read image file.'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleSelectImageFile = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type?.startsWith('image/')) {
+      setCreatePostError('Please choose an image file.');
+      return;
+    }
+
+    setSelectedImageFile(file);
+    setImagePreviewUrl(URL.createObjectURL(file));
+    if (createPostError) setCreatePostError('');
+  };
+
+  const handleRemoveSelectedImage = () => {
+    setSelectedImageFile(null);
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+      setImagePreviewUrl('');
+    }
+    if (imageFileInputRef.current) {
+      imageFileInputRef.current.value = '';
+    }
+  };
+
+  const handleCreatePost = async () => {
+    const content = newPostContent.trim();
+    if (!content || isPosting) return;
+
+    if (!selectedGroupId) {
+      setCreatePostError('Please select a group before posting.');
+      return;
+    }
+
+    try {
+      setIsPosting(true);
+      setCreatePostError('');
+
+      let encodedImage = null;
+      if (selectedImageFile) {
+        encodedImage = await compressImage(selectedImageFile);
+      }
+
+      const response = await createCommunityPost({
+        content,
+        group_id: Number(selectedGroupId),
+        ...(encodedImage ? { image_url: encodedImage } : {}),
+      });
+      const createdPost = response?.post ?? response?.data?.post ?? response;
+
+      if (createdPost?.id) {
+        setPosts((prev) => [transformPost(createdPost), ...prev]);
+      } else {
+        await fetchPosts(1);
+      }
+
+      setNewPostContent('');
+      handleRemoveSelectedImage();
+    } catch (err) {
+      console.error('Error creating post:', err);
+      const apiMessage =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.response?.data?.details;
+      setCreatePostError(apiMessage || 'Failed to create post. Please try again.');
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -267,12 +406,17 @@ export default function CommunityPage() {
 
         {/* Main Content */}
         <div className="flex flex-col gap-4 lg:gap-5">
-          {/* Create Post */}
+          {/* Create Post - Admin/Super Admin only */}
+          {isAdmin && (
           <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm">
             <div className="flex gap-3 items-start">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-400 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden">
-                {studentProfile?.avatar_url ? (
-                  <img src={studentProfile.avatar_url} alt={studentProfile.full_name} className="w-full h-full object-cover" />
+                {(studentProfile?.avatar_url || user?.avatar_url || user?.avatar) ? (
+                  <img
+                    src={studentProfile?.avatar_url || user?.avatar_url || user?.avatar}
+                    alt={studentProfile?.full_name || user?.name || 'User'}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   getInitials(studentProfile?.full_name || user?.name || 'User')
                 )}
@@ -289,10 +433,57 @@ export default function CommunityPage() {
                 }}
               />
             </div>
+
+            <div className="mt-3 flex flex-col gap-1 sm:max-w-xs">
+              <label htmlFor="post-group" className="text-xs font-medium text-gray-600">Post to group</label>
+              <select
+                id="post-group"
+                value={selectedGroupId}
+                onChange={(e) => {
+                  setSelectedGroupId(e.target.value);
+                  if (createPostError) setCreatePostError('');
+                }}
+                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {myGroups.length === 0 ? (
+                  <option value="">No groups available</option>
+                ) : (
+                  myGroups.map((group) => (
+                    <option key={group.id} value={String(group.id)}>{group.name}</option>
+                  ))
+                )}
+              </select>
+            </div>
+
+            <input
+              ref={imageFileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleSelectImageFile}
+            />
+
+            {imagePreviewUrl ? (
+              <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs text-gray-600">{selectedImageFile?.name || 'Selected image'}</span>
+                  <button
+                    onClick={handleRemoveSelectedImage}
+                    className="text-xs text-red-600 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <img src={imagePreviewUrl} alt="Selected preview" className="max-h-48 rounded-md object-contain" />
+              </div>
+            ) : null}
             
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 pt-4 border-t border-gray-200 sm:justify-between sm:items-center">
               <div className="flex gap-4 sm:gap-5 justify-center sm:justify-start">
-                <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
+                <button
+                  onClick={() => imageFileInputRef.current?.click()}
+                  className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors"
+                >
                   <span><ImageIcon /></span>
                 </button>
                 <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
@@ -303,13 +494,18 @@ export default function CommunityPage() {
                 </button>
               </div>
               <button
-                disabled={!newPostContent.trim()}
+                onClick={handleCreatePost}
+                disabled={!newPostContent.trim() || isPosting || !selectedGroupId}
                 className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors w-full sm:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Post
+                {isPosting ? 'Posting...' : 'Post'}
               </button>
             </div>
+            {createPostError ? (
+              <p className="mt-3 text-sm text-red-600">{createPostError}</p>
+            ) : null}
           </div>
+          )}
 
           {/* Posts */}
           {loading && posts.length === 0 ? (

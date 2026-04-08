@@ -4,14 +4,25 @@ import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Menu, MenuItem, IconButton } from '@mui/material';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
 import EventModal from './EventModal';
 import { deleteCommunityEvent, getCommunityEvents, updateCommunityEvent } from '../../../services/communityService';
+import { useAuth } from '../../../hooks/useAuth';
 import Eventimage from '../../../assets/events/tech event.jpg';
 
 export default function Events() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
@@ -22,6 +33,20 @@ export default function Events() {
   const [isSavingEvent, setIsSavingEvent] = useState(false);
   const [eventModalError, setEventModalError] = useState('');
   const [deletingEventId, setDeletingEventId] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuEventId, setMenuEventId] = useState(null);
+
+  const handleMenuClick = (event, id) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuEventId(id);
+  };
+
+  const handleMenuClose = (event) => {
+    if (event && event.stopPropagation) event.stopPropagation();
+    setAnchorEl(null);
+    setMenuEventId(null);
+  };
 
   useEffect(() => {
     fetchEvents();
@@ -158,11 +183,31 @@ export default function Events() {
     const date = new Date(dateStr);
     const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
     const day = date.getDate();
-    return { month, day };
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+    const year = date.getFullYear();
+    return { month, day, weekday, year };
+  };
+
+  const formatFullDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const isEventPast = (dateStr) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const eventDate = new Date(dateStr);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate < now;
   };
 
   const tabs = [
-    { id: 'upcoming', label: 'Upcoming' },
+    { id: 'upcoming', label: 'Upcoming', count: getFilteredEvents.length },
     { id: 'past', label: 'Past' }
   ];
 
@@ -282,28 +327,53 @@ export default function Events() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredEvents.map((event) => {
-                const { month, day } = formatDate(event.event_date || event.date);
+                const { month, day, weekday, year } = formatDate(event.event_date || event.date);
+                const isPast = isEventPast(event.event_date || event.date);
                 return (
-                  <div key={event.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+                  <div
+                    key={event.id}
+                    className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group ${
+                      isPast ? 'opacity-75' : ''
+                    }`}
+                  >
                     {/* Event Image */}
-                    <div className="relative h-48">
+                    <div className="relative h-48 overflow-hidden">
                       <img 
                         src={event.img_url || event.image || Eventimage} 
                         alt={event.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+
                       {/* Date Badge */}
-                      <div className="absolute top-4 left-4 bg-white rounded-lg p-2 text-center shadow-md">
-                        <div className="text-xs font-semibold text-red-500">{month}</div>
-                        <div className="text-xl font-bold text-gray-900">{day}</div>
+                      <div className="absolute top-4 left-4 bg-white rounded-xl p-2.5 text-center shadow-lg min-w-[60px]">
+                        <div className="text-[10px] font-bold text-red-500 uppercase tracking-wider">{month}</div>
+                        <div className="text-2xl font-extrabold text-gray-900 leading-tight">{day}</div>
                       </div>
-                      {/* Tags */}
+
+                      {/* Status Badge */}
+                      {isPast ? (
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-gray-800/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
+                            Ended
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-emerald-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                            Upcoming
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Tags over image */}
                       {event.tags && event.tags.length > 0 && (
-                        <div className="absolute top-4 right-4 flex gap-2">
+                        <div className="absolute bottom-3 left-4 flex gap-2 flex-wrap">
                           {event.tags.map((tag, index) => (
                             <span
                               key={index}
-                              className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                              className="bg-white/90 backdrop-blur-sm text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
                             >
                               {tag}
                             </span>
@@ -313,36 +383,105 @@ export default function Events() {
                     </div>
 
                     {/* Event Details */}
-                    <div className="p-5">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <div className="p-5 relative">
+                      {/* Admin Actions - More Menu */}
+                      {isAdmin && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <IconButton
+                            onClick={(e) => handleMenuClick(e, event.id)}
+                            size="small"
+                            className="text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100"
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && menuEventId === event.id}
+                            onClose={handleMenuClose}
+                            onClick={(e) => e.stopPropagation()}
+                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                            PaperProps={{
+                              elevation: 2,
+                              sx: { mt: 1, minWidth: 140, borderRadius: 2 }
+                            }}
+                          >
+                            <MenuItem onClick={(e) => {
+                                handleMenuClose(e);
+                                handleOpenEditEventModal(event);
+                            }} sx={{ fontSize: '14px', py: 1.5 }}>
+                              <EditIcon sx={{ mr: 1.5, fontSize: 18, color: 'text.secondary' }} />
+                              Edit
+                            </MenuItem>
+                            <MenuItem onClick={(e) => {
+                                handleMenuClose(e);
+                                handleDeleteEvent(event);
+                            }} sx={{ color: 'error.main', fontSize: '14px', py: 1.5 }}>
+                              <DeleteOutlineIcon sx={{ mr: 1.5, fontSize: 18 }} />
+                              {deletingEventId === event.id ? 'Deleting...' : 'Delete'}
+                            </MenuItem>
+                          </Menu>
+                        </div>
+                      )}
+
+                      {/* Title */}
+                      <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 pr-10 group-hover:text-indigo-600 transition-colors">
                         {event.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                        <CalendarTodayIcon fontSize="small" />
-                        <span>{event.location}</span>
+
+                      {/* Description */}
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                        {event.description || 'No description available for this event.'}
+                      </p>
+
+                      {/* Details Grid */}
+                      <div className="space-y-2.5 mb-4">
+                        {/* Date & Weekday */}
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50">
+                            <CalendarTodayIcon sx={{ fontSize: 16 }} className="text-indigo-500" />
+                          </div>
+                          <span className="font-medium">{formatFullDate(event.event_date || event.date)}</span>
+                        </div>
+
+                        {/* Time */}
+                        {event.time && (
+                          <div className="flex items-center gap-3 text-sm text-gray-600">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50">
+                              <AccessTimeIcon sx={{ fontSize: 16 }} className="text-amber-500" />
+                            </div>
+                            <span>{event.time}</span>
+                          </div>
+                        )}
+
+                        {/* Location */}
+                        {event.location && (
+                          <div className="flex items-center gap-3 text-sm text-gray-600">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50">
+                              <LocationOnIcon sx={{ fontSize: 16 }} className="text-emerald-500" />
+                            </div>
+                            <span>{event.location}</span>
+                          </div>
+                        )}
+
+
                       </div>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenEditEventModal(event);
-                        }}
-                        className="mb-3 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-indigo-500 hover:text-indigo-600"
-                      >
-                        Edit Event
-                      </button>
+                      {/* Created by */}
+                      {event.created_by_name && (
+                        <div className="flex items-center gap-2 mb-4 pt-3 border-t border-gray-100">
+                          <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <span className="text-[10px] font-bold text-indigo-600">
+                              {event.created_by_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            Created by <span className="font-medium text-gray-700">{event.created_by_name}</span>
+                          </span>
+                        </div>
+                      )}
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteEvent(event);
-                        }}
-                        disabled={deletingEventId === event.id}
-                        className="w-full rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {deletingEventId === event.id ? 'Deleting...' : 'Delete Event'}
-                      </button>
-                      
+
                     </div>
                   </div>
                 );
@@ -351,9 +490,19 @@ export default function Events() {
           )}
 
           {/* Empty State */}
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No events found</p>
+          {!loading && filteredEvents.length === 0 && (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-indigo-50 flex items-center justify-center">
+                <CalendarTodayIcon className="text-indigo-400" sx={{ fontSize: 28 }} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">No events found</h3>
+              <p className="text-gray-500 text-sm">
+                {searchQuery
+                  ? `No events matching "${searchQuery}"`
+                  : activeTab === 'upcoming'
+                  ? 'No upcoming events at the moment.'
+                  : 'No past events to display.'}
+              </p>
             </div>
           )}
         </div>

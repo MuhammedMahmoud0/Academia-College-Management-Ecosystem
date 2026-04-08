@@ -18,6 +18,8 @@ import StudentRegistrationPage from './pages/StudentRegistrationPage';
 import LeaderBoardPage from './pages/LeaderBoardPage';
 import CommunityPage from './pages/CommunityPage';
 import MyGroupsPage from './pages/MyGroupsPage';
+import GroupPostsPage from './pages/GroupPostsPage';
+import UserPostsPage from './pages/UserPostsPage';
 import EventsPage from './pages/EventsPage';
 import StudentAnalyticsPage from './pages/StudentAnalyticsPage';
 import StudentMatrialsPage from './pages/StudentMatrialsPage';
@@ -81,7 +83,9 @@ function App() {
           <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="leaderboard" element={<LeaderBoardPage />} />
           <Route path="community" element={<CommunityPage />} />
+          <Route path="community/user/:userId/posts" element={<UserPostsPage />} />
           <Route path="my-groups" element={<MyGroupsPage />} />
+          <Route path="my-groups/:groupId/posts" element={<GroupPostsPage />} />
           <Route path="events" element={<EventsPage />} />
           <Route path="payment" element={<StudentsPaymentPage />} />
           <Route path="id-card" element={<IDPage />} />
