@@ -4,7 +4,7 @@ import NeedsAttentionCard from '../components/doctors/DoctorDashboard/NeedsAtten
 import CourseCard from '../components/doctors/DoctorDashboard/CourseCard';
 import WeekScheduleCard from '../components/doctors/DoctorDashboard/WeekScheduleCard';
 import { getTeacherSchedule } from '../services/scheduleService';
-import { getDoctorAlerts, getDoctorCourses } from '../services/doctorDashboard';
+import { getDoctorAlerts, getTAAlerts, getDoctorCourses } from '../services/doctorDashboard';
 
 export default function DoctorDashboard() {
     const { user } = useContext(AuthContext);
@@ -29,7 +29,7 @@ export default function DoctorDashboard() {
             try {
                 const [scheduleData, alertsData, coursesData] = await Promise.allSettled([
                     getTeacherSchedule(),
-                    getDoctorAlerts(),
+                    isTA ? getTAAlerts() : getDoctorAlerts(),
                     isTA ? Promise.resolve({ courses: [] }) : getDoctorCourses()
                 ]);
 

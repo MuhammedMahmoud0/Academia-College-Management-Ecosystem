@@ -1,13 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
+import { getStudentsAttendance } from '../../../services/adminAttendanceDashboard';
+import { getAllDepartments } from '../../../services/departments';
+import { getAllCourses } from '../../../services/courseService';
+import SearchableSelect from '../../common/SearchableSelect';
 
-const StudentsAttendanceTable = ({ students }) => {
+const StudentsAttendanceTable = ({ departments, courses, loadingOptions }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
-  const [selectedCourse, setSelectedCourse] = useState('All Courses');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('');
 
-  const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [studentsData, setStudentsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Debounce search term
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      setLoading(true);
+      try {
+        const params = {};
+        if (selectedDepartment) params.department_id = selectedDepartment;
+        if (selectedCourse) params.course_code = selectedCourse;
+        if (debouncedSearch) params.search = debouncedSearch;
+
+        const data = await getStudentsAttendance(params);
+        
+
+        let studentsArray = null;
+        if (data && Array.isArray(data.students)) {
+           studentsArray = data.students;
+        } else if (data && data.data && Array.isArray(data.data.students)) {
+           studentsArray = data.data.students;
+        } else if (Array.isArray(data)) {
+           studentsArray = data;
+        }
+
+        if (studentsArray) {
+           const formatted = studentsArray.map(item => ({
+             id: item.student_user_id || item.id || Math.random().toString(),
+             name: item.full_name || item.name || 'Unknown',
+             major: item.department_name || item.major || 'None',
+             attendance: item.avg_attendance !== undefined ? item.avg_attendance : (item.attendance || 0)
+           }));
+           setStudentsData(formatted);
+        } else {
+           console.warn("Could not find students array in response:", data);
+           setStudentsData([]);
+        }
+      } catch (err) {
+        console.error('Error fetching students attendance data:', err);
+        setStudentsData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [selectedDepartment, selectedCourse, debouncedSearch]);
 
   const getAttendanceColor = (rate) => {
     const numRate = parseInt(rate);
@@ -18,11 +78,31 @@ const StudentsAttendanceTable = ({ students }) => {
   };
 
   const handleExportReport = () => {
-    console.log('Exporting report...');
+    if (!studentsData || studentsData.length === 0) return;
+
+    // Prepare data for Excel
+    const excelData = studentsData.map(student => ({
+      'Student Name': student.name,
+      'Department': student.major,
+      'Avg. Attendance (%)': student.attendance
+    }));
+
+    // Create a new workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    
+    // Adjust column widths purely for better readability
+    const colWidths = [{ wpx: 200 }, { wpx: 150 }, { wpx: 120 }];
+    worksheet['!cols'] = colWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students_Attendance');
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, 'Students_Attendance_Report.xlsx');
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden min-h-[300px] relative">
       {/* Search and Filters Bar */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-wrap gap-3 items-center justify-between">
@@ -45,7 +125,7 @@ const StudentsAttendanceTable = ({ students }) => {
               </div>
               <input
                 type="text"
-                placeholder="Search for a student..."
+                placeholder="Search for a student by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
@@ -55,28 +135,21 @@ const StudentsAttendanceTable = ({ students }) => {
 
           {/* Filters and Export */}
           <div className="flex flex-wrap gap-3 items-center">
-            <select
+            <SearchableSelect 
+              options={departments}
               value={selectedDepartment}
-              onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-            >
-              <option value="All Departments">Filter by Department</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-              <option value="Electrical Engineering">Electrical Engineering</option>
-              <option value="Civil Engineering">Civil Engineering</option>
-            </select>
+              onChange={setSelectedDepartment}
+              placeholder="All Departments"
+              loading={loadingOptions}
+            />
 
-            <select
+            <SearchableSelect 
+              options={courses}
               value={selectedCourse}
-              onChange={(e) => setSelectedCourse(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-            >
-              <option value="All Courses">Filter by Course</option>
-              <option value="CS421">CS421: Computer Design</option>
-              <option value="CS301">CS301: Data Structures</option>
-              <option value="ME205">ME205: Thermodynamics</option>
-            </select>
+              onChange={setSelectedCourse}
+              placeholder="All Courses"
+              loading={loadingOptions}
+            />
 
             <button
               onClick={handleExportReport}
@@ -102,6 +175,12 @@ const StudentsAttendanceTable = ({ students }) => {
         </div>
       </div>
 
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center z-10">
+           <span className="text-indigo-600 text-sm font-semibold">Loading students...</span>
+        </div>
+      )}
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -111,7 +190,7 @@ const StudentsAttendanceTable = ({ students }) => {
                 Student Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Major
+                Department
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Avg. Attendance
@@ -119,8 +198,8 @@ const StudentsAttendanceTable = ({ students }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredStudents.length > 0 ? (
-              filteredStudents.map((student) => (
+            {studentsData.length > 0 ? (
+              studentsData.map((student) => (
                 <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -128,21 +207,23 @@ const StudentsAttendanceTable = ({ students }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">{student.major}</div>
+                    <div className="text-sm text-gray-600">{student.major || 'N/A'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className={`text-sm font-bold ${getAttendanceColor(student.attendance)}`}>
-                      {student.attendance}
+                      {student.attendance}%
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
-                  No students found
-                </td>
-              </tr>
+              !loading && (
+                <tr>
+                  <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                    No students match the criteria
+                  </td>
+                </tr>
+              )
             )}
           </tbody>
         </table>

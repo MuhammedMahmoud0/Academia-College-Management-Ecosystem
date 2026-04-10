@@ -37,6 +37,9 @@ export default function GradesTable({ courses = [] }) {
             <th className="py-3 px-5 font-medium text-gray-700 text-sm">Instructor</th>
             <th className="py-3 px-5 font-medium text-gray-700 text-sm">Credits</th>
             <th className="py-3 px-5 font-medium text-gray-700 text-sm">Semester</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Midterm</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Work</th>
+            <th className="py-3 px-5 font-medium text-gray-700 text-sm">Final</th>
             <th className="py-3 px-5 font-medium text-gray-700 text-sm">Grade</th>
           </tr>
         </thead>
@@ -65,6 +68,15 @@ export default function GradesTable({ courses = [] }) {
               </td>
               <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-600">
                 {course.semester} {course.year}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-700 font-medium">
+                {course.midterm_score ?? '-'}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-700 font-medium">
+                {course.work_score ?? '-'}
+              </td>
+              <td className="py-4 px-5 whitespace-nowrap text-sm text-gray-700 font-medium">
+                {course.final_score ?? '-'}
               </td>
               <td className="py-4 px-5 whitespace-nowrap">
                 <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-semibold rounded-full ${getGradeColor(course.grade)}`}>

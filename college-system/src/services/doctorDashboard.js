@@ -28,6 +28,20 @@ export const getDoctorAlerts = async () => {
 };
 
 /**
+ * Get teaching assistant alerts (active tasks, expired tasks, ungraded submissions, low score counts)
+ * @returns {Promise} Object containing alerts data
+ */
+export const getTAAlerts = async () => {
+  const token = getAuthToken();
+  const response = await api.get('/teaching-assistant/alerts', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+/**
  * Get assigned courses & enrollment stats for the doctor
  * @returns {Promise} Object containing courses data
  */

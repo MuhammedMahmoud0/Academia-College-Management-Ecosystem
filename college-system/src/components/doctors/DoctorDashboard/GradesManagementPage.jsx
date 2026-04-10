@@ -163,9 +163,9 @@ export default function GradesManagementPage() {
         
         // Prepare payload - convert empty strings to null or ignore them
         const payload = {};
-        if (edits.mid_score !== '') payload.mid_score = Number(edits.mid_score);
+        if (!isTA && edits.mid_score !== '') payload.mid_score = Number(edits.mid_score);
         if (edits.work_score !== '') payload.work_score = Number(edits.work_score);
-        if (edits.final_score !== '') payload.final_score = Number(edits.final_score);
+        if (!isTA && edits.final_score !== '') payload.final_score = Number(edits.final_score);
 
         setEditMap({ ...editMap, [studentId]: { ...edits, saving: true } });
 
@@ -458,7 +458,7 @@ export default function GradesManagementPage() {
                                             
                                             {/* Midterm Cell */}
                                             <td className="px-6 py-4 text-center">
-                                                {isEditing ? (
+                                                {isEditing && !isTA ? (
                                                     <input 
                                                         type="number"
                                                         min="0"
@@ -494,7 +494,7 @@ export default function GradesManagementPage() {
 
                                             {/* Final Exam Cell */}
                                             <td className="px-6 py-4 text-center">
-                                                {isEditing ? (
+                                                {isEditing && !isTA ? (
                                                     <input 
                                                         type="number"
                                                         min="0"
