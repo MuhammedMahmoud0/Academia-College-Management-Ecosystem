@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 export default function Sidebar({ isOpen, onClose }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
     const menuItems = [
         {
@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     )
                 },
                 { 
-                    name: 'Doctor Dashboard', 
+                    name: user?.role === 'teaching_assistant' ? 'TA Dashboard' : 'Doctor Dashboard', 
                     path: '/dashboard/doctor', 
                     icon: (
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

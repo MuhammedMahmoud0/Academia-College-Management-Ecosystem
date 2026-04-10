@@ -4,7 +4,9 @@ import {
   ArrowLeft, AlertTriangle, AlertCircle, Info,
   ChevronRight, Loader, ShieldAlert
 } from 'lucide-react';
-import { getDoctorAlerts } from '../services/doctorDashboard';
+import { getDoctorAlerts, getTAAlerts } from '../services/doctorDashboard';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 const ALERT_CONFIG = {
   ungraded_submissions: {
@@ -50,14 +52,17 @@ const POLL_INTERVAL = 30_000; // 30 seconds
 
 export default function DoctorAlertsPage() {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchAlerts = useCallback(async (isInitial = false) => {
+    if (!user) return; // Wait for user context
     if (isInitial) setLoading(true);
     try {
-      const res = await getDoctorAlerts();
+      const isTA = user.role === 'teaching_assistant';
+      const res = await (isTA ? getTAAlerts() : getDoctorAlerts());
       setAlerts(res.alerts || []);
       setLastUpdated(new Date());
     } catch {
@@ -69,10 +74,11 @@ export default function DoctorAlertsPage() {
 
   // Initial fetch + auto-poll every 30 s
   useEffect(() => {
+    if (!user) return;
     fetchAlerts(true);
     const timer = setInterval(() => fetchAlerts(false), POLL_INTERVAL);
     return () => clearInterval(timer);
-  }, [fetchAlerts]);
+  }, [fetchAlerts, user]);
 
   return (
     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 min-h-screen rounded-xl">

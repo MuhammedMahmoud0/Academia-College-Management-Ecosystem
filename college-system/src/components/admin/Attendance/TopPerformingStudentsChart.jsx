@@ -1,60 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { getTopPerformingStudents } from '../../../services/adminAttendanceDashboard';
+import { getAllDepartments } from '../../../services/departments';
+import { getAllCourses } from '../../../services/courseService';
+import SearchableSelect from '../../common/SearchableSelect';
 
-const TopPerformingStudentsChart = ({ data }) => {
-  const [selectedDepartment, setSelectedDepartment] = useState('Overall');
-  const [selectedSemester, setSelectedSemester] = useState('Overall');
-  const [selectedCourse, setSelectedCourse] = useState('Overall');
+const TopPerformingStudentsChart = ({ departments, courses, loadingOptions }) => {
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('');
 
-  const chartData = data || [
-    { name: 'Sarah J.', rate: 98 },
-    { name: 'David C.', rate: 95 },
-    { name: 'Emily R.', rate: 94 },
-    { name: 'James M.', rate: 93 },
-    { name: 'Lisa K.', rate: 92 }
-  ];
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
+
+  useEffect(() => {
+    const fetchTopStudents = async () => {
+      setLoading(true);
+      try {
+        const params = { limit: 5 };
+        if (selectedDepartment) params.department_id = selectedDepartment;
+        if (selectedSemester) params.semester = selectedSemester;
+        if (selectedCourse) params.course_code = selectedCourse;
+
+        const data = await getTopPerformingStudents(params);
+        
+        if (data && data.students) {
+           const formatted = data.students.map(item => ({
+             name: item.full_name,
+             rate: item.attendance_percentage
+           }));
+           setChartData(formatted);
+        } else {
+           setChartData([]);
+        }
+      } catch (err) {
+        console.error('Error fetching top performing students data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopStudents();
+  }, [selectedDepartment, selectedSemester, selectedCourse]);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Top Performing Students</h3>
-      <div className="flex gap-3 items-center mb-4">
+      <h3 className="text-lg font-semibold text-gray-800 mb-3">Top Performing Students {loading && <span className="text-sm font-normal text-gray-400">(Loading...)</span>}</h3>
+      <div className="flex flex-wrap gap-3 items-center mb-4">
         <div className="flex items-center gap-1">
           <label className="text-xs text-gray-600 font-medium">Dept:</label>
-          <select
+          <SearchableSelect 
+            options={departments}
             value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="px-3 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            <option value="Overall">Overall</option>
-            <option value="Computer Science">CS</option>
-            <option value="Mechanical Engineering">ME</option>
-            <option value="Electrical Engineering">EE</option>
-            <option value="Civil Engineering">CE</option>
-          </select>
+            onChange={setSelectedDepartment}
+            placeholder="Select Department"
+            loading={loadingOptions}
+          />
         </div>
         <div className="flex items-center gap-1">
           <label className="text-xs text-gray-600 font-medium">Semester:</label>
           <select
             value={selectedSemester}
             onChange={(e) => setSelectedSemester(e.target.value)}
-            className="px-3 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="px-3 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white"
           >
-            <option value="Overall">Overall</option>
-            <option value="Fall 2025">Fall 2025</option>
-            <option value="Spring 2026">Spring 2026</option>
+            <option value="">Overall</option>
+            <option value="Fall">Fall</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+            <option value="Winter">Winter</option>
           </select>
         </div>
         <div className="flex items-center gap-1">
           <label className="text-xs text-gray-600 font-medium">Course:</label>
-          <select
+          <SearchableSelect 
+            options={courses}
             value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
-            className="px-3 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            <option value="Overall">Overall</option>
-            <option value="CS421">CS421</option>
-            <option value="CS301">CS301</option>
-          </select>
+            onChange={setSelectedCourse}
+            placeholder="Select Course"
+            loading={loadingOptions}
+          />
         </div>
       </div>
       <ResponsiveContainer width="100%" height={300}>

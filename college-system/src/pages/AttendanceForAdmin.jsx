@@ -1,4 +1,4 @@
-import {React} from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminAttendanceStatsCard from '../components/admin/Attendance/AdminAttendanceStatsCard';
 import StudentsAttendanceTable from '../components/admin/Attendance/StudentsAttendanceTable';
 import DepartmentComparisonChart from '../components/admin/Attendance/DepartmentComparisonChart';
@@ -6,61 +6,69 @@ import AttendanceTrendLineChart from '../components/admin/Attendance/AttendanceT
 import AttendanceDistributionChart from '../components/admin/Attendance/AttendanceDistributionChart';
 import TopPerformingStudentsChart from '../components/admin/Attendance/TopPerformingStudentsChart';
 
+import { getOverallAttendanceRate, getLowestAttendanceCourses } from '../services/adminAttendanceDashboard';
+import { getAllDepartments } from '../services/departments';
+import { getAllCourses } from '../services/courseService';
+
 const AttendanceForAdmin = () => {
+  const [overallRateData, setOverallRateData] = useState(null);
+  const [lowestCourses, setLowestCourses] = useState([]);
+  const [loadingOverall, setLoadingOverall] = useState(true);
+  const [loadingLowest, setLoadingLowest] = useState(true);
 
-  // Mock data - replace with actual API calls
-  const stats = {
-    overallAttendanceRate: '92%',
-    lowestAttendanceCourses: [
-      { name: 'PHY101: General Physics', rate: 78 },
-      { name: 'MA310: Linear Algebra', rate: 85 }
-    ]
-  };
+  // Global filters for all charts
+  const [departments, setDepartments] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
 
-  const studentsData = [
-    { id: 1, name: 'Sarah Johnson', major: 'Computer Science', attendance: '98%' },
-    { id: 2, name: 'David Chen', major: 'Mechanical Eng.', attendance: '95%' },
-    { id: 3, name: 'Michael Brown', major: 'Computer Science', attendance: '78%' },
-    { id: 4, name: 'Emily Rodriguez', major: 'Electrical Eng.', attendance: '94%' },
-    { id: 5, name: 'James Martinez', major: 'Civil Eng.', attendance: '89%' },
-    { id: 6, name: 'Lisa Kim', major: 'Computer Science', attendance: '92%' }
-  ];
+  useEffect(() => {
+    const fetchGlobalOptions = async () => {
+      try {
+        const [deptRes, courseRes] = await Promise.all([
+          getAllDepartments(),
+          getAllCourses()
+        ]);
+        if (deptRes && deptRes.departments) {
+          setDepartments(deptRes.departments.map(d => ({ value: d.department_id, label: d.name })));
+        }
+        if (courseRes && courseRes.courses) {
+          setCourses(courseRes.courses.map(c => ({ value: c.code, label: `${c.code}: ${c.name}` })));
+        }
+      } catch (e) {
+        console.error("Failed to load filter options", e);
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    fetchGlobalOptions();
+  }, []);
 
-  const departmentData = [
-    { department: 'CS', rate: 92 },
-    { department: 'ME', rate: 88 },
-    { department: 'EE', rate: 85 },
-    { department: 'CE', rate: 90 }
-  ];
+  useEffect(() => {
+    const fetchOverallRate = async () => {
+      try {
+        const data = await getOverallAttendanceRate();
+        setOverallRateData(data);
+      } catch (err) {
+        console.error('Error fetching overall attendance rate:', err);
+      } finally {
+        setLoadingOverall(false);
+      }
+    };
 
-  const trendData = [
-    { month: 'Jan', rate: 88 },
-    { month: 'Feb', rate: 90 },
-    { month: 'Mar', rate: 92 },
-    { month: 'Apr', rate: 89 },
-    { month: 'May', rate: 93 },
-    { month: 'Jun', rate: 91 }
-  ];
+    const fetchLowestCourses = async () => {
+      try {
+        const data = await getLowestAttendanceCourses(5);
+        setLowestCourses(data.courses || []);
+      } catch (err) {
+        console.error('Error fetching lowest courses:', err);
+      } finally {
+        setLoadingLowest(false);
+      }
+    };
 
-  const distributionData = [
-    { name: 'Excellent (90-100%)', value: 45, color: '#10b981' },
-    { name: 'Good (80-89%)', value: 30, color: '#f59e0b' },
-    { name: 'Fair (70-79%)', value: 15, color: '#f97316' },
-    { name: 'Poor (Below 70%)', value: 10, color: '#ef4444' }
-  ];
-
-  const topStudentsData = [
-    { name: 'Sarah J.', rate: 98 },
-    { name: 'David C.', rate: 95 },
-    { name: 'Emily R.', rate: 94 },
-    { name: 'James M.', rate: 93 },
-    { name: 'Lisa K.', rate: 92 }
-  ];
-
-  // const handleExportReport = () => {
-  //   console.log('Exporting attendance report...');
-  //   // Implement export functionality
-  // };
+    fetchOverallRate();
+    fetchLowestCourses();
+  }, []);
 
   return (
      <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
@@ -75,33 +83,36 @@ const AttendanceForAdmin = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <AdminAttendanceStatsCard
             title="Overall Attendance Rate"
-            value={stats.overallAttendanceRate}
+            value={loadingOverall ? '...' : (overallRateData ? `${overallRateData.overall_attendance_rate}%` : 'N/A')}
+            subtitle={overallRateData ? `Total Records: ${overallRateData.total_records} (Present: ${overallRateData.present_count}, Absent: ${overallRateData.absent_count})` : ''}
             valueColor="text-emerald-600"
           />
           <AdminAttendanceStatsCard
             title="Courses with Lowest Attendance"
-            items={stats.lowestAttendanceCourses}
+            items={loadingLowest ? [] : lowestCourses.map(c => ({
+              name: `${c.course_code}: ${c.course_name}`,
+              rate: c.attendance_rate
+            }))}
           />
         </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <AttendanceTrendLineChart data={trendData} />
-          <DepartmentComparisonChart data={departmentData} />
+          <AttendanceTrendLineChart departments={departments} courses={courses} loadingOptions={loadingOptions} />
+          <DepartmentComparisonChart departments={departments} courses={courses} loadingOptions={loadingOptions} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <AttendanceDistributionChart data={distributionData} />
-          <TopPerformingStudentsChart data={topStudentsData} />
+          <AttendanceDistributionChart departments={departments} courses={courses} loadingOptions={loadingOptions} />
+          <TopPerformingStudentsChart departments={departments} courses={courses} loadingOptions={loadingOptions} />
         </div>
 
         {/* Students Table */}
-        <StudentsAttendanceTable 
-          students={studentsData}
-        />
+        <StudentsAttendanceTable departments={departments} courses={courses} loadingOptions={loadingOptions} />
       </div>
    
   );
 };
 
 export default AttendanceForAdmin;
+
