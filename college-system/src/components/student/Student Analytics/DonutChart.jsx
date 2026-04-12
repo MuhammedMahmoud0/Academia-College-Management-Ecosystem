@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell } from 'recharts';
+import React from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
 
 export default function DonutChart({
@@ -8,17 +8,8 @@ export default function DonutChart({
   total = 130,
   title = 'Attendance',
   color = '#4F46E5',
+  isAnimationActive = true,
 } = {}) {
-  const [chartWidth, setChartWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setChartWidth(window.innerWidth);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const data = [
     { name: 'Attended', value: percentage },
     { name: 'Absent', value: 100 - percentage },
@@ -26,63 +17,49 @@ export default function DonutChart({
 
   const COLORS = [color, '#E5E7EB'];
 
-  const getChartDimensions = () => {
-    if (chartWidth < 640) {
-      // Mobile
-      return { size: 220, innerRadius: 60, outerRadius: 85, percentFontSize: '32px', textFontSize: '12px', margin: '10px' };
-    } else if (chartWidth < 1024) {
-      // Tablet
-      return { size: 270, innerRadius: 70, outerRadius: 100, percentFontSize: '40px', textFontSize: '13px', margin: '15px' };
-    } else {
-      // Desktop
-      return { size: 320, innerRadius: 80, outerRadius: 110, percentFontSize: '48px', textFontSize: '14px', margin: '20px' };
-    }
-  };
-
-  const dimensions = getChartDimensions();
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: 'auto', minHeight: '400px', padding: '10px' }}>
-      <h2 style={{ marginBottom: dimensions.margin, color: '#1F2937', fontSize: chartWidth < 640 ? '18px' : '20px', fontWeight: 'bold' }}>
-        {title}
-      </h2>
-      <div style={{ position: 'relative', width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
-        <PieChart width={dimensions.size} height={dimensions.size} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={dimensions.innerRadius}
-            outerRadius={dimensions.outerRadius}
-            paddingAngle={0}
-            dataKey="value"
-            startAngle={90}
-            endAngle={-270}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-        </PieChart>
-        
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ fontSize: dimensions.percentFontSize, fontWeight: 'bold', color: color, marginBottom: '6px', lineHeight: 1 }}>
+    <div className="w-full min-h-[320px] flex flex-col items-center">
+      <h2 className="mb-4 text-lg sm:text-xl font-bold text-slate-900 text-center">{title}</h2>
+
+      <div className="relative w-full h-[280px] flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="62%"
+              outerRadius="84%"
+              paddingAngle={0}
+              dataKey="value"
+              startAngle={90}
+              endAngle={-270}
+              isAnimationActive={isAnimationActive}
+              animationDuration={900}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+          <div className="text-4xl sm:text-5xl font-bold leading-none" style={{ color }}>
             {percentage}%
           </div>
-          <div style={{ fontSize: dimensions.textFontSize, color: '#9CA3AF' }}>
+          <div className="text-xs sm:text-sm text-slate-400 mt-2">
             {attended}/{total} classes
           </div>
         </div>
-        <div style={{ position: 'absolute', bottom: '10px', fontSize: '12px', color: '#6B7280' }}>
-          <Link to="/dashboard/student-attendance-details" className='text-gray-800 font-semibold text-sm underline '>show more details</Link>
+
+        <div className="absolute bottom-1 text-center text-xs text-slate-500">
+          <Link
+            to="/dashboard/attendance"
+            className="text-slate-700 font-semibold text-sm underline underline-offset-2 hover:text-indigo-600"
+          >
+            show more details
+          </Link>
         </div>
       </div>
     </div>

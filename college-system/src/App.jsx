@@ -29,6 +29,7 @@ import FAQPage from './pages/FAQPage';
 import AttendanceForStudents from './pages/AttendanceForStudents';
 import AttendanceForDoctors from './pages/AttendanceForDoctors';
 import AttendanceForAdmin from './pages/AttendanceForAdmin';
+import LowestAttendanceDetails from './pages/LowestAttendanceDetails';
 import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
@@ -44,7 +45,6 @@ import LiveAttendancePage from './components/doctors/DoctorDashboard/LiveAttenda
 import GradesManagementPage from './components/doctors/DoctorDashboard/GradesManagementPage';
 import LowGradeAlertsPage from './components/doctors/DoctorDashboard/LowGradeAlertsPage';
 import FinancialManagementPage from './pages/FinancialManagementPage';
-import StudentAttendanceDetails from './pages/StudentAttendanceDetails';
 import ExamsManagment from './pages/ExamsManagment';
 import TasksPage from './pages/Tasks';
 import TaskSubmissionsPage from './pages/TaskSubmissions';
@@ -99,12 +99,12 @@ function App() {
           <Route path="system-configuration" element={<SystemConfigurationPage />} />
           <Route path="settings" element={<SettingPage />} />
           <Route path="financial-management" element={<FinancialManagementPage />} />
-          <Route path="student-attendance-details" element={<StudentAttendanceDetails />} />
           <Route path="exams-management" element={<ExamsManagment />} />
           {/* Doctor Routes */}
           <Route path="doctor" element={<DoctorDashboard />} />
           <Route path="doctor/alerts" element={<DoctorAlertsPage />} />
           <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
+          <Route path="doctor-attendance/lowest" element={<LowestAttendanceDetails />} />
           <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
           <Route path="doctor/course/:courseId/alerts" element={<LowGradeAlertsPage />} />
           <Route path="doctor/course/:courseId/grades" element={<GradesManagementPage />} />

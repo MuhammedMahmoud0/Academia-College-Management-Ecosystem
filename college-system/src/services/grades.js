@@ -95,3 +95,35 @@ export const updateStudentGradeForTA = async (tutorialLabId, studentId, data) =>
   });
   return response.data;
 };
+
+/**
+ * Get grade distribution for the authenticated student.
+ * Endpoint: GET /grades/my/distribution
+ * @returns {Promise<{distribution: Array<{grade: string, count: number}>}>}
+ */
+export const getMyGradeDistribution = async () => {
+  const token = getAuthToken();
+  const response = await api.get('/grades/my/distribution', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data?.data || response.data;
+};
+
+/**
+ * Get CGPA trend for the authenticated student.
+ * Endpoint: GET /grades/my/cgpa-trend
+ * @returns {Promise<{current_cgpa: number, total_semesters: number, trend: Array}>}
+ */
+export const getMyCgpaTrend = async () => {
+  const token = getAuthToken();
+  const response = await api.get('/grades/my/cgpa-trend', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data?.data || response.data;
+};

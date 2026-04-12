@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, Cell, Tooltip } from "recharts";
+import React from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-// #region Sample data
-const data = [
+const fallbackData = [
   { grade: "A", count: 8, max: 8 },
   { grade: "A-", count: 5, max: 8 },
   { grade: "B+", count: 4, max: 8 },
   { grade: "B", count: 2, max: 8 },
   { grade: "C+", count: 1, max: 8 },
 ];
-// #endregion
 
 const CustomLabel = (props) => {
   const { x, y, width, height, value } = props;
@@ -28,76 +26,37 @@ const CustomLabel = (props) => {
   );
 };
 
-const GradesDistribution = () => {
-  const [chartWidth, setChartWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setChartWidth(window.innerWidth);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const getChartDimensions = () => {
-    if (chartWidth < 640) {
-      // Mobile
-      return { width: Math.min(chartWidth - 40, 500), height: 350, yAxisWidth: 50, barSize: 24 };
-    } else if (chartWidth < 1024) {
-      // Tablet
-      return { width: Math.min(chartWidth * 0.5, 600), height: 300, yAxisWidth: 60, barSize: 22 };
-    } else {
-      // Desktop
-      return { width: 700, height: 260, yAxisWidth: 70, barSize: 22 };
-    }
-  };
-
-  const dimensions = getChartDimensions();
+const GradesDistribution = ({ distributionData = [], loading = false }) => {
+  const maxCount = Math.max(1, ...distributionData.map((item) => Number(item?.count) || 0));
+  const chartData = distributionData.length > 0
+    ? distributionData.map((item) => ({
+        grade: item?.grade || "N/A",
+        count: Number(item?.count) || 0,
+        max: maxCount,
+      }))
+    : fallbackData;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "start",
-        width: "100%",
-        height: "auto",
-        minHeight: "300px",
-        padding: chartWidth < 640 ? "0 10px" : "0 20px",
-      }}
-    >
-      <h2
-        style={{
-          marginBottom: "15px",
-          color: "#1F2937",
-          fontSize: chartWidth < 640 ? "16px" : "18px",
-          fontWeight: "bold",
-          width: "100%",
-        }}
-      >
-        Grades Distribution
-      </h2>
+    <div className="w-full min-h-[320px] flex flex-col">
+      <h2 className="mb-4 text-lg sm:text-xl font-bold text-slate-900">Grades Distribution</h2>
 
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "start",
-          overflowX: "auto",
-        }}
-      >
-        <BarChart
-          width={dimensions.width}
-          height={dimensions.height}
-          data={data}
+      {loading ? (
+        <div className="h-[280px] sm:h-[300px] rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-slate-500 text-sm">
+          Loading grade distribution...
+        </div>
+      ) : (
+
+      <div className="w-full h-[280px] sm:h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+          data={chartData}
           layout="vertical"
           barCategoryGap="35%"
           barGap={-25}
           margin={{
             top: 10,
-            right: 10,
-            left: 10,
+            right: 8,
+            left: 8,
             bottom: 10,
           }}
         >
@@ -106,10 +65,11 @@ const GradesDistribution = () => {
           <YAxis
             dataKey="grade"
             type="category"
-            width={dimensions.yAxisWidth}
+            width={56}
             tick={{
               dx: -5,
-              fontSize: chartWidth < 640 ? 12 : 14,
+              fontSize: 12,
+              fill: "#64748B",
               whiteSpace: "nowrap",
               textAnchor: "start",
             }}
@@ -118,13 +78,21 @@ const GradesDistribution = () => {
             tickMargin={20}
           />
 
-          <Tooltip cursor={{ fill: "transparent" }} />
+          <Tooltip
+            cursor={{ fill: "transparent" }}
+            formatter={(value) => [value, "Count"]}
+            contentStyle={{
+              borderRadius: "10px",
+              border: "1px solid #CBD5E1",
+              boxShadow: "0 6px 18px rgba(15, 23, 42, 0.08)",
+            }}
+          />
 
           {/* Background (shadow) bar */}
           <Bar
             dataKey="max"
             fill="#E5E7EB"
-            barSize={dimensions.barSize}
+            barSize={22}
             radius={[20, 20, 20, 20]}
           />
 
@@ -132,12 +100,14 @@ const GradesDistribution = () => {
           <Bar
             dataKey="count"
             fill="#4F46E5"
-            barSize={dimensions.barSize}
+            barSize={22}
             radius={[20, 20, 20, 20]}
             label={<CustomLabel />}
           />
         </BarChart>
+        </ResponsiveContainer>
       </div>
+      )}
     </div>
   );
 };

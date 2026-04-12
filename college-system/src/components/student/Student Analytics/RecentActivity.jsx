@@ -1,70 +1,80 @@
-export default function RecentActivity() {
-  const activities = [
-    {
-      id: 1,
-      title: 'Problem Set 3 (CS462)',
-      time: '2 days ago',
-      icon: '⬆️',
-      iconBg: '#DBEAFE',
-    },
-    {
-      id: 2,
-      title: 'Lab 2 (CS360) - Grade: A',
-      time: '5 days ago',
-      icon: '✓',
-      iconBg: '#DCFCE7',
-    },
-    {
-      id: 3,
-      title: 'Midterm Exam Scheduled for CS350',
-      time: '1 week ago',
-      icon: '📋',
-      iconBg: '#FEE2E2',
-    },
-  ];
+const getNotificationStyle = (type = '') => {
+  const normalized = String(type).toLowerCase();
+
+  if (normalized.includes('grade')) return { icon: '📘', iconBg: '#DBEAFE' };
+  if (normalized.includes('deadline')) return { icon: '⏰', iconBg: '#FEF3C7' };
+  if (normalized.includes('community')) return { icon: '💬', iconBg: '#E0E7FF' };
+  if (normalized.includes('announcement')) return { icon: '📣', iconBg: '#FEE2E2' };
+
+  return { icon: '🔔', iconBg: '#E5E7EB' };
+};
+
+const formatRelativeTime = (dateValue) => {
+  if (!dateValue) return 'Unknown time';
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return 'Unknown time';
+
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  const withPlural = (value, unit) => `${value} ${unit}${value === 1 ? '' : 's'} ago`;
+
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return withPlural(Math.floor(seconds / 60), 'min');
+  if (seconds < 86400) return withPlural(Math.floor(seconds / 3600), 'hr');
+  if (seconds < 604800) return withPlural(Math.floor(seconds / 86400), 'day');
+  return withPlural(Math.floor(seconds / 604800), 'week');
+};
+
+export default function RecentActivity({ activities = [], loading = false }) {
+  const visibleActivities = activities.slice(0, 5);
 
   return (
-    <div style={{ width: '100%', height: '300px', display: 'flex', flexDirection: 'column' }}>
-      <h2 style={{paddingLeft: '12px', marginBottom: '15px', color: '#1F2937', fontSize: '18px', fontWeight: 'bold' }}>
-        Recent Activity
-      </h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto', flex: 1, paddingRight: '8px' }}>
-        {activities.map((activity) => (
+    <div className="w-full h-[320px] flex flex-col">
+      <h2 className="mb-4 text-lg sm:text-xl font-bold text-slate-900">Recent Activity</h2>
+
+      <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-1">
+        {loading ? (
+          <div className="rounded-xl border border-dashed border-slate-200 h-full flex items-center justify-center text-slate-500 text-sm">
+            Loading recent activity...
+          </div>
+        ) : visibleActivities.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-200 h-full flex items-center justify-center text-slate-500 text-sm">
+            No recent notifications.
+          </div>
+        ) : (
+          visibleActivities.map((activity) => {
+            const style = getNotificationStyle(activity?.type);
+
+            return (
           <div
             key={activity.id}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '12px',
-              padding: '12px',
-              borderRadius: '8px',
-            }}
+            className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/40 transition-colors"
           >
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '40px',
-                height: '40px',
-                backgroundColor: activity.iconBg,
+                width: '36px',
+                height: '36px',
+                backgroundColor: style.iconBg,
                 borderRadius: '8px',
-                fontSize: '20px',
+                fontSize: '18px',
                 flexShrink: 0,
               }}
             >
-              {activity.icon}
+              {style.icon}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h3 style={{ margin: '0 0 4px 0', color: '#1F2937', fontSize: '16px', fontWeight: '600' }}>
-                {activity.title}
+            <div className="flex-1 min-w-0">
+              <h3 className="m-0 mb-1 text-slate-800 text-sm sm:text-[15px] font-semibold leading-snug">
+                {activity.message || 'Notification'}
               </h3>
-              <p style={{ margin: 0, color: '#9CA3AF', fontSize: '14px' }}>
-                {activity.time}
-              </p>
+              <p className="m-0 text-slate-400 text-xs sm:text-sm">{formatRelativeTime(activity.created_at)}</p>
             </div>
           </div>
-        ))}
+            );
+          })
+        )}
       </div>
     </div>
   );

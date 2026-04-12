@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 
 const EditAttendanceModal = ({ isOpen, onClose, studentName, date, currentStatus, onSave }) => {
-  const [selectedStatus, setSelectedStatus] = useState(currentStatus || 'Present');
+  // Normalize currentStatus casing to Title Case (e.g. "present" -> "Present")
+  const normalizedStatus = currentStatus 
+    ? currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1).toLowerCase() 
+    : 'Present';
+    
+  const [selectedStatus, setSelectedStatus] = useState(normalizedStatus);
+
+  // Update selected status if currentStatus prop changes
+  React.useEffect(() => {
+    if (isOpen) {
+      setSelectedStatus(normalizedStatus);
+    }
+  }, [isOpen, currentStatus]);
 
   if (!isOpen) return null;
 
