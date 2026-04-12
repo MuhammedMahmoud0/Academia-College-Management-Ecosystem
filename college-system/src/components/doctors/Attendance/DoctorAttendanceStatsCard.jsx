@@ -1,9 +1,21 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
-const DoctorAttendanceStatsCard = ({ title, value, subtitle, valueColor = 'text-emerald-600', students = [] }) => {
+const DoctorAttendanceStatsCard = ({ title, value, subtitle, valueColor = 'text-emerald-600', students = [], onArrowClick }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="text-sm text-gray-600 mb-2">{title}</div>
+    <div className="bg-white rounded-lg shadow-md p-6 relative">
+      <div className="flex justify-between items-start mb-2">
+        <div className="text-sm text-gray-600">{title}</div>
+        {onArrowClick && (
+          <button 
+            onClick={onArrowClick}
+            className="text-gray-400 hover:text-indigo-600 transition-colors"
+            title="View Details"
+          >
+            <ArrowRight size={18} />
+          </button>
+        )}
+      </div>
       {students.length > 0 ? (
         <div className="space-y-2">
           {students.map((student, index) => (
