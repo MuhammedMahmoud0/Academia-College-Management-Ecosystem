@@ -17,11 +17,92 @@ const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 const todayDate = () => new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
 const todayName = () => DAYS[new Date().getDay()];
 
+const toExpiryMs = (value) => {
+    if (value == null) return null;
+    if (typeof value === 'number') {
+        // If backend sends small number, treat it as TTL seconds.
+        return value > 1e12 ? value : Date.now() + value * 1000;
+    }
+
+    const asDate = Date.parse(value);
+    if (!Number.isNaN(asDate)) return asDate;
+
+    const asNumber = Number(value);
+    if (Number.isFinite(asNumber)) {
+        return asNumber > 1e12 ? asNumber : Date.now() + asNumber * 1000;
+    }
+
+    return null;
+};
+
+const normalizeStudent = (student) => {
+    const userId = student?.user_id ?? student?.userId ?? student?.student_user_id ?? student?.id;
+    const rawStatus = String(student?.status || '').trim().toLowerCase();
+    let status = rawStatus;
+
+    if (!status) {
+        if (student?.is_present === true) status = 'present';
+        if (student?.is_present === false) status = 'absent';
+    }
+
+    if (status === 'attended') status = 'present';
+    if (status !== 'present' && status !== 'absent') status = 'absent';
+
+    return {
+        ...student,
+        user_id: userId,
+        status,
+    };
+};
+
+const normalizeSessionPayload = (raw) => {
+    const payload = raw?.data ?? raw;
+    const sessionObj = payload?.session || {};
+
+    const studentsRaw =
+        payload?.students ||
+        payload?.enrolledStudents ||
+        payload?.enrolled_students ||
+        sessionObj?.students ||
+        [];
+
+    const students = Array.isArray(studentsRaw)
+        ? studentsRaw.map(normalizeStudent).filter((student) => student.user_id != null)
+        : [];
+
+    const presentCountRaw =
+        payload?.presentCount ??
+        payload?.present_count ??
+        sessionObj?.presentCount ??
+        sessionObj?.present_count;
+
+    const presentCount =
+        presentCountRaw != null
+            ? Number(presentCountRaw)
+            : students.filter((student) => student.status === 'present').length;
+
+    return {
+        sessionId:
+            payload?.sessionId ??
+            payload?.session_id ??
+            sessionObj?.id ??
+            sessionObj?.session_id ??
+            null,
+        qrCode: payload?.qrCode ?? payload?.qr_code ?? sessionObj?.qrCode ?? sessionObj?.qr_code ?? null,
+        qrExpiry: payload?.qrExpiry ?? payload?.qr_expiry ?? sessionObj?.qrExpiry ?? sessionObj?.qr_expiry ?? null,
+        students,
+        presentCount,
+    };
+};
+
 export default function LiveAttendancePage() {
     const { courseId } = useParams();
     const location = useLocation();
     // courseName can be passed via navigation state from CourseDetailPage
     const courseName = location.state?.courseName || courseId;
+    const routeLectureId = location.state?.lectureId ?? location.state?.lecture_id ?? null;
+    const routeTutorialLabId = location.state?.tutorialLabId ?? location.state?.tutorial_lab_id ?? null;
+    const routeSessionType = String(location.state?.sessionType || location.state?.slotType || '').trim().toLowerCase();
 
     // ── Today's slots for this course (fetched on mount) ──────────────────────
     const [todaySlots, setTodaySlots] = useState([]);
@@ -63,7 +144,27 @@ export default function LiveAttendancePage() {
                     s => s.courseCode === courseId
                 );
                 setTodaySlots(slots);
-                if (slots.length === 1) setSelectedSlot(slots[0]);
+
+                const explicitMatchedSlot = slots.find((slot) => {
+                    const slotLectureId = slot?.lectureId ?? slot?.lecture_id;
+                    const slotTutorialLabId = slot?.tutorialLabId ?? slot?.tutorial_lab_id;
+
+                    if (routeTutorialLabId != null && String(slotTutorialLabId) === String(routeTutorialLabId)) {
+                        return true;
+                    }
+
+                    if (routeLectureId != null && String(slotLectureId) === String(routeLectureId)) {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                if (explicitMatchedSlot) {
+                    setSelectedSlot(explicitMatchedSlot);
+                } else if (slots.length === 1 && routeLectureId == null && routeTutorialLabId == null) {
+                    setSelectedSlot(slots[0]);
+                }
             } catch {
                 // Non-critical – doctor can still try to start
             } finally {
@@ -71,10 +172,13 @@ export default function LiveAttendancePage() {
             }
         };
         fetchSlots();
-    }, [courseId]);
+    }, [courseId, routeLectureId, routeTutorialLabId]);
 
     // ── QR countdown ─────────────────────────────────────────────────────────
-    const startCountdown = useCallback((expiryMs) => {
+    const startCountdown = useCallback((expiryValue) => {
+        const expiryMs = toExpiryMs(expiryValue);
+        if (!expiryMs) return;
+
         qrExpiryRef.current = expiryMs;
         if (countdownRef.current) clearInterval(countdownRef.current);
         const tick = () => {
@@ -86,9 +190,11 @@ export default function LiveAttendancePage() {
     }, []);
 
     // ── Apply a full session snapshot (used by both socket and polling) ────────
-    const applySnapshot = useCallback((data) => {
+    const applySnapshot = useCallback((rawData) => {
+        const data = normalizeSessionPayload(rawData);
+
         if (Array.isArray(data.students)) setStudents(data.students);
-        if (data.presentCount != null) setPresentCount(data.presentCount);
+        if (data.presentCount != null && !Number.isNaN(data.presentCount)) setPresentCount(data.presentCount);
         if (data.qrCode) setQrCode(data.qrCode);
         if (data.qrExpiry) startCountdown(data.qrExpiry);
     }, [startCountdown]);
@@ -187,24 +293,60 @@ export default function LiveAttendancePage() {
                 session_date: todayDate(),
                 isLive: true,
             };
-            if (selectedSlot) {
-                if (selectedSlot.type === 'lecture') {
-                    payload.lecture_id = selectedSlot.lectureId;
-                } else {
-                    payload.tutorial_lab_id = selectedSlot.tutorialLabId;
+
+            const selectedSlotType = String(selectedSlot?.type || '').toLowerCase();
+            const selectedLectureId = selectedSlot?.lectureId ?? selectedSlot?.lecture_id;
+            const selectedTutorialLabId = selectedSlot?.tutorialLabId ?? selectedSlot?.tutorial_lab_id;
+
+            const isRouteTutorialLike = routeSessionType === 'tutorial' || routeSessionType === 'lab' || routeSessionType === 'tutorial_lab';
+
+            if (routeTutorialLabId != null || (isRouteTutorialLike && routeLectureId != null)) {
+                // Explicit route id wins to avoid starting session for a different slot of the same course.
+                payload.tutorial_lab_id = routeTutorialLabId ?? routeLectureId;
+            } else if (routeLectureId != null) {
+                // Explicit lecture id from navigation state.
+                payload.lecture_id = routeLectureId;
+            } else if (selectedSlot) {
+                if (selectedSlotType === 'lecture' && selectedLectureId) {
+                    payload.lecture_id = selectedLectureId;
+                } else if (selectedTutorialLabId) {
+                    payload.tutorial_lab_id = selectedTutorialLabId;
+                } else if (selectedLectureId) {
+                    payload.lecture_id = selectedLectureId;
                 }
             }
-            const data = await startAttendanceSession(payload);
-            setSessionId(data.sessionId);
-            sessionIdRef.current = data.sessionId;
-            setQrCode(data.qrCode);
-            const enrolled = data.enrolledStudents || [];
-            setStudents(enrolled);
-            setPresentCount(enrolled.filter(s => s.status === 'present').length);
-            if (data.qrExpiry) startCountdown(data.qrExpiry);
+
+            const startRes = await startAttendanceSession(payload);
+            const startData = normalizeSessionPayload(startRes);
+            const nextSessionId = startData.sessionId;
+
+            if (!nextSessionId) {
+                throw new Error('Session started but session id is missing in the response.');
+            }
+
+            setSessionId(nextSessionId);
+            sessionIdRef.current = nextSessionId;
+
+            if (startData.qrCode) setQrCode(startData.qrCode);
+            if (startData.qrExpiry) startCountdown(startData.qrExpiry);
+
+            if (startData.students.length > 0) {
+                setStudents(startData.students);
+                setPresentCount(startData.presentCount);
+            } else {
+                // Ensure roster appears even if start endpoint omits enrolled students.
+                try {
+                    const detailsData = await getSessionDetails(nextSessionId);
+                    applySnapshot(detailsData);
+                } catch {
+                    setStudents([]);
+                    setPresentCount(0);
+                }
+            }
+
             setSessionStarted(true);
-            setupSocket(data.sessionId);
-            startPolling(data.sessionId);
+            setupSocket(nextSessionId);
+            startPolling(nextSessionId);
         } catch (err) {
             setError(err?.response?.data?.error || 'Failed to start session.');
         } finally {
@@ -269,7 +411,9 @@ export default function LiveAttendancePage() {
                     state={{ 
                         courseCode: location.state?.courseCode || courseId, 
                         courseName, 
-                        lectureId: location.state?.lectureId 
+                        lectureId: routeLectureId,
+                        tutorialLabId: routeTutorialLabId,
+                        sessionType: routeSessionType,
                     }}
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 w-fit"
                 >

@@ -49,6 +49,8 @@ export default function DoctorDashboard() {
                                     studentCount: null,
                                     lecture: {
                                         lecture_id: slot.tutorialLabId,
+                                        tutorial_lab_id: slot.tutorialLabId,
+                                        session_type: slot.type,
                                         group: slot.type ? slot.type.toUpperCase() : 'LAB',
                                         day_of_week: day.day,
                                         start_time: slot.startTime,

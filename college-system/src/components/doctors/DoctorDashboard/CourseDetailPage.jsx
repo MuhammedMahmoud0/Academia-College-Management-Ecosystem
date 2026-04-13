@@ -29,7 +29,9 @@ export default function CourseDetailPage() {
     const [courseDetails] = useState({
         courseCode: location.state?.courseCode || courseId,
         courseName: location.state?.courseName || 'Course Detail',
-        lectureId: location.state?.lectureId || null
+        lectureId: location.state?.lectureId || null,
+        tutorialLabId: location.state?.tutorialLabId || null,
+        sessionType: location.state?.sessionType || null,
     });
 
     const [performanceData, setPerformanceData] = useState([]);
@@ -349,7 +351,13 @@ export default function CourseDetailPage() {
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">Attendance</h2>
                         <Link 
                             to={`/dashboard/doctor/course/${courseId}/attendance`}
-                            state={{ courseCode: courseDetails.courseCode, courseName: courseDetails.courseName, lectureId: courseDetails.lectureId }}
+                            state={{
+                                courseCode: courseDetails.courseCode,
+                                courseName: courseDetails.courseName,
+                                lectureId: courseDetails.lectureId,
+                                tutorialLabId: courseDetails.tutorialLabId,
+                                sessionType: courseDetails.sessionType,
+                            }}
                             className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
