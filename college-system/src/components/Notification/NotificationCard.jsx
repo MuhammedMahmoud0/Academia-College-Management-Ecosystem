@@ -3,7 +3,7 @@ import { CheckCircle, AlertTriangle, MessageCircle, Bell } from 'lucide-react';
 export default function NotificationCard({ notification, onMarkAsRead }) {
   const getIcon = () => {
     const iconProps = { className: 'w-5 h-5' };
-    
+
     switch (notification.icon) {
       case 'check':
         return <CheckCircle {...iconProps} className={`${iconProps.className} text-green-600`} />;
@@ -33,6 +33,16 @@ export default function NotificationCard({ notification, onMarkAsRead }) {
     }
   };
 
+  const formatTime = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
     <div
       onClick={onMarkAsRead}
@@ -44,9 +54,16 @@ export default function NotificationCard({ notification, onMarkAsRead }) {
       </div>
 
       {/* Message */}
-      <p className="flex-1 text-sm text-gray-700 leading-relaxed">
-        {notification.message}
-      </p>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-gray-700 leading-relaxed">
+          {notification.message}
+        </p>
+        {notification.created_at && (
+          <p className="text-xs text-gray-400 mt-1">
+            {formatTime(notification.created_at)}
+          </p>
+        )}
+      </div>
 
       {/* Unread indicator */}
       {!notification.isRead && (

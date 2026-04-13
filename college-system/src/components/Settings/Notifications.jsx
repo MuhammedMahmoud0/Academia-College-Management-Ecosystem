@@ -1,49 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNotification } from '../../context/NotificationContext';
+import toast from 'react-hot-toast';
 
 export default function NotificationsSetting() {
-  const [preferences, setPreferences] = useState({
-    newGrades: true,
-    deadlines: true,
-    communityHub: false,
-    campusEvents: true
-  });
+  const { preferences, updatePreferences } = useNotification();
+  const [saving, setSaving] = useState(false);
+  const [localPreferences, setLocalPreferences] = useState(preferences);
+
+  // Sync with context preferences
+  useEffect(() => {
+    setLocalPreferences(preferences);
+  }, [preferences]);
 
   const handleToggle = (key) => {
-    setPreferences(prev => ({
+    setLocalPreferences(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
   };
 
-  const handleSavePreferences = () => {
-    console.log('Saving preferences:', preferences);
-    // Add your save logic here
+  const handleSavePreferences = async () => {
+    setSaving(true);
+    try {
+      await updatePreferences(localPreferences);
+    } catch {
+      toast.error('Failed to save preferences');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const notificationOptions = [
     {
-      key: 'newGrades',
+      key: 'new_grade',
       title: 'New Grades Posted',
       description: 'Get notified when a professor posts a new grade.',
-      enabled: preferences.newGrades
+      enabled: localPreferences.new_grade
     },
     {
-      key: 'deadlines',
+      key: 'exam_deadline',
       title: 'Assignment & Exam Deadlines',
       description: 'Receive reminders for upcoming deadlines.',
-      enabled: preferences.deadlines
+      enabled: localPreferences.exam_deadline
     },
     {
-      key: 'communityHub',
+      key: 'community_activity',
       title: 'Community Hub Activity',
       description: 'Get notified for replies and mentions.',
-      enabled: preferences.communityHub
+      enabled: localPreferences.community_activity
     },
     {
-      key: 'campusEvents',
+      key: 'campus_announcement',
       title: 'Campus Events & Announcements',
       description: 'Stay up to date with campus news.',
-      enabled: preferences.campusEvents
+      enabled: localPreferences.campus_announcement
     }
   ];
 
@@ -73,7 +83,7 @@ export default function NotificationsSetting() {
                   {option.description}
                 </p>
               </div>
-              
+
               {/* Toggle Switch */}
               <button
                 onClick={() => handleToggle(option.key)}
@@ -97,9 +107,10 @@ export default function NotificationsSetting() {
         <div className="flex justify-end mt-6 md:mt-8">
           <button
             onClick={handleSavePreferences}
-            className="bg-indigo-600 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors font-medium w-full sm:w-auto"
+            disabled={saving}
+            className="bg-indigo-600 text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors font-medium w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Preferences
+            {saving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>
       </div>
