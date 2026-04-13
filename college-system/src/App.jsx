@@ -2,6 +2,7 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -57,62 +58,64 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/landing" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        
-        {/* Dashboard Routes with Layout - Protected */}
-        <Route path="/dashboard" element={<ProtectedRoute><MainLayoutPage /></ProtectedRoute>}>
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="admin/alerts" element={<AdminAlertsPage />} />
-          <Route path="admin/activity" element={<AdminActivityPage />} />
-          <Route path="info" element={<InfoPage />} />
-          <Route path="courses" element={<CoursesGradesPage />} />
-          <Route path="exams" element={<ExamSchedulePage />} />
-          <Route path="attendance" element={<AttendanceForStudents />} />
-          <Route path="teachers" element={<TeacherSchedulePage />} />
-          <Route path="students" element={<StudentSchedulePage />} />
-          <Route path="register" element={<StudentRegistrationPage />} />
-          {/* Tasks Route - Updated to use the robust TasksPage replacing placeholder */}
-          <Route path="tasks" element={<TasksPage />} />
-          <Route path="tasks/:taskId/submissions" element={<TaskSubmissionsPage />} />
-          <Route path="student-tasks" element={<Tasks_student />} />
-          <Route path="material" element={<StudentMatrialsPage />} />
-          <Route path="doctormaterial" element={<DoctorMatrialsPage />} />
-          <Route path="analytics" element={<StudentAnalyticsPage />} />
-          <Route path="leaderboard" element={<LeaderBoardPage />} />
-          <Route path="community" element={<CommunityPage />} />
-          <Route path="community/user/:userId/posts" element={<UserPostsPage />} />
-          <Route path="my-groups" element={<MyGroupsPage />} />
-          <Route path="my-groups/:groupId/posts" element={<GroupPostsPage />} />
-          <Route path="events" element={<EventsPage />} />
-          <Route path="payment" element={<StudentsPaymentPage />} />
-          <Route path="id-card" element={<IDPage />} />
-          <Route path="faq" element={<FAQPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="academic-management" element={<AcademicManagementPage />} />
-          <Route path="admin-attendance" element={<AttendanceForAdmin />} />
-          <Route path="user-management" element={<UserManagementPage />} />
-          <Route path="user-management/management-profile" element={<ManagementProfile />} />
-          <Route path="admin-payment" element={<AdminPaymentPage />} />
-          <Route path="system-configuration" element={<SystemConfigurationPage />} />
-          <Route path="settings" element={<SettingPage />} />
-          <Route path="financial-management" element={<FinancialManagementPage />} />
-          <Route path="exams-management" element={<ExamsManagment />} />
-          {/* Doctor Routes */}
-          <Route path="doctor" element={<DoctorDashboard />} />
-          <Route path="doctor/alerts" element={<DoctorAlertsPage />} />
-          <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
-          <Route path="doctor-attendance/lowest" element={<LowestAttendanceDetails />} />
-          <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
-          <Route path="doctor/course/:courseId/alerts" element={<LowGradeAlertsPage />} />
-          <Route path="doctor/course/:courseId/grades" element={<GradesManagementPage />} />
-          <Route path="doctor/course/:courseId/attendance" element={<LiveAttendancePage />} />
-          
-          <Route index element={<InfoPage />} />
-        </Route>
-      </Routes>
+        <NotificationProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* Dashboard Routes with Layout - Protected */}
+            <Route path="/dashboard" element={<ProtectedRoute><MainLayoutPage /></ProtectedRoute>}>
+              <Route path="admin" element={<AdminDashboard />} />
+              <Route path="admin/alerts" element={<AdminAlertsPage />} />
+              <Route path="admin/activity" element={<AdminActivityPage />} />
+              <Route path="info" element={<InfoPage />} />
+              <Route path="courses" element={<CoursesGradesPage />} />
+              <Route path="exams" element={<ExamSchedulePage />} />
+              <Route path="attendance" element={<AttendanceForStudents />} />
+              <Route path="teachers" element={<TeacherSchedulePage />} />
+              <Route path="students" element={<StudentSchedulePage />} />
+              <Route path="register" element={<StudentRegistrationPage />} />
+              {/* Tasks Route - Updated to use the robust TasksPage replacing placeholder */}
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="tasks/:taskId/submissions" element={<TaskSubmissionsPage />} />
+              <Route path="student-tasks" element={<Tasks_student />} />
+              <Route path="material" element={<StudentMatrialsPage />} />
+              <Route path="doctormaterial" element={<DoctorMatrialsPage />} />
+              <Route path="analytics" element={<StudentAnalyticsPage />} />
+              <Route path="leaderboard" element={<LeaderBoardPage />} />
+              <Route path="community" element={<CommunityPage />} />
+              <Route path="community/user/:userId/posts" element={<UserPostsPage />} />
+              <Route path="my-groups" element={<MyGroupsPage />} />
+              <Route path="my-groups/:groupId/posts" element={<GroupPostsPage />} />
+              <Route path="events" element={<EventsPage />} />
+              <Route path="payment" element={<StudentsPaymentPage />} />
+              <Route path="id-card" element={<IDPage />} />
+              <Route path="faq" element={<FAQPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="academic-management" element={<AcademicManagementPage />} />
+              <Route path="admin-attendance" element={<AttendanceForAdmin />} />
+              <Route path="user-management" element={<UserManagementPage />} />
+              <Route path="user-management/management-profile" element={<ManagementProfile />} />
+              <Route path="admin-payment" element={<AdminPaymentPage />} />
+              <Route path="system-configuration" element={<SystemConfigurationPage />} />
+              <Route path="settings" element={<SettingPage />} />
+              <Route path="financial-management" element={<FinancialManagementPage />} />
+              <Route path="exams-management" element={<ExamsManagment />} />
+              {/* Doctor Routes */}
+              <Route path="doctor" element={<DoctorDashboard />} />
+              <Route path="doctor/alerts" element={<DoctorAlertsPage />} />
+              <Route path="doctor-attendance" element={<AttendanceForDoctors />} />
+              <Route path="doctor-attendance/lowest" element={<LowestAttendanceDetails />} />
+              <Route path="doctor/course/:courseId" element={<CourseDetailPage />} />
+              <Route path="doctor/course/:courseId/alerts" element={<LowGradeAlertsPage />} />
+              <Route path="doctor/course/:courseId/grades" element={<GradesManagementPage />} />
+              <Route path="doctor/course/:courseId/attendance" element={<LiveAttendancePage />} />
+
+              <Route index element={<InfoPage />} />
+            </Route>
+          </Routes>
+        </NotificationProvider>
       </AuthProvider>
     </div>
   );
