@@ -5,6 +5,13 @@ export default function CourseCard({ courseCode, courseName, studentCount, cours
     // Convert the single assigned lecture back into an array to support the existing map structure seamlessly
     const lectures = lecture ? [lecture] : [];
     const lectureId = lecture?.lecture_id;
+    const sessionType = lecture?.session_type || lecture?.type || lecture?.lecture_type || null;
+    const tutorialLabId =
+        lecture?.tutorial_lab_id ??
+        lecture?.tutorialLabId ??
+        ((sessionType === 'tutorial' || sessionType === 'lab' || sessionType === 'tutorial_lab')
+            ? lecture?.lecture_id
+            : null);
 
     const formatTime = (timeString) => {
         if (!timeString) return '';
@@ -89,7 +96,7 @@ export default function CourseCard({ courseCode, courseName, studentCount, cours
 
                 <Link 
                     to={`/dashboard/doctor/course/${courseId}`}
-                    state={{ courseCode, courseName, lectureId }}
+                    state={{ courseCode, courseName, lectureId, tutorialLabId, sessionType }}
                     className="w-full mt-auto group relative flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm ring-1 ring-inset ring-indigo-600 transition-all duration-200 py-3 rounded-lg font-semibold"
                 >
                     Manage Course
