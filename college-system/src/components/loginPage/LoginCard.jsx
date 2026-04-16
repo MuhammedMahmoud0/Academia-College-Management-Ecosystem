@@ -8,15 +8,28 @@ const LoginCard = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, user, isLoading } = useAuth();
+
+  const getHomeRoute = (role) => {
+    const routes = {
+      student:            '/dashboard/info',
+      doctor:             '/dashboard/doctor',
+      teaching_assistant: '/dashboard/doctor',
+      admin:              '/dashboard/admin',
+      super_admin:        '/dashboard/admin',
+    };
+    return routes[role] || '/dashboard';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     
     try {
-      await login(email, password);
-      navigate("/dashboard/info");
+      const data = await login(email, password);
+      // fetchedUser is set by AuthContext.login() after calling /auth/me
+      const role = data?.fetchedUser?.role;
+      navigate(getHomeRoute(role));
     } catch (error) {
       setError(error.response?.data?.message || "Login failed. Please try again.");
       console.error("Login failed:", error);

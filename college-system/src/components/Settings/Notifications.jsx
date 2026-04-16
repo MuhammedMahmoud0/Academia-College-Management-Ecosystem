@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNotification } from '../../context/NotificationContext';
-import toast from 'react-hot-toast';
+import Toast from '../Toast/Toast';
 
 export default function NotificationsSetting() {
   const { preferences, updatePreferences } = useNotification();
   const [saving, setSaving] = useState(false);
   const [localPreferences, setLocalPreferences] = useState(preferences);
+  const [toast, setToast] = useState(null);
 
   // Sync with context preferences
   useEffect(() => {
@@ -21,10 +22,12 @@ export default function NotificationsSetting() {
 
   const handleSavePreferences = async () => {
     setSaving(true);
+    setToast(null);
     try {
       await updatePreferences(localPreferences);
+      setToast({ message: 'Preferences saved successfully!', type: 'success' });
     } catch {
-      toast.error('Failed to save preferences');
+      setToast({ message: 'Failed to save preferences', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -58,7 +61,17 @@ export default function NotificationsSetting() {
   ];
 
   return (
-    <div className="w-full p-4 md:p-6">
+    <div className="w-full p-4 md:p-6 relative">
+      {toast && (
+        <div className="fixed top-24 right-4 z-50">
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
+      
       <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
         {/* Header */}
         <div className="mb-6 md:mb-8">
