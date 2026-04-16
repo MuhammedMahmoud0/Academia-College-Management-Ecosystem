@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/student/info page/InfoCard';
-import { getStudentProfile } from '../services/infoService';
+import { getStudentProfile } from '../services/userProfile';
 import Avatar from '@mui/material/Avatar';
 
 export default function Info() {
@@ -31,8 +31,10 @@ export default function Info() {
                 name: profile.full_name || 'N/A',
                 major: profile.student_profiles?.departments?.name || 'N/A',
                 studentId: profile.student_profiles?.student_id || 'N/A',
+                national_id: profile.national_id || 'N/A',
                 year: profile.student_profiles?.year_level ? `${profile.student_profiles.year_level}${getYearSuffix(profile.student_profiles.year_level)} Year` : 'N/A',
                 gpa: profile.student_profiles?.cgpa ? profile.student_profiles?.cgpa.toFixed(2) : 'N/A',
+                total_credits: profile.student_profiles?.total_credits || 0,
                 email: profile.email || 'N/A',
                 phone: profile.phone || 'N/A',
                 address: profile.address || 'N/A',
@@ -132,12 +134,20 @@ export default function Info() {
                                 value={studentData.studentId}
                             />
                             <InfoCard 
+                                label="National ID"
+                                value={studentData.national_id}
+                            />
+                            <InfoCard 
                                 label="Year"
                                 value={studentData.year}
                             />
                             <InfoCard 
                                 label="Cumulative GPA"
                                 value={studentData.gpa}
+                            />
+                            <InfoCard 
+                                label="Total Credits"
+                                value={studentData.total_credits}
                             />
                             <InfoCard 
                                 label="Email Address"

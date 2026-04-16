@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Calendar, Megaphone, Shield } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import AcademicCalendar from '../components/admin/SystemConfiguration/AcademicCalendar';
-import SiteWideAnnouncements from '../components/admin/SystemConfiguration/SiteWideAnnouncements';
-import RolePermissionManagement from '../components/admin/SystemConfiguration/RolePermissionManagement';
 
 const SystemConfigurationPage = () => {
   const [activeTab, setActiveTab] = useState('calendar');
@@ -13,18 +11,6 @@ const SystemConfigurationPage = () => {
       label: 'Academic Calendar',
       icon: Calendar,
       component: AcademicCalendar
-    },
-    {
-      id: 'announcements',
-      label: 'Site-wide Announcements',
-      icon: Megaphone,
-      component: SiteWideAnnouncements
-    },
-    {
-      id: 'permissions',
-      label: 'Role & Permission Management',
-      icon: Shield,
-      component: RolePermissionManagement
     }
   ];
 

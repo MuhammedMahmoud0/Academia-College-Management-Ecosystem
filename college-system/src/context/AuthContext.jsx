@@ -66,11 +66,22 @@ export const AuthProvider = ({ children }) => {
       // Store token
       localStorage.setItem('auth_token', newToken);
       localStorage.setItem('message', message);
-
       setToken(newToken);
+
+      // Fetch user immediately so RoleRoute has the role before the redirect
+      let userData = null;
+      try {
+        userData = await getCurrentUser(newToken);
+        if (userData && (userData.name || userData.role)) {
+          setUser(userData);
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+        }
+      } catch (userErr) {
+        console.error('Could not fetch user profile after login:', userErr);
+      }
+
       setIsAuthenticated(true);
-      
-      return data;
+      return { ...data, fetchedUser: userData };
     } catch (error) {
       setIsAuthenticated(false);
       throw error;
