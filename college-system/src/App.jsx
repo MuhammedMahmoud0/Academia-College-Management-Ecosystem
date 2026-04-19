@@ -51,6 +51,7 @@ import ExamsManagment from './pages/ExamsManagment';
 import TasksPage from './pages/Tasks';
 import TaskSubmissionsPage from './pages/TaskSubmissions';
 import Tasks_student from './pages/Tasks_student';
+import SummarizationPage from './pages/SummarizationPage';
 import AdminAlertsPage from './pages/AdminAlertsPage';
 import AdminActivityPage from './pages/AdminActivityPage';
 import DoctorAlertsPage from './pages/DoctorAlertsPage';
@@ -133,6 +134,7 @@ function App() {
               <Route path="register"                           element={R(STUDENT,   <StudentRegistrationPage />)} />
               <Route path="student-tasks"                      element={R(STUDENT,   <Tasks_student />)} />
               <Route path="material"                           element={R(STUDENT,   <StudentMatrialsPage />)} />
+              <Route path="summarization"                      element={R(STUDENT,   <SummarizationPage />)} />
               <Route path="analytics"                          element={R(STUDENT,   <StudentAnalyticsPage />)} />
               <Route path="leaderboard"                        element={R(STUDENT,   <LeaderBoardPage />)} />
               <Route path="payment"                            element={R(STUDENT,   <StudentsPaymentPage />)} />
