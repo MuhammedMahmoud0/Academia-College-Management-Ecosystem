@@ -62,6 +62,7 @@ const buildMenu = (role) => {
             items: [
                 item('Student Tasks',    '/dashboard/student-tasks',  icons.check),
                 item('Material',         '/dashboard/material',       icons.folder),
+                item('Summarize PDF',    '/dashboard/summarization',  icons.file),
             ]
         },
         {
@@ -182,6 +183,7 @@ export const ROUTE_ACCESS = {
     '/dashboard/register':              ['student'],
     '/dashboard/student-tasks':         ['student'],
     '/dashboard/material':              ['student'],
+    '/dashboard/summarization':         ['student'],
     '/dashboard/analytics':             ['student'],
     '/dashboard/leaderboard':           ['student'],
     '/dashboard/payment':               ['student'],
