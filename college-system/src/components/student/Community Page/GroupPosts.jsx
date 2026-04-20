@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
 import PostCard from './PostCard';
@@ -80,6 +79,12 @@ export default function GroupPosts() {
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
+	const sentinelRef = useRef(null);
+	const pageRef = useRef(1);
+	const hasMoreRef = useRef(false);
+	const loadingMoreRef = useRef(false);
+
+	const PAGE_SIZE = 10;
 
 	const resolvedGroupName = useMemo(() => {
 		return group?.name || posts?.[0]?.groupName || 'Group';
@@ -93,15 +98,19 @@ export default function GroupPosts() {
 				setLoading(true);
 			} else {
 				setLoadingMore(true);
+				loadingMoreRef.current = true;
 			}
 
-			const data = await getGroupPosts(groupId, requestedPage, 10);
+			const data = await getGroupPosts(groupId, requestedPage, PAGE_SIZE);
 			const mappedPosts = (data?.posts ?? []).map((post, index) => mapGroupPost(post, index));
 
 			setGroup(data?.group ?? data?.community_groups ?? null);
 			setPosts((prev) => (requestedPage === 1 ? mappedPosts : [...prev, ...mappedPosts]));
 			setPage(requestedPage);
-			setHasMore(mappedPosts.length === 10);
+			pageRef.current = requestedPage;
+			const more = mappedPosts.length === PAGE_SIZE;
+			setHasMore(more);
+			hasMoreRef.current = more;
 			setError('');
 		} catch (err) {
 			console.error('Error fetching group posts:', err);
@@ -117,8 +126,32 @@ export default function GroupPosts() {
 		} finally {
 			setLoading(false);
 			setLoadingMore(false);
+			loadingMoreRef.current = false;
 		}
 	};
+
+	const loadMore = useCallback(() => {
+		if (!loadingMoreRef.current && hasMoreRef.current) {
+			fetchPosts(pageRef.current + 1);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	// Infinite scroll via IntersectionObserver
+	useEffect(() => {
+		const sentinel = sentinelRef.current;
+		if (!sentinel) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					loadMore();
+				}
+			},
+			{ rootMargin: '200px' }
+		);
+		observer.observe(sentinel);
+		return () => observer.disconnect();
+	}, [loadMore]);
 
 	useEffect(() => {
 		fetchPosts(1);
@@ -141,13 +174,6 @@ export default function GroupPosts() {
 						<p className="text-sm text-gray-600">Latest posts from this group community.</p>
 					</div>
 				</div>
-				<button
-					onClick={() => fetchPosts(1)}
-					className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-				>
-					<RefreshIcon fontSize="small" />
-					Refresh
-				</button>
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-5">
@@ -175,17 +201,21 @@ export default function GroupPosts() {
 								<PostCard key={post.id} post={post} />
 							))}
 
-							{hasMore ? (
-								<div className="flex justify-center">
-									<button
-										onClick={() => fetchPosts(page + 1)}
-										disabled={loadingMore}
-										className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-medium hover:bg-indigo-700 transition-colors disabled:bg-indigo-300 disabled:cursor-not-allowed"
-									>
-										{loadingMore ? 'Loading...' : 'Load more'}
-									</button>
+							{/* Infinite scroll sentinel */}
+							{hasMore && (
+								<div ref={sentinelRef} className="flex justify-center py-6">
+									{loadingMore && (
+										<div className="flex items-center gap-2 text-gray-500">
+											<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+											<span className="text-sm">Loading more posts...</span>
+										</div>
+									)}
 								</div>
-							) : null}
+							)}
+
+							{!hasMore && posts.length > 0 && (
+								<p className="text-center text-gray-400 text-sm py-4">You've reached the end</p>
+							)}
 						</>
 					)}
 				</div>

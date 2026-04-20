@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import GroupIcon from '@mui/icons-material/Group';
 import AddIcon from '@mui/icons-material/Add';
-import GroupModal from './GroupModal';
-import { createGroup, getSuggestedGroups, joinCommunityGroup } from '../../../services/communityService';
+import { getSuggestedGroups, joinCommunityGroup } from '../../../services/communityService';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function Suggested() {
@@ -12,9 +11,6 @@ export default function Suggested() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
-  const [createGroupError, setCreateGroupError] = useState('');
   const [joiningGroupId, setJoiningGroupId] = useState(null);
   const [joinedGroupIds, setJoinedGroupIds] = useState([]);
 
@@ -37,44 +33,6 @@ export default function Suggested() {
     }
   };
 
-  const handleOpenCreateGroupModal = () => {
-    setCreateGroupError('');
-    setShowCreateGroupModal(true);
-  };
-
-  const handleCloseCreateGroupModal = () => {
-    if (!isCreatingGroup) {
-      setShowCreateGroupModal(false);
-      setCreateGroupError('');
-    }
-  };
-
-  const handleCreateGroup = async (payload) => {
-    try {
-      setIsCreatingGroup(true);
-      setCreateGroupError('');
-      await createGroup(payload);
-      setShowCreateGroupModal(false);
-      await fetchSuggestedGroups();
-    } catch (err) {
-      console.error('Error creating group:', err);
-      if (err?.response?.status === 401) {
-        setCreateGroupError('Your session expired. Please login again.');
-      } else if (err?.response?.status === 403) {
-        setCreateGroupError('Only admin or super admin can create groups.');
-      } else if (err?.response?.status >= 500) {
-        setCreateGroupError('Server error while creating group. Please try again shortly.');
-      } else {
-        const apiMessage =
-          err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          err?.response?.data?.details;
-        setCreateGroupError(apiMessage || 'Failed to create group. Please try again.');
-      }
-    } finally {
-      setIsCreatingGroup(false);
-    }
-  };
 
   const handleJoinGroup = async (groupId) => {
     try {
@@ -113,15 +71,6 @@ export default function Suggested() {
         <h4 className="text-base font-semibold text-gray-900">
           Suggested Groups
         </h4>
-        {isAdmin && (
-          <button
-            onClick={handleOpenCreateGroupModal}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-indigo-700"
-          >
-            <AddIcon sx={{ fontSize: 16 }} />
-            Create Group
-          </button>
-        )}
       </div>
       {loading ? (
         <div className="flex justify-center items-center py-8">
@@ -188,14 +137,6 @@ export default function Suggested() {
         </div>
       )}
 
-      <GroupModal
-        isOpen={showCreateGroupModal}
-        onClose={handleCloseCreateGroupModal}
-        onSubmit={handleCreateGroup}
-        mode="create"
-        isSubmitting={isCreatingGroup}
-        submitError={createGroupError}
-      />
     </div>
   );
 }
