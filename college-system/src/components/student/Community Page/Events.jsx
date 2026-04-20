@@ -7,6 +7,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -14,7 +15,7 @@ import { Menu, MenuItem, IconButton } from '@mui/material';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
 import EventModal from './EventModal';
-import { deleteCommunityEvent, getCommunityEvents, updateCommunityEvent } from '../../../services/communityService';
+import { deleteCommunityEvent, getCommunityEvents, updateCommunityEvent, createCommunityEvent } from '../../../services/communityService';
 import { useAuth } from '../../../hooks/useAuth';
 import Eventimage from '../../../assets/events/tech event.jpg';
 
@@ -29,6 +30,7 @@ export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [modalMode, setModalMode] = useState('create');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isSavingEvent, setIsSavingEvent] = useState(false);
   const [eventModalError, setEventModalError] = useState('');
@@ -69,6 +71,14 @@ export default function Events() {
   const handleOpenEditEventModal = (event) => {
     setSelectedEvent(event);
     setEventModalError('');
+    setModalMode('edit');
+    setShowEventModal(true);
+  };
+
+  const handleOpenCreateEventModal = () => {
+    setSelectedEvent(null);
+    setEventModalError('');
+    setModalMode('create');
     setShowEventModal(true);
   };
 
@@ -85,12 +95,15 @@ export default function Events() {
       setIsSavingEvent(true);
       setEventModalError('');
 
-      if (!selectedEvent?.id) {
-        setEventModalError('Please select an event to edit.');
-        return;
+      if (modalMode === 'edit') {
+        if (!selectedEvent?.id) {
+          setEventModalError('Please select an event to edit.');
+          return;
+        }
+        await updateCommunityEvent(selectedEvent.id, payload);
+      } else {
+        await createCommunityEvent(payload);
       }
-
-      await updateCommunityEvent(selectedEvent.id, payload);
 
       setShowEventModal(false);
       setSelectedEvent(null);
@@ -225,6 +238,16 @@ export default function Events() {
           </button>
           <h1 className="text-3xl font-bold text-slate-900">Events</h1>
         </div>
+
+        {isAdmin && (
+          <button
+            onClick={handleOpenCreateEventModal}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-md active:scale-95 max-lg:mr-3 ml-auto lg:mr-0"
+          >
+            <AddIcon fontSize="small" />
+            <span className="max-sm:hidden">Create Event</span>
+          </button>
+        )}
         
         {/* Mobile Menu Button */}
         <button
@@ -512,7 +535,7 @@ export default function Events() {
         isOpen={showEventModal}
         onClose={handleCloseCreateEventModal}
         onSubmit={handleEventSubmit}
-        mode="edit"
+        mode={modalMode}
         initialValues={selectedEvent}
         isSubmitting={isSavingEvent}
         submitError={eventModalError}

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
-import ShareIcon from '@mui/icons-material/Share';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
@@ -130,7 +129,7 @@ export default function PostCard({ post, onPostDeleted, onPostUpdated }) {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           // Compress to JPEG with 0.7 quality
           const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
           resolve(dataUrl);
@@ -297,7 +296,7 @@ export default function PostCard({ post, onPostDeleted, onPostUpdated }) {
           )}
           <div>
             <div className="text-sm sm:text-base font-semibold text-gray-900 flex items-center flex-wrap gap-x-1">
-              <span 
+              <span
                 className="cursor-pointer hover:text-indigo-600 transition-colors"
                 onClick={() => post.author_id && navigate(`/dashboard/community/user/${post.author_id}/posts`)}
               >
@@ -306,7 +305,7 @@ export default function PostCard({ post, onPostDeleted, onPostUpdated }) {
               {post.groupName && (
                 <>
                   <span className="text-gray-500 font-normal">in</span>
-                  <span 
+                  <span
                     className="text-indigo-600 cursor-pointer hover:underline"
                     onClick={() => post.groupId && navigate(`/dashboard/my-groups/${post.groupId}/posts`)}
                   >
@@ -387,23 +386,18 @@ export default function PostCard({ post, onPostDeleted, onPostUpdated }) {
         <button
           onClick={handleLike}
           disabled={isLiking}
-          className={`border-none bg-transparent cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm px-2 py-1 transition-colors ${
-            isLiked ? 'text-indigo-600 hover:text-indigo-700' : 'text-gray-600 hover:text-gray-800'
-          } ${isLiking ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`border-none bg-transparent cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm px-2 py-1 transition-colors ${isLiked ? 'text-indigo-600 hover:text-indigo-700' : 'text-gray-600 hover:text-gray-800'
+            } ${isLiking ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <span><ThumbUpIcon fontSize="small" /></span> {likeCount}
         </button>
         <button
           onClick={handleToggleComments}
           disabled={isLoadingComments}
-          className={`border-none bg-transparent cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm px-2 py-1 transition-colors ${
-            showComments ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-800'
-          } ${isLoadingComments ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`border-none bg-transparent cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm px-2 py-1 transition-colors ${showComments ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-800'
+            } ${isLoadingComments ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <span><InsertCommentIcon fontSize="small" /></span> {commentCount}
-        </button>
-        <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-xs sm:text-sm px-2 py-1 hover:text-gray-800 transition-colors">
-          <span><ShareIcon fontSize="small" /></span> Share
         </button>
       </div>
 

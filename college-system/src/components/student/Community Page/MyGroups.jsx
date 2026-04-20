@@ -5,10 +5,11 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import PeopleIcon from '@mui/icons-material/People';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
 import ProfileCard from './ProfileCard';
 import Navigation from './Navigation';
 import GroupModal from './GroupModal';
-import { deleteGroup, getMyGroups, updateGroup } from '../../../services/communityService';
+import { deleteGroup, getMyGroups, updateGroup, createGroup } from '../../../services/communityService';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function MyGroups() {
@@ -22,6 +23,7 @@ export default function MyGroups() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isSavingGroup, setIsSavingGroup] = useState(false);
   const [groupModalError, setGroupModalError] = useState('');
+  const [modalMode, setModalMode] = useState('create');
   const [deletingGroupId, setDeletingGroupId] = useState(null);
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
@@ -47,6 +49,15 @@ export default function MyGroups() {
     setOpenActionMenuId(null);
     setSelectedGroup(group);
     setGroupModalError('');
+    setModalMode('edit');
+    setShowGroupModal(true);
+  };
+
+  const handleOpenCreateGroupModal = () => {
+    setOpenActionMenuId(null);
+    setSelectedGroup(null);
+    setGroupModalError('');
+    setModalMode('create');
     setShowGroupModal(true);
   };
 
@@ -67,12 +78,15 @@ export default function MyGroups() {
       setIsSavingGroup(true);
       setGroupModalError('');
 
-      if (!selectedGroup?.id) {
-        setGroupModalError('Please select a group to edit.');
-        return;
+      if (modalMode === 'edit') {
+        if (!selectedGroup?.id) {
+          setGroupModalError('Please select a group to edit.');
+          return;
+        }
+        await updateGroup(selectedGroup.id, payload);
+      } else {
+        await createGroup(payload);
       }
-
-      await updateGroup(selectedGroup.id, payload);
 
       setShowGroupModal(false);
       setSelectedGroup(null);
@@ -211,6 +225,16 @@ export default function MyGroups() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">My Groups</h1>
         </div>
 
+        {isAdminUser && (
+          <button
+            onClick={handleOpenCreateGroupModal}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-md active:scale-95 max-lg:mr-3 ml-auto lg:mr-0"
+          >
+            <AddIcon fontSize="small" />
+            <span className="max-sm:hidden">Create Group</span>
+          </button>
+        )}
+
         {/* Mobile Menu Button */}
         <button
           onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
@@ -305,21 +329,21 @@ export default function MyGroups() {
                   tabIndex={0}
                   className="relative w-full text-left bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
                 >
-                  <div className="absolute right-4 top-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleActionMenu(group.id);
-                      }}
-                      className="rounded-lg p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                      aria-label="Group actions"
-                    >
-                      <MoreVertIcon fontSize="small" />
-                    </button>
+                  {isAdminUser ? (
+                    <div className="absolute right-4 top-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleActionMenu(group.id);
+                        }}
+                        className="rounded-lg p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                        aria-label="Group actions"
+                      >
+                        <MoreVertIcon fontSize="small" />
+                      </button>
 
-                    {openActionMenuId === group.id ? (
-                      <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                        {isAdminUser ? (
+                      {openActionMenuId === group.id ? (
+                        <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -329,8 +353,6 @@ export default function MyGroups() {
                           >
                             Edit
                           </button>
-                        ) : null}
-                        {isAdminUser ? (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -341,20 +363,10 @@ export default function MyGroups() {
                           >
                             {deletingGroupId === group.id ? 'Deleting...' : 'Delete'}
                           </button>
-                        ) : null}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleLeaveGroup(group);
-                          }}
-                          disabled={deletingGroupId === group.id}
-                          className="block w-full px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          Exit
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
 
                   {/* Group Icon */}
                   <div className="flex items-start gap-4 mb-4">
@@ -413,7 +425,7 @@ export default function MyGroups() {
         isOpen={showGroupModal}
         onClose={handleCloseGroupModal}
         onSubmit={handleGroupSubmit}
-        mode="edit"
+        mode={modalMode}
         initialValues={selectedGroup}
         isSubmitting={isSavingGroup}
         submitError={groupModalError}

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import EventModal from './EventModal';
-import { createCommunityEvent, getCommunityEvents } from '../../../services/communityService';
+import { getCommunityEvents } from '../../../services/communityService';
 import { useAuth } from '../../../hooks/useAuth';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -48,11 +47,7 @@ export default function UpcomingEvents() {
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateEventModal, setShowCreateEventModal] = useState(false);
-  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-  const [createEventError, setCreateEventError] = useState('');
-  const MAX_VISIBLE = 4;
-  const [showAll, setShowAll] = useState(false);
+  const MAX_VISIBLE = 5;
 
   useEffect(() => {
     fetchEvents();
@@ -84,49 +79,13 @@ export default function UpcomingEvents() {
     }
   };
 
-  const handleOpenCreateEventModal = () => {
-    setCreateEventError('');
-    setShowCreateEventModal(true);
-  };
 
-  const handleCloseCreateEventModal = () => {
-    if (!isCreatingEvent) {
-      setShowCreateEventModal(false);
-      setCreateEventError('');
-    }
-  };
-
-  const handleCreateEvent = async (payload) => {
-    try {
-      setIsCreatingEvent(true);
-      setCreateEventError('');
-
-      await createCommunityEvent(payload);
-      setShowCreateEventModal(false);
-      await fetchEvents();
-    } catch (err) {
-      console.error('Error creating event:', err);
-
-      if (err?.response?.status === 401) {
-        setCreateEventError('Your session expired. Please login again.');
-      } else if (err?.response?.status === 403) {
-        setCreateEventError('Only admin or super admin can create events.');
-      } else if (err?.response?.status >= 500) {
-        setCreateEventError('Server error while creating event. Please try again shortly.');
-      } else {
-        const apiMessage =
-          err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          err?.response?.data?.details;
-        setCreateEventError(apiMessage || 'Failed to create event. Please try again.');
-      }
-    } finally {
-      setIsCreatingEvent(false);
-    }
-  };
-
-  const visibleEvents = showAll ? events : events.slice(0, MAX_VISIBLE);
-  const hasMore = events.length > MAX_VISIBLE;
+  const sortedEvents = [...events].sort((a, b) => {
+    const d1 = new Date(a.event_date);
+    const d2 = new Date(b.event_date);
+    return d2 - d1;
+  });
+  const visibleEvents = sortedEvents.slice(0, MAX_VISIBLE);
 
   const renderSkeleton = () => (
     <div className="flex flex-col gap-3">
@@ -219,15 +178,6 @@ export default function UpcomingEvents() {
             </span>
           )}
         </div>
-        {isAdmin && (
-          <button
-            onClick={handleOpenCreateEventModal}
-            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-md active:scale-95"
-          >
-            <AddIcon sx={{ fontSize: 15 }} />
-            <span className="hidden sm:inline">Create</span>
-          </button>
-        )}
       </div>
 
       {/* Body */}
@@ -244,26 +194,8 @@ export default function UpcomingEvents() {
           <div className="flex flex-col gap-0.5">
             {visibleEvents.map((event, idx) => renderEventCard(event, idx))}
           </div>
-
-          {hasMore && (
-            <button
-              onClick={() => setShowAll((prev) => !prev)}
-              className="mt-3 w-full text-center text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg py-2 transition-all cursor-pointer border-none"
-            >
-              {showAll ? 'Show less' : `View all ${events.length} events`}
-            </button>
-          )}
         </>
       )}
-
-      <EventModal
-        isOpen={showCreateEventModal}
-        onClose={handleCloseCreateEventModal}
-        onSubmit={handleCreateEvent}
-        mode="create"
-        isSubmitting={isCreatingEvent}
-        submitError={createEventError}
-      />
     </div>
   );
 }

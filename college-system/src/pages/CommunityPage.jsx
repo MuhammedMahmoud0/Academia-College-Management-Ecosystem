@@ -3,7 +3,7 @@ import Navigation from '../components/student/Community Page/Navigation';
 import PostCard from '../components/student/Community Page/PostCard';
 import UpcomingEvents from '../components/student/Community Page/UpcomingEvents';
 import Suggested from '../components/student/Community Page/Suggested';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ImageIcon from '@mui/icons-material/Image';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
@@ -30,6 +30,8 @@ export default function CommunityPage() {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
   const imageFileInputRef = useRef(null);
+  const sentinelRef = useRef(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -69,9 +71,13 @@ export default function CommunityPage() {
 
   const fetchPosts = async (pageNum = 1) => {
     try {
-      setLoading(true);
+      if (pageNum === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
       const data = await getCommunityFeed(pageNum, 10);
-      
+
       // Transform API data to match component structure
       const transformedPosts = (data.posts || []).map(transformPost);
 
@@ -80,13 +86,13 @@ export default function CommunityPage() {
       } else {
         setPosts(prev => [...prev, ...transformedPosts]);
       }
-      
+
       setHasMore(transformedPosts.length === 10);
       setPage(pageNum);
       setError(null);
     } catch (err) {
       console.error('Error fetching posts:', err);
-      
+
       // Provide specific error messages
       if (err.response?.status === 403) {
         setError('You do not have permission to view posts.');
@@ -97,7 +103,7 @@ export default function CommunityPage() {
       } else {
         setError('Unable to connect to server. Showing sample posts.');
       }
-      
+
       // Fallback to mock data on first load
       if (pageNum === 1) {
         const mockPosts = getMockPosts();
@@ -105,6 +111,7 @@ export default function CommunityPage() {
       }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -167,7 +174,7 @@ export default function CommunityPage() {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           // Compress to JPEG with 0.7 quality
           const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
           resolve(dataUrl);
@@ -307,19 +314,37 @@ export default function CommunityPage() {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
-  const loadMore = () => {
-    if (!loading && hasMore) {
+  const loadMore = useCallback(() => {
+    if (!loading && !loadingMore && hasMore) {
       fetchPosts(page + 1);
     }
-  };
+  }, [loading, loadingMore, hasMore, page]);
+
+  // Infinite scroll: observe sentinel element
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   return (
-  <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
+    <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl" >
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-      <h1 className="text-3xl font-bold text-slate-900 mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
           Community Hub
         </h1>
-        
+
         {/* Mobile Menu Buttons */}
         <div className="flex gap-2">
           <button
@@ -342,11 +367,11 @@ export default function CommunityPage() {
           </button>
         </div>
       </div>
-      
+
       {/* Left Sidebar Overlay - Mobile/Tablet */}
       {leftSidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div 
+          <div
             className="absolute inset-0 bg-black bg-opacity-10"
             onClick={() => setLeftSidebarOpen(false)}
           ></div>
@@ -373,7 +398,7 @@ export default function CommunityPage() {
       {/* Right Sidebar Overlay - Mobile/Tablet */}
       {rightSidebarOpen && (
         <div className="xl:hidden fixed inset-0 z-50">
-          <div 
+          <div
             className="absolute inset-0 bg-black bg-opacity-10"
             onClick={() => setRightSidebarOpen(false)}
           ></div>
@@ -408,103 +433,103 @@ export default function CommunityPage() {
         <div className="flex flex-col gap-4 lg:gap-5">
           {/* Create Post - Admin/Super Admin only */}
           {isAdmin && (
-          <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm">
-            <div className="flex gap-3 items-start">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-400 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden">
-                {(studentProfile?.avatar_url || user?.avatar_url || user?.avatar) ? (
-                  <img
-                    src={studentProfile?.avatar_url || user?.avatar_url || user?.avatar}
-                    alt={studentProfile?.full_name || user?.name || 'User'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  getInitials(studentProfile?.full_name || user?.name || 'User')
-                )}
+            <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm">
+              <div className="flex gap-3 items-start">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-400 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden">
+                  {(studentProfile?.avatar_url || user?.avatar_url || user?.avatar) ? (
+                    <img
+                      src={studentProfile?.avatar_url || user?.avatar_url || user?.avatar}
+                      alt={studentProfile?.full_name || user?.name || 'User'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    getInitials(studentProfile?.full_name || user?.name || 'User')
+                  )}
+                </div>
+                <textarea
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  placeholder={`What's on your mind, ${studentProfile?.full_name?.split(' ')[0] || user?.name?.split(' ')[0] || 'there'}?`}
+                  className="flex-1 border-none outline-none text-sm sm:text-base bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg resize-none min-h-[44px] max-h-[200px]"
+                  rows={1}
+                  onInput={(e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                />
               </div>
-              <textarea
-                value={newPostContent}
-                onChange={(e) => setNewPostContent(e.target.value)}
-                placeholder={`What's on your mind, ${studentProfile?.full_name?.split(' ')[0] || user?.name?.split(' ')[0] || 'there'}?`}
-                className="flex-1 border-none outline-none text-sm sm:text-base bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg resize-none min-h-[44px] max-h-[200px]"
-                rows={1}
-                onInput={(e) => {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
-                }}
+
+              <div className="mt-3 flex flex-col gap-1 sm:max-w-xs">
+                <label htmlFor="post-group" className="text-xs font-medium text-gray-600">Post to group</label>
+                <select
+                  id="post-group"
+                  value={selectedGroupId}
+                  onChange={(e) => {
+                    setSelectedGroupId(e.target.value);
+                    if (createPostError) setCreatePostError('');
+                  }}
+                  className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  {myGroups.length === 0 ? (
+                    <option value="">No groups available</option>
+                  ) : (
+                    myGroups.map((group) => (
+                      <option key={group.id} value={String(group.id)}>{group.name}</option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              <input
+                ref={imageFileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleSelectImageFile}
               />
-            </div>
 
-            <div className="mt-3 flex flex-col gap-1 sm:max-w-xs">
-              <label htmlFor="post-group" className="text-xs font-medium text-gray-600">Post to group</label>
-              <select
-                id="post-group"
-                value={selectedGroupId}
-                onChange={(e) => {
-                  setSelectedGroupId(e.target.value);
-                  if (createPostError) setCreatePostError('');
-                }}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                {myGroups.length === 0 ? (
-                  <option value="">No groups available</option>
-                ) : (
-                  myGroups.map((group) => (
-                    <option key={group.id} value={String(group.id)}>{group.name}</option>
-                  ))
-                )}
-              </select>
-            </div>
+              {imagePreviewUrl ? (
+                <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs text-gray-600">{selectedImageFile?.name || 'Selected image'}</span>
+                    <button
+                      onClick={handleRemoveSelectedImage}
+                      className="text-xs text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <img src={imagePreviewUrl} alt="Selected preview" className="max-h-48 rounded-md object-contain" />
+                </div>
+              ) : null}
 
-            <input
-              ref={imageFileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleSelectImageFile}
-            />
-
-            {imagePreviewUrl ? (
-              <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs text-gray-600">{selectedImageFile?.name || 'Selected image'}</span>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 pt-4 border-t border-gray-200 sm:justify-between sm:items-center">
+                <div className="flex gap-4 sm:gap-5 justify-center sm:justify-start">
                   <button
-                    onClick={handleRemoveSelectedImage}
-                    className="text-xs text-red-600 hover:text-red-700"
+                    onClick={() => imageFileInputRef.current?.click()}
+                    className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors"
                   >
-                    Remove
+                    <span><ImageIcon /></span>
+                  </button>
+                  <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
+                    <span><AttachFileIcon /></span>
+                  </button>
+                  <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
+                    <span><SignalCellularAltIcon /></span>
                   </button>
                 </div>
-                <img src={imagePreviewUrl} alt="Selected preview" className="max-h-48 rounded-md object-contain" />
-              </div>
-            ) : null}
-            
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 pt-4 border-t border-gray-200 sm:justify-between sm:items-center">
-              <div className="flex gap-4 sm:gap-5 justify-center sm:justify-start">
                 <button
-                  onClick={() => imageFileInputRef.current?.click()}
-                  className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors"
+                  onClick={handleCreatePost}
+                  disabled={!newPostContent.trim() || isPosting || !selectedGroupId}
+                  className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors w-full sm:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  <span><ImageIcon /></span>
-                </button>
-                <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
-                  <span><AttachFileIcon /></span>
-                </button>
-                <button className="border-none bg-transparent cursor-pointer text-gray-600 flex items-center gap-1.5 text-lg sm:text-xl hover:text-gray-800 transition-colors">
-                  <span><SignalCellularAltIcon /></span>
+                  {isPosting ? 'Posting...' : 'Post'}
                 </button>
               </div>
-              <button
-                onClick={handleCreatePost}
-                disabled={!newPostContent.trim() || isPosting || !selectedGroupId}
-                className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors w-full sm:w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {isPosting ? 'Posting...' : 'Post'}
-              </button>
+              {createPostError ? (
+                <p className="mt-3 text-sm text-red-600">{createPostError}</p>
+              ) : null}
             </div>
-            {createPostError ? (
-              <p className="mt-3 text-sm text-red-600">{createPostError}</p>
-            ) : null}
-          </div>
           )}
 
           {/* Posts */}
@@ -516,7 +541,7 @@ export default function CommunityPage() {
           ) : error ? (
             <div className="bg-red-50 rounded-xl p-6 shadow-sm text-center">
               <p className="text-red-600">{error}</p>
-              <button 
+              <button
                 onClick={() => fetchPosts(1)}
                 className="mt-4 bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors"
               >
@@ -532,17 +557,21 @@ export default function CommunityPage() {
               {posts.map(post => (
                 <PostCard key={post.id} post={post} />
               ))}
-              
+
+              {/* Infinite scroll sentinel */}
               {hasMore && (
-                <div className="text-center py-4">
-                  <button
-                    onClick={loadMore}
-                    disabled={loading}
-                    className="bg-indigo-600 text-white border-none rounded-lg px-6 py-2.5 cursor-pointer font-medium text-sm hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Loading...' : 'Load More'}
-                  </button>
+                <div ref={sentinelRef} className="flex justify-center py-6">
+                  {loadingMore && (
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+                      <span className="text-sm">Loading more posts...</span>
+                    </div>
+                  )}
                 </div>
+              )}
+
+              {!hasMore && posts.length > 0 && (
+                <p className="text-center text-gray-400 text-sm py-4">You've reached the end</p>
               )}
             </>
           )}
