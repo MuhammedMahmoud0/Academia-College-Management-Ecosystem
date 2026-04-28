@@ -2,8 +2,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDepartments } from '../../../services/userManagement';
 import { useToast } from '../../../hooks/useToast';
 
-export default function EditModal({ user, onClose, onSave, isSaving = false }) {
-    const isStudent = Boolean(user?.student_profiles?.student_id || user?.studentId);
+export default function EditModal({
+    user,
+    onClose,
+    onSave,
+    isSaving = false,
+    mode,
+}) {
+    const resolvedMode = mode || (user?.role === 'admin' || user?.role === 'super_admin'
+        ? 'admin'
+        : Boolean(user?.student_profiles?.student_id || user?.studentId)
+            ? 'student'
+            : 'staff');
+    const isStudent = resolvedMode === 'student';
+    const isAdmin = resolvedMode === 'admin';
+    const showRoleField = resolvedMode === 'staff';
+    const showDepartmentField = resolvedMode !== 'admin';
     const toast = useToast();
     const getDepartmentId = (department) => String(department?.department_id || department?.id || '');
     const getDepartmentName = (department) => department?.name || department?.department_name || 'Unnamed Department';
@@ -44,6 +58,12 @@ export default function EditModal({ user, onClose, onSave, isSaving = false }) {
     });
 
     useEffect(() => {
+        if (!showDepartmentField) {
+            setIsLoadingDepartments(false);
+            setDepartments([]);
+            return;
+        }
+
         const loadDepartments = async () => {
             try {
                 setIsLoadingDepartments(true);
@@ -72,7 +92,7 @@ export default function EditModal({ user, onClose, onSave, isSaving = false }) {
         };
 
         loadDepartments();
-    }, [initialDepartmentId, initialDepartmentName, toast]);
+    }, [initialDepartmentId, initialDepartmentName, showDepartmentField, toast]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -115,7 +135,7 @@ export default function EditModal({ user, onClose, onSave, isSaving = false }) {
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-semibold text-gray-900">
-                                Edit {isStudent ? 'Student' : 'Doctor/Faculty'}
+                                Edit {isStudent ? 'Student' : isAdmin ? 'Admin' : 'Doctor/Faculty'}
                             </h2>
                             <button
                                 type="button"
@@ -157,7 +177,7 @@ export default function EditModal({ user, onClose, onSave, isSaving = false }) {
                                 />
                             </div>
 
-                            {!isStudent && (
+                            {showRoleField && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Role
@@ -219,27 +239,29 @@ export default function EditModal({ user, onClose, onSave, isSaving = false }) {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {isStudent ? 'Major' : 'Department'}
-                                </label>
-                                <select
-                                    name="department_id"
-                                    value={formData.department_id}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    disabled={isLoadingDepartments || isSaving}
-                                >
-                                    <option value="">
-                                        {isLoadingDepartments ? 'Loading departments...' : 'Select department'}
-                                    </option>
-                                    {departments.map((department) => (
-                                        <option key={getDepartmentId(department)} value={getDepartmentId(department)}>
-                                            {getDepartmentName(department)}
+                            {showDepartmentField && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {isStudent ? 'Major' : 'Department'}
+                                    </label>
+                                    <select
+                                        name="department_id"
+                                        value={formData.department_id}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        disabled={isLoadingDepartments || isSaving}
+                                    >
+                                        <option value="">
+                                            {isLoadingDepartments ? 'Loading departments...' : 'Select department'}
                                         </option>
-                                    ))}
-                                </select>
-                            </div>
+                                        {departments.map((department) => (
+                                            <option key={getDepartmentId(department)} value={getDepartmentId(department)}>
+                                                {getDepartmentName(department)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">

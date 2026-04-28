@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 
-export default function DropDownMenu({ user, onEdit, onResetPassword, onDelete, onChangeRole, profileLink }) {
+export default function DropDownMenu({
+    user,
+    onEdit,
+    onResetPassword,
+    onDelete,
+    onChangeRole,
+    profileLink,
+    profileState,
+    showProfileLink = true,
+}) {
     const menuRef = useRef(null);
     const [shouldOpenUpward, setShouldOpenUpward] = useState(false);
 
@@ -24,12 +33,15 @@ export default function DropDownMenu({ user, onEdit, onResetPassword, onDelete, 
             }`}
         >
             <div className="py-1">
-                <Link
-                    to={profileLink}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                    View Profile
-                </Link>
+                {showProfileLink && profileLink && (
+                    <Link
+                        to={profileLink}
+                        state={profileState}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        View Profile
+                    </Link>
+                )}
                 <button
                     onClick={() => onEdit(user)}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"

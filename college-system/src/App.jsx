@@ -36,7 +36,8 @@ import NotificationsPage from './pages/NotificationsPage';
 import AcademicManagementPage from './pages/AcademicManagementPage';
 import StudentsPaymentPage from './pages/StudentsPaymentPage';
 import UserManagementPage from './pages/UserManagementPage';
-import ManagementProfile from './components/admin/User Managment/ManagementProfile';
+import ManagementStudentProfile from './components/admin/User Managment/ManagementStudentProfile';
+import ManagementDoctorsProfile from './components/admin/User Managment/ManagementDoctorsProfile';
 import SettingPage from './pages/SettingPage';
 import AdminPaymentPage from './pages/AdminPaymentPage';
 import AdminDashboard from './pages/AdminDashboard';
@@ -105,7 +106,8 @@ function App() {
               <Route path="academic-management"                element={R(ADMIN,     <AcademicManagementPage />)} />
               <Route path="admin-attendance"                   element={R(ADMIN,     <AttendanceForAdmin />)} />
               <Route path="user-management"                    element={R(ADMIN,     <UserManagementPage />)} />
-              <Route path="user-management/management-profile" element={R(ADMIN,     <ManagementProfile />)} />
+              <Route path="user-management/students/:studentId/profile" element={R(ADMIN, <ManagementStudentProfile />)} />
+              <Route path="user-management/staff/:userId/profile" element={R(ADMIN, <ManagementDoctorsProfile />)} />
               <Route path="admin-payment"                      element={R(ADMIN,     <AdminPaymentPage />)} />
               <Route path="financial-management"               element={R(ADMIN,     <FinancialManagementPage />)} />
               {/* Super-admin only */}

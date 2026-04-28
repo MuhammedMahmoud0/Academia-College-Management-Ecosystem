@@ -172,6 +172,10 @@ export default function DoctorsManagement({ refreshToken = 0 }) {
     return date.toLocaleDateString('en-GB');
   };
 
+  const getStaffProfileLink = (doctor) => {
+    return doctor?.id ? `/dashboard/user-management/staff/${doctor.id}/profile` : '/dashboard/user-management';
+  };
+
   const roleOptions = useMemo(() => {
     const uniqueRoles = Array.from(new Set(doctors.map((doctor) => doctor.role).filter(Boolean)));
     return [
@@ -503,7 +507,11 @@ export default function DoctorsManagement({ refreshToken = 0 }) {
                             onEdit={handleEditUser}
                             onResetPassword={handleResetPassword}
                             onDelete={handleDeleteUser}
-                            profileLink="/dashboard/user-management/management-profile"
+                            profileLink={getStaffProfileLink(doctor)}
+                            profileState={{
+                              userRole: doctor?.role || '',
+                              userName: doctor?.full_name || doctor?.name || '',
+                            }}
                           />
                         )}
                       </div>

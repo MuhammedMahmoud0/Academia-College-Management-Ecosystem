@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StudentManagement from '../components/admin/User Managment/StudentManagement';
 import DoctorsManagement from '../components/admin/User Managment/DoctorsManagement';
+import AdminManagement from '../components/admin/User Managment/AdminManagement';
 import CreateStudentModal from '../components/admin/User Managment/CreateStudentModal';
 import ImportStudentsModal from '../components/admin/User Managment/ImportStudentsModal';
 import CreateStaffUserModal from '../components/admin/User Managment/CreateStaffUserModal';
 import ImportStaffModal from '../components/admin/User Managment/ImportStaffModal';
+import CreateAdminModal from '../components/admin/User Managment/CreateAdminModal';
 import {
   createNonStudentUser,
   createStudentUser,
@@ -12,24 +14,37 @@ import {
   uploadNonStudentsExcelFile,
   uploadStudentsExcelFile,
 } from '../services/userManagement';
+import { createManagedAdmin } from '../services/userManagementProfiles';
 import { useToast } from '../hooks/useToast';
+import { useAuth } from '../hooks/useAuth';
 import * as XLSX from 'xlsx';
 
 import excelimage from '../assets/icons/xls.png';
 export default function UserManagementPage() { 
+    const { user } = useAuth();
+    const isSuperAdmin = user?.role === 'super_admin';
     const [activeTab, setActiveTab] = useState('students');
     const [isCreateStudentModalOpen, setIsCreateStudentModalOpen] = useState(false);
     const [isImportStudentsModalOpen, setIsImportStudentsModalOpen] = useState(false);
     const [isCreateStaffModalOpen, setIsCreateStaffModalOpen] = useState(false);
     const [isImportStaffModalOpen, setIsImportStaffModalOpen] = useState(false);
+    const [isCreateAdminModalOpen, setIsCreateAdminModalOpen] = useState(false);
     const [isSubmittingCreate, setIsSubmittingCreate] = useState(false);
     const [isSubmittingImport, setIsSubmittingImport] = useState(false);
     const [isSubmittingStaffCreate, setIsSubmittingStaffCreate] = useState(false);
     const [isSubmittingStaffImport, setIsSubmittingStaffImport] = useState(false);
+    const [isSubmittingAdminCreate, setIsSubmittingAdminCreate] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [studentsRefreshToken, setStudentsRefreshToken] = useState(0);
     const [doctorsRefreshToken, setDoctorsRefreshToken] = useState(0);
+    const [adminsRefreshToken, setAdminsRefreshToken] = useState(0);
     const toast = useToast();
+
+    useEffect(() => {
+      if (!isSuperAdmin && activeTab === 'admins') {
+        setActiveTab('students');
+      }
+    }, [activeTab, isSuperAdmin]);
 
     const normalizeEmailColumnInExcel = async (file) => {
       const buffer = await file.arrayBuffer();
@@ -92,6 +107,11 @@ export default function UserManagementPage() {
     };
 
     const handleCreateUserClick = async () => {
+      if (activeTab === 'admins') {
+        setIsCreateAdminModalOpen(true);
+        return;
+      }
+
       if (activeTab === 'doctors-faculty') {
         setIsCreateStaffModalOpen(true);
         return;
@@ -128,6 +148,38 @@ export default function UserManagementPage() {
       }
 
       setIsImportStudentsModalOpen(true);
+    };
+
+    const handleCreateAdmin = async (formData) => {
+      try {
+        setIsSubmittingAdminCreate(true);
+        const payload = {
+          name: formData.name?.trim(),
+          email: formData.email?.trim(),
+          password: formData.password,
+        };
+
+        await createManagedAdmin(payload);
+        toast.success('Admin created successfully.');
+        setIsCreateAdminModalOpen(false);
+        setAdminsRefreshToken(Date.now());
+        return true;
+      } catch (error) {
+        const details = error?.response?.data?.details;
+        const detailsText = Array.isArray(details)
+          ? details[0]?.message || details[0]
+          : '';
+        const message =
+          error?.response?.data?.message
+          || error?.response?.data?.error
+          || detailsText
+          || error?.message
+          || 'Failed to create admin.';
+        toast.error(message);
+        return false;
+      } finally {
+        setIsSubmittingAdminCreate(false);
+      }
     };
 
     const handleCreateStudent = async (formData) => {
@@ -286,6 +338,18 @@ export default function UserManagementPage() {
           >
             Doctors & Faculty
           </button>
+          {isSuperAdmin && (
+            <button
+              onClick={() => setActiveTab('admins')}
+              className={`flex items-center justify-center sm:justify-start gap-2 px-3 md:px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap text-sm md:text-base ${
+                activeTab === 'admins'
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Admins
+            </button>
+          )}
         </div>
         {/* Action Buttons */}
         <div className="flex gap-3 w-full sm:w-auto">
@@ -296,19 +360,22 @@ export default function UserManagementPage() {
             <span className="text-xl">+</span>
             Create New User
           </button>
-          <button
-            onClick={handleImportClick}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors whitespace-nowrap flex-1 sm:flex-none"
-          >
-            <img src={excelimage} alt="Excel Icon" className="w-5 h-5" />
-            Import Excel File
-          </button>
+          {activeTab !== 'admins' && (
+            <button
+              onClick={handleImportClick}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors whitespace-nowrap flex-1 sm:flex-none"
+            >
+              <img src={excelimage} alt="Excel Icon" className="w-5 h-5" />
+              Import Excel File
+            </button>
+          )}
         </div>
       </div>
       <hr className='text-gray-300 mb-4'/>
         {/* Content */}
         {activeTab === 'students' && <StudentManagement refreshToken={studentsRefreshToken} />}
         {activeTab === 'doctors-faculty' && <DoctorsManagement refreshToken={doctorsRefreshToken} />}
+        {activeTab === 'admins' && isSuperAdmin && <AdminManagement refreshToken={adminsRefreshToken} />}
 
         <CreateStudentModal
           isOpen={isCreateStudentModalOpen}
@@ -330,6 +397,13 @@ export default function UserManagementPage() {
           isSubmitting={isSubmittingStaffCreate}
           onClose={() => setIsCreateStaffModalOpen(false)}
           onSubmit={handleCreateStaffUser}
+        />
+
+        <CreateAdminModal
+          isOpen={isCreateAdminModalOpen}
+          isSubmitting={isSubmittingAdminCreate}
+          onClose={() => setIsCreateAdminModalOpen(false)}
+          onSubmit={handleCreateAdmin}
         />
 
         <ImportStaffModal

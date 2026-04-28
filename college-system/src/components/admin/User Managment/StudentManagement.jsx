@@ -222,6 +222,11 @@ export default function StudentManagement({ refreshToken = 0 }) {
     return date.toLocaleDateString('en-GB');
   };
 
+  const getStudentProfileLink = (student) => {
+    const studentId = student?.student_profiles?.student_id;
+    return studentId ? `/dashboard/user-management/students/${studentId}/profile` : '/dashboard/user-management';
+  };
+
   const toggleMenu = (id) => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
@@ -534,7 +539,11 @@ export default function StudentManagement({ refreshToken = 0 }) {
                           onResetPassword={handleResetPassword}
                           onChangeRole={handleOpenChangeRole}
                           onDelete={handleDeleteUser}
-                          profileLink="/dashboard/user-management/management-profile"
+                          profileLink={getStudentProfileLink(student)}
+                          profileState={{
+                            userRole: student?.role || 'student',
+                            userName: student?.full_name || student?.name || '',
+                          }}
                         />
                       )}
                     </div>

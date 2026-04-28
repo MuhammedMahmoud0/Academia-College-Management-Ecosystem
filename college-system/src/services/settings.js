@@ -26,3 +26,20 @@ export const updatePassword = async (passwordData) => {
   });
   return response.data;
 };
+
+export const getNonStudentProfile = async () => {
+  const response = await api.get('/users/profile', {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
+export const updateNonStudentProfile = async (profileData) => {
+  const response = await api.patch('/users/profile', profileData, {
+    headers: {
+      ...getAuthHeaders(),
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
