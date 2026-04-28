@@ -3,12 +3,16 @@ import React from 'react';
 const TransactionsTable = ({ transactions }) => {
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
+      case 'paid':
       case 'completed':
-        return 'bg-green-100 text-green-600';
+        return 'bg-emerald-100 text-emerald-700';
+      case 'pending':
       case 'processing':
-        return 'bg-yellow-100 text-yellow-600';
+        return 'bg-amber-100 text-amber-700';
       case 'failed':
-        return 'bg-red-100 text-red-600';
+        return 'bg-rose-100 text-rose-700';
+      case 'refunded':
+        return 'bg-slate-100 text-slate-700';
       default:
         return 'bg-gray-100 text-gray-600';
     }
@@ -26,7 +30,9 @@ const TransactionsTable = ({ transactions }) => {
           <thead className="bg-gray-50 border-y border-gray-200">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Term</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
             </tr>
@@ -40,7 +46,15 @@ const TransactionsTable = ({ transactions }) => {
                     <div className="text-sm text-gray-500">{transaction.studentId}</div>
                   </div>
                 </td>
+                <td className="px-6 py-5">
+                  <div className="text-gray-900">{transaction.semester}</div>
+                  <div className="text-sm text-gray-500">{transaction.year}</div>
+                </td>
                 <td className="px-6 py-5 text-gray-700">{transaction.date}</td>
+                <td className="px-6 py-5">
+                  <div className="text-sm text-gray-900 capitalize">{transaction.gateway || 'N/A'}</div>
+                  <div className="text-xs text-gray-500">{transaction.invoiceCount} invoices</div>
+                </td>
                 <td className="px-6 py-5 font-semibold text-gray-900">${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td className="px-6 py-5">
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(transaction.status)}`}>
@@ -66,8 +80,22 @@ const TransactionsTable = ({ transactions }) => {
                 {transaction.status}
               </span>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-600">{transaction.date}</span>
+            <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+              <div>
+                <span className="text-gray-500">Term: </span>
+                <span className="text-gray-900">{transaction.semester} {transaction.year}</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Date: </span>
+                <span className="text-gray-900">{transaction.date}</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Gateway: </span>
+                <span className="text-gray-900 capitalize">{transaction.gateway || 'N/A'}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center text-sm border-t border-gray-100 pt-3">
+              <span className="text-gray-500">{transaction.invoiceCount} invoices</span>
               <span className="font-semibold text-gray-900 text-base">
                 ${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>

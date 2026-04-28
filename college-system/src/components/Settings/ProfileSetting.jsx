@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from '../../services/authService';
 import { getStudentProfile, updateStudentProfile } from '../../services/userProfile';
+import { getNonStudentProfile, updateNonStudentProfile } from '../../services/settings';
 import Toast from '../Toast/Toast';
 
 export default function ProfileSetting() {
@@ -45,14 +46,16 @@ export default function ProfileSetting() {
          });
          setProfileImage(p.avatar_url || null);
       } else {
+         const response = await getNonStudentProfile();
+         const p = response.user;
          setFormData({
-            fullName: authUser.name || authUser.full_name || '',
-            email: authUser.email || '',
-            ID: authUser.id || '',
-            phone: authUser.phone || '',
-            address: authUser.address || ''
+            fullName: p.full_name || '',
+            email: p.email || '',
+            ID: p.id || '',
+            phone: p.phone || '',
+            address: p.address || ''
          });
-         setProfileImage(authUser.avatar_url || null);
+         setProfileImage(p.avatar_url || null);
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -95,7 +98,11 @@ export default function ProfileSetting() {
         data.append('avatar', fileToUpload);
       }
       
-      await updateStudentProfile(data);
+      if (isStudent) {
+        await updateStudentProfile(data);
+      } else {
+        await updateNonStudentProfile(data);
+      }
       setToast({ message: 'Profile updated successfully!', type: 'success' });
       setFileToUpload(null);
     } catch (err) {
@@ -140,7 +147,7 @@ export default function ProfileSetting() {
       <div className="mb-6 md:mb-8">
          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Profile Settings</h1>
         <p className="text-sm md:text-base text-gray-500">
-          {isStudent ? 'Update your phone, address, and photo.' : 'View your profile details.'}
+          Update your phone, address, and photo.
         </p>
       </div>
 
@@ -154,25 +161,19 @@ export default function ProfileSetting() {
           )}
         </div>
         <div className="text-center sm:text-left">
-          {isStudent ? (
-            <>
-              <label htmlFor="photo-upload" className="cursor-pointer inline-block">
-                <span className="bg-indigo-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors">
-                  Change photo
-                </span>
-              </label>
-              <input
-                id="photo-upload"
-                type="file"
-                accept="image/jpeg,image/png"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-              <p className="text-sm text-gray-500 mt-2">JPG, PNG. 1MB max.</p>
-            </>
-          ) : (
-            <p className="text-sm text-gray-500 italic">Photo changing disabled.</p>
-          )}
+          <label htmlFor="photo-upload" className="cursor-pointer inline-block">
+            <span className="bg-indigo-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-indigo-700 transition-colors">
+              Change photo
+            </span>
+          </label>
+          <input
+            id="photo-upload"
+            type="file"
+            accept="image/jpeg,image/png"
+            onChange={handlePhotoChange}
+            className="hidden"
+          />
+          <p className="text-sm text-gray-500 mt-2">JPG, PNG. 1MB max.</p>
         </div>
       </div>
 
@@ -239,11 +240,8 @@ export default function ProfileSetting() {
               id="phone"
               name="phone"
               value={formData.phone}
-              onChange={isStudent ? handleInputChange : undefined}
-              readOnly={!isStudent}
-              className={`w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition-all ${
-                isStudent ? 'focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white' : 'bg-gray-50 focus:ring-0 text-gray-500'
-              }`}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white"
               placeholder="Phone Number"
             />
           </div>
@@ -258,11 +256,8 @@ export default function ProfileSetting() {
               id="address"
               name="address"
               value={formData.address}
-              onChange={isStudent ? handleInputChange : undefined}
-              readOnly={!isStudent}
-              className={`w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition-all ${
-                isStudent ? 'focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white' : 'bg-gray-50 focus:ring-0 text-gray-500'
-              }`}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white"
               placeholder="Home Address"
             />
           </div>
@@ -271,19 +266,17 @@ export default function ProfileSetting() {
 
 
         {/* Save Button */}
-        {isStudent && (
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={handleSaveChanges}
-              disabled={saving}
-              className={`text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg transition-colors font-medium w-full sm:w-auto ${
-                 saving ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-              }`}
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        )}
+        <div className="flex justify-end pt-4">
+          <button
+            onClick={handleSaveChanges}
+            disabled={saving}
+            className={`text-white px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base rounded-lg transition-colors font-medium w-full sm:w-auto ${
+               saving ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
     </div>
   );
