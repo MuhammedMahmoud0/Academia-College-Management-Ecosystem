@@ -238,6 +238,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 z-40 transition-transform duration-300 ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 } w-64 overflow-y-auto`}
+                data-lenis-prevent="true"
             >
                 <nav className="p-4">
                     {menuSections.map((section, idx) => (
