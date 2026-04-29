@@ -1,9 +1,31 @@
 import NewsCard from "./NewsCard";
-import techEvent from '../../../assets/events/tech event.jpg';
-import musicEvent from '../../../assets/events/music event.jpg';
-import showEvent from '../../../assets/events/show event.jpg';
+import techEvent from '../../../assets/events/tech event.webp';
+import musicEvent from '../../../assets/events/music event.webp';
+import showEvent from '../../../assets/events/show event.webp';
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function News() {
+    const containerRef = useRef(null);
+
+    useGSAP(() => {
+        gsap.fromTo('.gsap-news-card',
+            { opacity: 0, y: 50 },
+            { 
+                opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power2.out",
+                scrollTrigger: {
+                    trigger: '.gsap-news-grid',
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+    }, { scope: containerRef });
+
     const newsItems = [
         {
             date: "Oct 12, 2025",
@@ -23,7 +45,7 @@ export default function News() {
     ];
 
     return (
-        <div id="news" className="news-section py-12 md:py-20 px-4 md:px-8 bg-slate-100">
+        <div id="news" className="news-section py-12 md:py-20 px-4 md:px-8 bg-slate-100" ref={containerRef}>
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12 md:mb-16">
@@ -36,15 +58,15 @@ export default function News() {
                 </div>
 
                 {/* News Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 gsap-news-grid">
                     {newsItems.map((item, index) => (
-                        <NewsCard
-                            key={index}
-                            index={index}
-                            image={item.image}
-                            date={item.date}
-                            title={item.title}
-                        />
+                        <div key={index} className="gsap-news-card">
+                            <NewsCard
+                                image={item.image}
+                                date={item.date}
+                                title={item.title}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

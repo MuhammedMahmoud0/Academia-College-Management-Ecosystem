@@ -2,7 +2,7 @@ import AdmissionCard from './AdmissionCard';
 
 export default function Admission() {
     return (
-        <div id="admissions" className="admission-section py-12 md:py-20 px-4 md:px-8 bg-slate-50 border border-slate-200">
+        <div id="admissions" className="admission-section py-12 md:py-20 px-4 md:px-8 bg-slate-50">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12 md:mb-16">

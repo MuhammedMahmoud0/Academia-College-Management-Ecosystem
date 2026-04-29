@@ -1,5 +1,7 @@
-import { animate, useMotionValue, useInView } from "motion/react";
 import { useEffect, useState, useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import appleLogo from "../../../assets/logos/apple.svg";
 import googleLogo from "../../../assets/logos/google.svg";
@@ -7,7 +9,25 @@ import microsoftLogo from "../../../assets/logos/microsoft.svg";
 import nasaLogo from "../../../assets/logos/nasa.svg";
 import nvidiaLogo from "../../../assets/logos/nvidia.svg";
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Career() {
+  const containerRef = useRef(null);
+
+  useGSAP(() => {
+    gsap.fromTo('.gsap-header', 
+      { opacity: 0, y: -20 },
+      { 
+        opacity: 1, y: 0, duration: 0.6, ease: "power2.out",
+        scrollTrigger: {
+          trigger: '.gsap-header',
+          start: "top 80%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+  }, { scope: containerRef });
+
   const stats = [
     { value: 95, label: "Job Placement Rate", suffix: "%" },
     { value: 80000, label: "Average Starting Salary", prefix: "$", suffix: "+" },
@@ -23,39 +43,36 @@ export default function Career() {
   ];
 
   function Counter({ value, prefix = "", suffix = "" }) {
-    const count = useMotionValue(0);
     const [displayValue, setDisplayValue] = useState("0");
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, amount: 0.5 });
 
-    useEffect(() => {
-      if (!isInView) return;
-
-      const unsubscribe = count.on("change", (latest) => {
-        const num = Math.round(latest);
-        const formatted = num.toLocaleString();
-        setDisplayValue(`${prefix}${formatted}${suffix}`);
-      });
-
-      const controls = animate(count, value, { 
-        duration: 2,
-        ease: "easeOut"
-      });
-
-      return () => {
-        unsubscribe();
-        controls.stop();
-      };
-    }, [value, count, prefix, suffix, isInView]);
+    useGSAP(() => {
+        const obj = { val: 0 };
+        gsap.to(obj, {
+            val: value,
+            duration: 2,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ref.current,
+                start: "top 85%",
+                once: true
+            },
+            onUpdate: function() {
+                const num = Math.round(obj.val);
+                const formatted = num.toLocaleString();
+                setDisplayValue(`${prefix}${formatted}${suffix}`);
+            }
+        });
+    }, { scope: ref });
 
     return <span ref={ref}>{displayValue}</span>;
   }
 
   return (
-    <div id="careers" className="career-section py-12 md:py-20 px-4 md:px-8 bg-slate-50 border border-slate-200">
+    <div id="careers" className="career-section py-12 md:py-20 px-4 md:px-8 bg-slate-50" ref={containerRef}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-12 md:mb-16 gsap-header">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">
             Career Outcomes & Industry Partners
           </h1>

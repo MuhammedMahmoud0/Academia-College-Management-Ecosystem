@@ -1,8 +1,40 @@
-import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Faq() {
     const [openIndex, setOpenIndex] = useState(null);
+    const containerRef = useRef(null);
+
+    useGSAP(() => {
+        gsap.fromTo('.gsap-header', 
+            { opacity: 0, y: -20 },
+            { 
+                opacity: 1, y: 0, duration: 0.6, ease: "power2.out",
+                scrollTrigger: {
+                    trigger: '.gsap-header',
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+
+        const items = gsap.utils.toArray('.gsap-faq-item');
+        gsap.fromTo(items,
+            { opacity: 0, y: 20 },
+            {
+                opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out",
+                scrollTrigger: {
+                    trigger: '.gsap-faq-container',
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+    }, { scope: containerRef });
 
     const faqs = [
         {
@@ -32,34 +64,23 @@ export default function Faq() {
     };
 
     return (
-        <div id="faq" className="faq-section py-12 md:py-20 px-4 md:px-8 bg-slate-50 border border-slate-200">
+        <div id="faq" className="faq-section py-12 md:py-20 px-4 md:px-8 bg-slate-50" ref={containerRef}>
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <motion.div 
-                    className="text-center mb-12 md:mb-16"
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ duration: 0.6 }}
+                <div 
+                    className="text-center mb-12 md:mb-16 gsap-header"
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3 md:mb-4">
                         Frequently Asked Questions
                     </h2>
-                </motion.div>
+                </div>
 
                 {/* FAQ Items */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 space-y-4">
+                <div className="bg-white rounded-2xl shadow-lg p-8 space-y-4 gsap-faq-container">
                     {faqs.map((faq, index) => (
-                        <motion.div
+                        <div
                             key={faq.id}
-                            className="border-b border-slate-200 last:border-b-0"
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.3 }}
-                            transition={{ 
-                                duration: 0.5,
-                                delay: index * 0.1
-                            }}
+                            className="border-b border-slate-200 last:border-b-0 gsap-faq-item"
                         >
                             {/* Question */}
                             <button
@@ -69,7 +90,7 @@ export default function Faq() {
                                 <span className="text-lg font-medium text-slate-900">
                                     {faq.question}
                                 </span>
-                                <motion.svg
+                                <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
                                     height="20"
@@ -79,29 +100,23 @@ export default function Faq() {
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    className="flex-shrink-0 ml-4 text-slate-600"
-                                    animate={{ rotate: openIndex === index ? 180 : 0 }}
-                                    transition={{ duration: 0.3 }}
+                                    className={`flex-shrink-0 ml-4 text-slate-600 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}
                                 >
                                     <polyline points="6 9 12 15 18 9" />
-                                </motion.svg>
+                                </svg>
                             </button>
 
                             {/* Answer */}
-                            <motion.div
-                                initial={false}
-                                animate={{
-                                    height: openIndex === index ? "auto" : 0,
-                                    opacity: openIndex === index ? 1 : 0
-                                }}
-                                transition={{ duration: 0.3, ease: "easeInOut" }}
-                                className="overflow-hidden"
+                            <div
+                                className={`grid transition-all duration-300 ease-in-out ${openIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                             >
-                                <p className="pb-4 text-slate-600 leading-relaxed">
-                                    {faq.answer}
-                                </p>
-                            </motion.div>
-                        </motion.div>
+                                <div className="overflow-hidden">
+                                    <p className="pb-4 text-slate-600 leading-relaxed">
+                                        {faq.answer}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>

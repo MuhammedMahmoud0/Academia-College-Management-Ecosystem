@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import ImagesCard from "./ImagesCard.jsx"; 
 
-import libraryImg from '../../../assets/images/library.jpg';
-import labsImg from '../../../assets/images/labs.jpg';
-import sportsImg from '../../../assets/images/sports1.jpg';
-import loungeImg from '../../../assets/images/lounge.jpg';
+import libraryImg from '../../../assets/images/library.webp';
+import labsImg from '../../../assets/images/labs.webp';
+import sportsImg from '../../../assets/images/sports1.webp';
+import loungeImg from '../../../assets/images/lounge.webp';
 
 export default function Campus() {
     const [hoveredCard, setHoveredCard] = useState(null);

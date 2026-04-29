@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { motion } from "motion/react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -9,6 +10,51 @@ const LoginCard = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login, user, isLoading } = useAuth();
+  
+  const containerRef = useRef(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline();
+    
+    tl.fromTo(".gsap-logo", 
+      { opacity: 0, y: -20 }, 
+      { opacity: 1, y: 0, duration: 0.5 }
+    )
+    .fromTo(".gsap-title",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      "-=0.1"
+    )
+    .fromTo(".gsap-subtitle",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      "-=0.1"
+    )
+    .fromTo(".gsap-card",
+      { scale: 0.95, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.4 },
+      "-=0.1"
+    )
+    .fromTo(".gsap-email",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      "-=0.2"
+    )
+    .fromTo(".gsap-password",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      "-=0.1"
+    )
+    .fromTo(".gsap-button",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 },
+      "-=0.1"
+    )
+    .fromTo(".gsap-back",
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3 }
+    );
+  }, { scope: containerRef });
 
   const getHomeRoute = (role) => {
     const routes = {
@@ -33,165 +79,144 @@ const LoginCard = () => {
     } catch (error) {
       setError(error.response?.data?.message || "Login failed. Please try again.");
       console.error("Login failed:", error);
+      gsap.fromTo(".gsap-error", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
     }
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full max-w-lg mx-auto" ref={containerRef}>
       {/* Header - Outside Card */}
-      <div className="text-center mb-4 sm:mb-6 px-4 sm:px-0">
-        <motion.div
-          className="flex items-center justify-center gap-2 mb-2 sm:mb-3"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+      <div className="text-center mb-8 px-4 sm:px-0">
+        <div
+          className="flex items-center justify-center gap-3 mb-4 gsap-logo"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#5B4EE5"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="sm:w-7 sm:h-7"
-          >
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-            <path d="M6 12v5c3 3 9 3 12 0v-5" />
-          </svg>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-            Academia College
+          <div className="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-6 h-6"
+            >
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+              <path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+            Academia
           </h1>
-        </motion.div>
-        <motion.h2
-          className="text-base sm:text-lg font-semibold text-gray-700 mb-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+        </div>
+        <h2
+          className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 gsap-title"
         >
-          Welcome Back!
-        </motion.h2>
-        <motion.p
-          className="text-xs sm:text-sm text-gray-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          Welcome Back
+        </h2>
+        <p
+          className="text-sm sm:text-base text-gray-500 gsap-subtitle font-medium"
         >
-          Sign in to continue to your account.
-        </motion.p>
+          Sign in to access your dashboard
+        </p>
       </div>
 
       {/* Card Container */}
-      <motion.div
-        className="bg-white rounded-xl shadow-lg p-6 sm:p-8 mx-4 sm:mx-0"
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
+      <div
+        className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-100 p-8 sm:p-10 mx-4 sm:mx-0 gsap-card"
       >
         {/* Error Message */}
         {error && (
-          <motion.div
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div
+            className="mb-6 p-4 bg-red-50/80 border border-red-200 rounded-xl text-red-700 text-sm font-medium flex items-center gap-2 gsap-error backdrop-blur-sm"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {error}
-          </motion.div>
+          </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Input */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+          <div className="gsap-email">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
-              required
-            />
-          </motion.div>
+            <div className="relative">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-sm text-gray-900 placeholder-gray-400"
+                required
+              />
+            </div>
+          </div>
 
           {/* Password Input */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
+          <div className="gsap-password">
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-xs sm:text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <Link
-                to="/forgot-password"
-                className="text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 transition-colors"
-              >
-                Forgot password?
-              </Link>
             </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
-              required
-            />
-          </motion.div>
+            <div className="relative">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-sm text-gray-900 placeholder-gray-400"
+                required
+              />
+            </div>
+          </div>
 
           {/* Login Button */}
-          <motion.button
+          <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-600 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4 sm:mt-6 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: isLoading ? 1 : 1.01 }}
-            whileTap={{ scale: isLoading ? 1 : 0.99 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition-all active:scale-[0.98] mt-6 text-base disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-indigo-600/20 gsap-button flex items-center justify-center gap-2"
           >
-            {isLoading ? "Logging in..." : "Login"}
-          </motion.button>
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Logging in...
+              </>
+            ) : "Sign In"}
+          </button>
         </form>
-      </motion.div>
+      </div>
 
       {/* Back to Home Link */}
-      <motion.div
-        className="text-center mt-4 sm:mt-6 px-4 sm:px-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
+      <div
+        className="text-center mt-8 px-4 sm:px-0 gsap-back"
       >
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors text-sm sm:text-base"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg font-medium transition-all text-sm group"
         >
           <svg
-            className="w-4 h-4"
+            className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
           </svg>
-          Back to Home
+          Back to Homepage
         </Link>
-      </motion.div>
+      </div>
     </div>
   );
 };
