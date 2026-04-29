@@ -1,4 +1,6 @@
-import { motion } from "motion/react";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 // Icon components
 const CodeIcon = () => (
@@ -72,62 +74,63 @@ const iconMap = {
 
 export default function ProgramsCard({ program, index }) {
   const IconComponent = iconMap[program.icon] || CodeIcon;
+  const cardRef = useRef(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: "top 85%",
+        toggleActions: "play none none none"
+      }
+    });
+
+    tl.fromTo(cardRef.current,
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 0.6, delay: index * 0.15, ease: "power2.out" }
+    )
+    .fromTo('.gsap-icon',
+      { scale: 0, rotate: -180 },
+      { scale: 1, rotate: 0, duration: 0.6, ease: "back.out(1.7)" },
+      "-=0.4"
+    )
+    .fromTo('.gsap-title',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5 },
+      "-=0.4"
+    )
+    .fromTo('.gsap-desc',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5 },
+      "-=0.3"
+    );
+  }, { scope: cardRef });
 
   return (
-    <motion.div
-      className="flex flex-col items-center bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-8 text-center"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.15,
-        ease: "easeOut",
-      }}
-      whileHover={{ scale: 1.03, y: -5 }}
+    <div
+      ref={cardRef}
+      className="flex flex-col items-center bg-white rounded-2xl shadow-md hover:shadow-xl hover:scale-[1.03] hover:-translate-y-[5px] transition-all duration-300 p-8 text-center"
     >
       {/* Icon Circle */}
-      <motion.div
-        className="w-20 h-20 mb-6 flex items-center justify-center bg-indigo-100 rounded-full text-indigo-600"
-        initial={{ scale: 0, rotate: -180 }}
-        whileInView={{ scale: 1, rotate: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.6,
-          delay: index * 0.15 + 0.2,
-          ease: "easeOut",
-        }}
+      <div
+        className="w-20 h-20 mb-6 flex items-center justify-center bg-indigo-100 rounded-full text-indigo-600 gsap-icon"
       >
         <IconComponent />
-      </motion.div>
+      </div>
 
       {/* Program Name */}
-      <motion.h3
-        className="text-xl font-bold text-slate-900 mb-3"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.5,
-          delay: index * 0.15 + 0.3,
-        }}
+      <h3
+        className="text-xl font-bold text-slate-900 mb-3 gsap-title"
       >
         {program.name}
-      </motion.h3>
+      </h3>
 
       {/* Description */}
-      <motion.p
-        className="text-slate-600 leading-relaxed"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.5,
-          delay: index * 0.15 + 0.4,
-        }}
+      <p
+        className="text-slate-600 leading-relaxed gsap-desc"
       >
         {program.description}
-      </motion.p>
-    </motion.div>
+      </p>
+    </div>
   );
 }

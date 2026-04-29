@@ -17,7 +17,7 @@ import Navigation from './Navigation';
 import EventModal from './EventModal';
 import { deleteCommunityEvent, getCommunityEvents, updateCommunityEvent, createCommunityEvent } from '../../../services/communityService';
 import { useAuth } from '../../../hooks/useAuth';
-import Eventimage from '../../../assets/events/tech event.jpg';
+import Eventimage from '../../../assets/events/tech event.webp';
 
 export default function Events() {
   const navigate = useNavigate();

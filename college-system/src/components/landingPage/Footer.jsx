@@ -1,4 +1,9 @@
-import { motion } from "motion/react";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Icon Components
 const GraduationCapIcon = () => (
@@ -29,6 +34,35 @@ const LinkedinIcon = () => (
 );
 
 export default function Footer() {
+    const footerRef = useRef(null);
+
+    useGSAP(() => {
+        const columns = gsap.utils.toArray('.gsap-footer-col');
+        gsap.fromTo(columns,
+            { opacity: 0, y: 20 },
+            {
+                opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out",
+                scrollTrigger: {
+                    trigger: footerRef.current,
+                    start: "top 90%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+
+        gsap.fromTo('.gsap-footer-bottom',
+            { opacity: 0 },
+            {
+                opacity: 1, duration: 0.6, delay: 0.3, ease: "power2.out",
+                scrollTrigger: {
+                    trigger: footerRef.current,
+                    start: "top 90%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+    }, { scope: footerRef });
+
     const quickLinks = [
         { name: "About", href: "#about" },
         { name: "Admissions", href: "#admissions" },
@@ -51,17 +85,12 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-slate-900 text-slate-300 py-12 md:py-16 px-4 md:px-8 border-t border-slate-800" style={{ backgroundColor: '#0f172a' }}>
+        <footer className="bg-slate-900 text-slate-300 py-12 md:py-16 px-4 md:px-8 border-t border-slate-800" style={{ backgroundColor: '#0f172a' }} ref={footerRef}>
             <div className="max-w-7xl mx-auto">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8 md:mb-12">
                     {/* Brand Section */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6 }}
-                    >
+                    <div className="gsap-footer-col">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="text-indigo-500">
                                 <GraduationCapIcon />
@@ -71,15 +100,10 @@ export default function Footer() {
                         <p className="text-slate-400 leading-relaxed text-sm md:text-base">
                             A tradition of excellence, a future of innovation. Join a community dedicated to shaping the leaders of tomorrow.
                         </p>
-                    </motion.div>
+                    </div>
 
                     {/* Quick Links */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                    >
+                    <div className="gsap-footer-col">
                         <h4 className="text-lg font-bold text-white mb-4">Quick Links</h4>
                         <ul className="space-y-2">
                             {quickLinks.map((link, index) => (
@@ -93,15 +117,10 @@ export default function Footer() {
                                 </li>
                             ))}
                         </ul>
-                    </motion.div>
+                    </div>
 
                     {/* Contact Us */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
+                    <div className="gsap-footer-col">
                         <h4 className="text-base md:text-lg font-bold text-white mb-4">Contact Us</h4>
                         <div className="space-y-2 text-slate-400 text-sm md:text-base">
                             <p>123 University Ave, Alexandria, Egypt</p>
@@ -114,32 +133,26 @@ export default function Footer() {
                             <h5 className="text-white font-semibold mb-3 text-sm md:text-base">Follow Us</h5>
                             <div className="flex gap-4">
                                 {socialLinks.map((social, index) => (
-                                    <motion.a
+                                    <a
                                         key={index}
                                         href={social.href}
-                                        className="text-slate-400 hover:text-indigo-400 transition-colors duration-300"
-                                        whileHover={{ scale: 1.2 }}
-                                        whileTap={{ scale: 0.9 }}
+                                        className="text-slate-400 hover:text-indigo-400 hover:scale-110 active:scale-95 transition-all duration-300 inline-block"
                                     >
                                         <social.icon />
-                                    </motion.a>
+                                    </a>
                                 ))}
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Bottom Border */}
                 <div className="border-t border-slate-800 pt-6 md:pt-8">
-                    <motion.p 
-                        className="text-center text-slate-500 text-xs md:text-sm"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                    <p 
+                        className="text-center text-slate-500 text-xs md:text-sm gsap-footer-bottom"
                     >
                         © 2025 Academia College. All rights reserved.
-                    </motion.p>
+                    </p>
                 </div>
             </div>
         </footer>

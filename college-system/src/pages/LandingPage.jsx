@@ -33,5 +33,5 @@ export default function LandingPage() {
             <Contact />
             <Footer />
         </div>
-    )
+    );
 }
