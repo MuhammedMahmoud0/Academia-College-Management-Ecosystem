@@ -4,7 +4,7 @@ import 'package:college_project/core/data/local/hive_storage_helper.dart';
 import 'package:college_project/core/data/local/sharedpref_helper.dart';
 import 'package:college_project/core/routing/router_generation.dart';
 import 'package:college_project/core/styles/app_colors.dart';
-import 'package:college_project/features/auth/cubit/auth_cubit.dart';
+import 'package:college_project/features/auth/login/cubit/auth_cubit.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

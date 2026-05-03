@@ -1,96 +1,13 @@
 // lib/features/chatbot/widgets/chatbot_bottom_sheet.dart
 
 import 'dart:convert';
+import 'package:college_project/features/chatbot/cubit/cubit/chatbot_cubit.dart';
+import 'package:college_project/features/chatbot/cubit/cubit/chatbot_state.dart';
+import 'package:college_project/features/chatbot/widgets/chatbot_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-// ─── Models ───────────────────────────────────────────────────────────────────
-
-class ChatCategory {
-  final String id;
-  final String title;
-  final String iconName;
-  final String color;
-  final List<QuestionAnswer> questions;
-
-  ChatCategory({
-    required this.id,
-    required this.title,
-    required this.iconName,
-    required this.color,
-    required this.questions,
-  });
-
-  factory ChatCategory.fromJson(Map<String, dynamic> json) => ChatCategory(
-    id: json['id'],
-    title: json['title'],
-    iconName: json['icon'],
-    color: json['color'],
-    questions: (json['questions'] as List)
-        .map((q) => QuestionAnswer.fromJson(q))
-        .toList(),
-  );
-}
-
-class QuestionAnswer {
-  final String id;
-  final String question;
-  final String answer;
-
-  QuestionAnswer({
-    required this.id,
-    required this.question,
-    required this.answer,
-  });
-
-  factory QuestionAnswer.fromJson(Map<String, dynamic> json) => QuestionAnswer(
-    id: json['id'],
-    question: json['question'],
-    answer: json['answer'],
-  );
-}
-
-// ─── Chat Message Model ───────────────────────────────────────────────────────
-
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime time;
-
-  ChatMessage({required this.text, required this.isUser, required this.time});
-}
-
-// ─── Icon Helper ──────────────────────────────────────────────────────────────
-
-IconData _iconFromName(String name) {
-  switch (name) {
-    case 'school':
-      return Icons.school_outlined;
-    case 'schedule':
-      return Icons.schedule_outlined;
-    case 'grade':
-      return Icons.grade_outlined;
-    case 'warning_amber':
-      return Icons.warning_amber_outlined;
-    case 'event_available':
-      return Icons.event_available_outlined;
-    case 'emoji_events':
-      return Icons.emoji_events_outlined;
-    case 'menu_book':
-      return Icons.menu_book_outlined;
-    case 'pause_circle':
-      return Icons.pause_circle_outline;
-    default:
-      return Icons.help_outline;
-  }
-}
-
-Color _colorFromHex(String hex) {
-  final buffer = StringBuffer();
-  if (hex.length == 7) buffer.write('ff');
-  buffer.write(hex.replaceFirst('#', ''));
-  return Color(int.parse(buffer.toString(), radix: 16));
-}
+import 'package:college_project/features/chatbot/models/chatbot_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 
@@ -103,7 +20,10 @@ Future<void> showChatbotSheet(BuildContext context, {required bool isDark}) {
     useSafeArea: true,
     builder: (_) => Directionality(
       textDirection: TextDirection.rtl,
-      child: ChatbotSheet(isDark: isDark),
+      child: BlocProvider(
+        create: (context) => ChatbotCubit()..getChatbot(),
+        child: ChatbotSheet(isDark: isDark),
+      ),
     ),
   );
 }
@@ -136,7 +56,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    //  _loadData();
   }
 
   @override
@@ -146,7 +66,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
     _scrollController.dispose();
     super.dispose();
   }
-
+  /*
   Future<void> _loadData() async {
     try {
       final json = await rootBundle.loadString('assets/data/chatbot_data.json');
@@ -161,7 +81,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
       setState(() => _isLoading = false);
     }
   }
-
+*/
   // ── Send Message ─────────────────────────────────────────────────────────
 
   Future<void> _sendMessage() async {
@@ -251,39 +171,57 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (_, scrollController) => Container(
-        decoration: BoxDecoration(
-          color: _bgColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
+    return BlocConsumer<ChatbotCubit, ChatbotState>(
+      listener: (context, state) {
+        if (state is ChatbotLoading) {
+          _isLoading = true;
+        }
+        if (state is ChatbotLoaded) {
+          _categories = state.categories.categories;
+          _isLoading = false;
+        }
+        if (state is ChatbotError) {
+          _isLoading = false;
+        }
+      },
+      builder: (context, state) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (_, scrollController) => Container(
+            decoration: BoxDecoration(
+              color: _bgColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            _buildHandle(),
-            _buildHeader(),
-            Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF6C63FF),
-                      ),
-                    )
-                  : _buildBody(scrollController),
+            child: Column(
+              children: [
+                _buildHandle(),
+                _buildHeader(),
+                Expanded(
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF6C63FF),
+                          ),
+                        )
+                      : _buildBody(scrollController),
+                ),
+                _buildInputBar(),
+              ],
             ),
-            _buildInputBar(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -407,7 +345,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
 
   Widget _buildQuestionsView(ScrollController sc) {
     final cat = _selectedCategory!;
-    final catColor = _colorFromHex(cat.color);
+    final catColor = ChatBotWidgets.colorFromHex(cat.color);
 
     return ListView.separated(
       controller: sc,
@@ -433,7 +371,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
 
   Widget _buildAnswerView(ScrollController sc) {
     final qa = _selectedQuestion!;
-    final catColor = _colorFromHex(_selectedCategory!.color);
+    final catColor = ChatBotWidgets.colorFromHex(_selectedCategory!.color);
 
     return SingleChildScrollView(
       controller: sc,
@@ -887,7 +825,7 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _colorFromHex(category.color);
+    final color = ChatBotWidgets.colorFromHex(category.color);
 
     return GestureDetector(
       onTap: onTap,
@@ -915,7 +853,7 @@ class _CategoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                _iconFromName(category.iconName),
+                ChatBotWidgets.iconFromName(category.iconName),
                 color: color,
                 size: 24,
               ),

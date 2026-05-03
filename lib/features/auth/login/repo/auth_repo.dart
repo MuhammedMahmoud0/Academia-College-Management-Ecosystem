@@ -1,7 +1,7 @@
 import 'package:college_project/core/constants/endpoints.dart';
 import 'package:college_project/core/data/network/api_client.dart';
 import 'package:college_project/core/data/network/api_exception.dart';
-import 'package:college_project/features/auth/models/login_model.dart';
+import 'package:college_project/features/auth/login/models/login_model.dart';
 import 'package:college_project/features/home/models/student_model.dart';
 
 class AuthRepo {

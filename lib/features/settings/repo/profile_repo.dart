@@ -57,8 +57,8 @@ class ProfileRepo {
         'full_name': name,
         'phone': phone,
         'address': address,
-        'national_id': nationalId,
 
+        // 'national_id': nationalId,
         if (image != null)
           'avatar': await MultipartFile.fromFile(
             image.path,

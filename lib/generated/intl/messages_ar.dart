@@ -99,7 +99,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfully":
             MessageLookupByLibrary.simpleMessage("تم تسجيل الدخول بنجاح"),
         "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),
-        "materials": MessageLookupByLibrary.simpleMessage("المواد"),
+        "materials": MessageLookupByLibrary.simpleMessage("المحتوي الاكاديمى"),
         "missed": MessageLookupByLibrary.simpleMessage("فائتة"),
         "myProfile": MessageLookupByLibrary.simpleMessage("ملفي الشخصي"),
         "nationalId": MessageLookupByLibrary.simpleMessage("الرقم القومي"),

@@ -5,6 +5,7 @@ class Endpoints {
   static const String login = "/auth/login";
   static const String profile = "/student/profile";
   static const String editProfile = "/student/profile";
+  static const String changePassword = "/settings/password";
 
   static const String schedule = "/schedule";
 
@@ -38,4 +39,9 @@ class Endpoints {
   static const String materials = "/materials";
   static String downloadMaterial(int materialId) =>
       "/materials/$materialId/download";
+
+  static const String getInvoices = '/payments/invoices/me';
+  static const String createPaymobPayment = '/payments/invoices/paymob-order';
+
+  static const String faq = '/faq';
 }

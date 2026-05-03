@@ -232,7 +232,9 @@ class ProfileScreen extends StatelessWidget {
                   _buildActionButton(
                     S.of(context).changePassword,
                     Icons.lock_outline_rounded,
-                    () {},
+                    () {
+                      context.push(AppRoutes.changePasswordScreen);
+                    },
                     isDark: context.watch<AppCubit>().isDarkMode,
                   ),
                   const SizedBox(height: 12),

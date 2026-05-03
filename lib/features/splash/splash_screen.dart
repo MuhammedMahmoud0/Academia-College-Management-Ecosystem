@@ -1,6 +1,6 @@
 import 'package:college_project/core/routing/app_routes.dart';
-import 'package:college_project/features/auth/cubit/auth_cubit.dart';
-import 'package:college_project/features/auth/cubit/auth_states.dart';
+import 'package:college_project/features/auth/login/cubit/auth_cubit.dart';
+import 'package:college_project/features/auth/login/cubit/auth_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

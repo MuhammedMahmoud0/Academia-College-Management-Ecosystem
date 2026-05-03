@@ -32,8 +32,8 @@ class QuickActionsRow extends StatelessWidget {
       children: actions.map((action) {
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: actions.indexOf(action) < actions.length - 1 ? 12 : 0,
+            padding: EdgeInsetsDirectional.only(
+              end: actions.indexOf(action) < actions.length - 1 ? 8 : 0,
             ),
             child: _QuickActionItem(action: action, isDark: isDark),
           ),

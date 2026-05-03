@@ -1,3 +1,4 @@
+import 'package:college_project/core/appCubit/app_cubit.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/student_schedule/cubit/schedule_cubit.dart';
 import 'package:college_project/features/student_schedule/cubit/schedule_states.dart';
@@ -63,7 +64,9 @@ class _StudentScheduleViewState extends State<_StudentScheduleView> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.getBackground(
+                  context.watch<AppCubit>().isDarkMode,
+                ),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),

@@ -14,4 +14,6 @@ class AppRoutes {
   static const String attendanceScreen = '/attendanceScreen';
   static const String qrScannerScreen = '/qrScannerScreen';
   static const String pdfScreenRoute = '/pdfScreen';
+  static const String paymentHistoryScreen = '/paymentHistoryScreen';
+  static const String changePasswordScreen = '/changePasswordScreen';
 }

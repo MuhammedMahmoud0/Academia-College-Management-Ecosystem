@@ -13,12 +13,13 @@ import 'package:college_project/features/home/widgets/profile_card.dart';
 import 'package:college_project/features/home/widgets/quick_actions_row.dart';
 import 'package:college_project/features/home/widgets/recent_grades.dart';
 import 'package:college_project/features/home/widgets/attendance_card.dart';
+import 'package:college_project/features/home/widgets/payment_card.dart';
 import 'package:college_project/features/home/widgets/upcoming_exam_card.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:college_project/features/home/widgets/chatbot_bottom_sheet.dart';
+import 'package:college_project/features/chatbot/chatbot_bottom_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -376,7 +377,10 @@ Widget _buildHomeContent(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -502,6 +506,14 @@ Widget _buildHomeContent(
                       await context.read<AttendanceCubit>().getActiveSessions();
                     },
                   ),
+                  const SizedBox(height: 16),
+                  PaymentCard(
+                    isDark: isDark,
+                    onTap: () => GoRouter.of(
+                      context,
+                    ).pushNamed(AppRoutes.paymentHistoryScreen),
+                  ),
+                  /*
                   const SizedBox(height: 28),
                   NotificationsPreview(
                     notifications: notifications,
@@ -523,6 +535,7 @@ Widget _buildHomeContent(
                     onSeeAllTap: () {},
                   ),
                   const SizedBox(height: 100),
+               */
                 ]),
               ),
             ),

@@ -46,7 +46,6 @@ class _GroupsScreenViewState extends State<_GroupsScreenView>
     final isDark = context.watch<AppCubit>().isDarkMode;
 
     return Scaffold(
-      backgroundColor: AppColors.getBackground(isDark),
       appBar: _buildAppBar(isDark),
       body: BlocBuilder<GroupsCubit, GroupsStates>(
         builder: (context, state) {

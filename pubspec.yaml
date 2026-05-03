@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.2.5
   flutter_cached_pdfview: ^0.4.3
   geolocator: ^14.0.2
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:

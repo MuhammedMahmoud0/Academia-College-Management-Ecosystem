@@ -1,7 +1,8 @@
 import 'package:college_project/core/routing/app_routes.dart';
 import 'package:college_project/features/attendance/attendance_history_screen.dart';
 import 'package:college_project/features/attendance/widget/qr_scanner_screen.dart';
-import 'package:college_project/features/auth/login_screen.dart';
+import 'package:college_project/features/auth/change_password/change_password_screen.dart';
+import 'package:college_project/features/auth/login/login_screen.dart';
 import 'package:college_project/features/community/community_screen.dart';
 import 'package:college_project/features/community/groups/groups_screen.dart';
 import 'package:college_project/features/leaderboard/leaderboard_screen.dart';
@@ -9,6 +10,7 @@ import 'package:college_project/features/material/cubit/materials_cubit.dart';
 import 'package:college_project/features/material/material_screen.dart';
 import 'package:college_project/features/material/widgets/pdf_screen.dart';
 import 'package:college_project/features/notifications/notification_screen.dart';
+import 'package:college_project/features/payment/payment_history_screen.dart';
 import 'package:college_project/features/settings/edit_profile_screen.dart';
 import 'package:college_project/features/settings/settings_screen.dart';
 import 'package:college_project/features/splash/splash_screen.dart';
@@ -97,6 +99,16 @@ class RouterGenerationConfig {
         name: AppRoutes.pdfScreenRoute,
         builder: (context, state) =>
             PdfScreen(pdfUrl: state.extra as String? ?? ''),
+      ),
+      GoRoute(
+        path: AppRoutes.paymentHistoryScreen,
+        name: AppRoutes.paymentHistoryScreen,
+        builder: (context, state) => const PaymentHistoryScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.changePasswordScreen,
+        name: AppRoutes.changePasswordScreen,
+        builder: (context, state) => const ChangePasswordScreen(),
       ),
     ],
   );
