@@ -1,156 +1,114 @@
+import 'package:college_project/features/notifications/cubit/notification_cubit.dart';
+import 'package:college_project/features/notifications/cubit/notification_states.dart';
 import 'package:college_project/features/notifications/models/notification_model.dart';
+import 'package:college_project/features/notifications/notification_detail_screen.dart';
 import 'package:college_project/features/notifications/widgets/notification_Item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class NotificationsScreen extends StatefulWidget {
+/// Wraps the screen in its own [BlocProvider].
+/// If you provide the cubit higher up in the tree, replace this with
+/// [BlocProvider.value] and remove the [NotificationsRepo] parameter.
+class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
   @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => NotificationsCubit()..fetchNotifications(),
+      child: const _NotificationsView(),
+    );
+  }
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
-  final Color primaryColor = const Color(0xFF6C63FF);
-  final Color backgroundColor = const Color(0xFFF8F9FE);
+// ─────────────────────────────────────────────────────────────────────────────
 
+class _NotificationsView extends StatefulWidget {
+  const _NotificationsView();
+
+  @override
+  State<_NotificationsView> createState() => _NotificationsViewState();
+}
+
+class _NotificationsViewState extends State<_NotificationsView> {
+  final Color primaryColor = const Color(0xFF6C63FF);
+
+  // First two are special (All / Unread), rest are raw API type strings
   final List<String> _categories = [
     "All",
     "Unread",
-    "Grade",
-    "Deadline",
+    "new_grade",
+    "exam_deadline",
+    "community_activity",
+    "campus_announcement",
+  ];
+
+  // Human-readable chip labels (index matches _categories)
+  final List<String> _categoryLabels = [
+    "All",
+    "Unread",
+    "Grades",
+    "Deadlines",
     "Community",
-    "Announcement",
+    "Announcements",
   ];
 
   int _selectedCategoryIndex = 0;
-  late List<NotificationModel> _allNotifications;
-  List<NotificationModel> _filteredNotifications = [];
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _loadInitialData();
-    _applyFilters();
+    _scrollController = ScrollController()..addListener(_onScroll);
   }
 
-  void _loadInitialData() {
-    final now = DateTime.now();
-    _allNotifications = [
-      NotificationModel(
-        id: '1',
-        title: 'Final Grade Posted',
-        message:
-            'Your grade for Data Structures has been published. Great job!',
-        timestamp: now.subtract(const Duration(hours: 1)),
-        type: NotificationType.grade,
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '2',
-        title: 'Upcoming Deadline',
-        message:
-            'The Mobile Dev project submission closes in 5 hours. This message is long and will now respect the spacing for the blue circle.',
-        timestamp: now.subtract(const Duration(hours: 3)),
-        type: NotificationType.reminder,
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '3',
-        title: 'New Community Post',
-        message: 'Sarah posted a new question in the Algorithm Study Group.',
-        timestamp: now.subtract(const Duration(days: 1, hours: 2)),
-        type: NotificationType.announcement,
-        isRead: true,
-      ),
-      NotificationModel(
-        id: '4',
-        title: 'Campus Announcement',
-        message: 'The library will be open 24/7 during the finals week.',
-        timestamp: now.subtract(const Duration(days: 3)),
-        type: NotificationType.announcement,
-        isRead: true,
-      ),
-      NotificationModel(
-        id: '5',
-        title: 'Math Quiz Grade',
-        message: 'Check your feedback for the Linear Algebra quiz.',
-        timestamp: now.subtract(const Duration(days: 1, hours: 5)),
-        type: NotificationType.grade,
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '6',
-        title: 'Assignment Due',
-        message: 'Discrete Math HW 4 is due tomorrow at 11:59 PM.',
-        timestamp: now.subtract(const Duration(days: 10)),
-        type: NotificationType.reminder,
-        isRead: true,
-      ),
-    ];
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
-  void _applyFilters() {
-    setState(() {
-      String selectedCategory = _categories[_selectedCategoryIndex];
-
-      if (selectedCategory == "All") {
-        _filteredNotifications = _allNotifications;
-      } else if (selectedCategory == "Unread") {
-        _filteredNotifications = _allNotifications
-            .where((n) => !n.isRead)
-            .toList();
-      } else {
-        _filteredNotifications = _allNotifications.where((n) {
-          switch (selectedCategory) {
-            case "Grade":
-              return n.type == NotificationType.grade;
-            case "Deadline":
-              return n.type == NotificationType.reminder;
-            case "Community":
-              return n.title.contains("Community") ||
-                  n.message.contains("Study Group");
-            case "Announcement":
-              return n.type == NotificationType.announcement &&
-                  !n.title.contains("Community");
-            default:
-              return true;
-          }
-        }).toList();
-      }
-      _filteredNotifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-    });
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<NotificationsCubit>().loadMore();
+    }
   }
 
-  Map<String, List<NotificationModel>> _groupNotificationsByDate() {
+  // ─── Local filter (client-side on already-fetched list) ──────────────────
+  List<NotificationModel> _applyFilter(List<NotificationModel> all) {
+    final cat = _categories[_selectedCategoryIndex];
+    if (cat == 'All') return all;
+    if (cat == 'Unread') return all.where((n) => !n.isRead).toList();
+    // For type categories the value IS the API type string
+    return all.where((n) => n.type == cat).toList();
+  }
+
+  Map<String, List<NotificationModel>> _group(List<NotificationModel> items) {
     final Map<String, List<NotificationModel>> groups = {};
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final startOfWeek = today.subtract(Duration(days: now.weekday - 1));
 
-    for (var notification in _filteredNotifications) {
+    for (final n in items) {
       final date = DateTime(
-        notification.timestamp.year,
-        notification.timestamp.month,
-        notification.timestamp.day,
+        n.createdAt.year,
+        n.createdAt.month,
+        n.createdAt.day,
       );
-      String groupKey;
-
+      String key;
       if (date == today) {
-        groupKey = "Today";
+        key = 'Today';
       } else if (date == yesterday) {
-        groupKey = "Yesterday";
+        key = 'Yesterday';
       } else if (date.isAfter(startOfWeek)) {
-        groupKey = "This Week";
+        key = 'This Week';
       } else {
-        groupKey = "Older";
+        key = 'Older';
       }
-
-      if (!groups.containsKey(groupKey)) {
-        groups[groupKey] = [];
-      }
-      groups[groupKey]!.add(notification);
+      groups.putIfAbsent(key, () => []).add(n);
     }
     return groups;
   }
@@ -159,57 +117,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.white,
-            size: 20.sp,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Notifications',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _allNotifications = _allNotifications
-                    .map(
-                      (n) => NotificationModel(
-                        id: n.id,
-                        title: n.title,
-                        message: n.message,
-                        timestamp: n.timestamp,
-                        type: n.type,
-                        isRead: true,
-                      ),
-                    )
-                    .toList();
-                _applyFilters();
-              });
-            },
-            child: Text(
-              'Mark all as read',
-              style: TextStyle(color: Colors.white, fontSize: 12.sp),
-            ),
-          ),
-          SizedBox(width: 8.w),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: Column(
         children: [
           SizedBox(height: 8.h),
-          _buildHorizontalCategoryFilter(),
+          _buildCategoryFilter(),
           SizedBox(height: 20.h),
           Expanded(
             child: Container(
@@ -221,9 +133,127 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   topRight: Radius.circular(32.r),
                 ),
               ),
-              child: _filteredNotifications.isEmpty
-                  ? _buildEmptyState()
-                  : _buildNotificationList(),
+              child: BlocConsumer<NotificationsCubit, NotificationsState>(
+                listener: (context, state) {
+                  if (state is NotificationsMarkAllReadError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  // ── Loading first page ──────────────────────────────────
+                  if (state is NotificationsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  // ── Hard error ──────────────────────────────────────────
+                  if (state is NotificationsError) {
+                    return _buildError(context, state.message);
+                  }
+
+                  // ── Derive notification list from any "data" state ──────
+                  List<NotificationModel> notifications = [];
+                  bool isLoadingMore = false;
+                  bool isMarkingAll = false;
+
+                  if (state is NotificationsLoaded) {
+                    notifications = state.notifications;
+                  } else if (state is NotificationsLoadingMore) {
+                    notifications = state.currentNotifications;
+                    isLoadingMore = true;
+                  } else if (state is NotificationsMarkAllReadLoading) {
+                    notifications = state.currentNotifications;
+                    isMarkingAll = true;
+                  } else if (state is NotificationsMarkAllReadError) {
+                    notifications = state.notifications;
+                  }
+
+                  final filtered = _applyFilter(notifications);
+
+                  if (filtered.isEmpty) return _buildEmptyState();
+
+                  final groups = _group(filtered);
+                  const groupKeys = [
+                    'Today',
+                    'Yesterday',
+                    'This Week',
+                    'Older',
+                  ];
+
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(32.r),
+                      topRight: Radius.circular(32.r),
+                    ),
+                    child: Stack(
+                      children: [
+                        ListView.builder(
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(top: 10.h, bottom: 24.h),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: groupKeys.length + 1,
+                          itemBuilder: (context, index) {
+                            // Last item = load-more indicator
+                            if (index == groupKeys.length) {
+                              return isLoadingMore
+                                  ? Padding(
+                                      padding: EdgeInsets.all(16.h),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink();
+                            }
+
+                            final key = groupKeys[index];
+                            final group = groups[key];
+                            if (group == null || group.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 20.w,
+                                    top: 16.h,
+                                    bottom: 8.h,
+                                  ),
+                                  child: Text(
+                                    key,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  ),
+                                ),
+                                ...group.map((n) => _buildItem(context, n)),
+                              ],
+                            );
+                          },
+                        ),
+
+                        // Mark-all overlay spinner
+                        if (isMarkingAll)
+                          Positioned.fill(
+                            child: ColoredBox(
+                              color: Colors.white54,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -231,7 +261,55 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _buildHorizontalCategoryFilter() {
+  // ─── AppBar ────────────────────────────────────────────────────────────
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20.sp),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text(
+        'Notifications',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 18.sp,
+        ),
+      ),
+      actions: [
+        BlocBuilder<NotificationsCubit, NotificationsState>(
+          builder: (context, state) {
+            final isLoading = state is NotificationsMarkAllReadLoading;
+            return TextButton(
+              onPressed: isLoading
+                  ? null
+                  : () => context.read<NotificationsCubit>().markAllAsRead(),
+              child: isLoading
+                  ? SizedBox(
+                      width: 16.w,
+                      height: 16.h,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      'Mark all as read',
+                      style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                    ),
+            );
+          },
+        ),
+        SizedBox(width: 8.w),
+      ],
+    );
+  }
+
+  // ─── Category filter chips ─────────────────────────────────────────────
+  Widget _buildCategoryFilter() {
     return SizedBox(
       height: 38.h,
       child: ListView.builder(
@@ -240,14 +318,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         physics: const BouncingScrollPhysics(),
         itemCount: _categories.length,
         itemBuilder: (context, index) {
-          bool isSelected = _selectedCategoryIndex == index;
+          final isSelected = _selectedCategoryIndex == index;
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedCategoryIndex = index;
-                _applyFilters();
-              });
-            },
+            onTap: () => setState(() => _selectedCategoryIndex = index),
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 4.w),
               padding: EdgeInsets.symmetric(horizontal: 18.w),
@@ -264,7 +337,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
               alignment: Alignment.center,
               child: Text(
-                _categories[index],
+                _categoryLabels[index],
                 style: TextStyle(
                   color: isSelected ? primaryColor : Colors.white,
                   fontWeight: FontWeight.bold,
@@ -278,75 +351,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _buildNotificationList() {
-    final groups = _groupNotificationsByDate();
-    final groupKeys = ["Today", "Yesterday", "This Week", "Older"];
-
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(32.r),
-        topRight: Radius.circular(32.r),
-      ),
-      child: ListView.builder(
-        itemCount: groupKeys.length,
-        padding: EdgeInsets.only(top: 10.h, bottom: 20.h),
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, groupIndex) {
-          final key = groupKeys[groupIndex];
-          if (!groups.containsKey(key) || groups[key]!.isEmpty)
-            return const SizedBox.shrink();
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 20.w, top: 16.h, bottom: 8.h),
-                child: Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-              ),
-              ...groups[key]!
-                  .map((notification) => _buildNotificationItem(notification))
-                  .toList(),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildNotificationItem(NotificationModel notification) {
-    // We removed the Stack and external padding here.
-    // The NotificationItem itself should now handle the blue circle internally
-    // so the grey background can span the full width correctly.
+  // ─── Single item ───────────────────────────────────────────────────────
+  Widget _buildItem(BuildContext context, NotificationModel notification) {
     return NotificationItem(
       notification: notification,
       onTap: () {
-        setState(() {
-          int mainIndex = _allNotifications.indexWhere(
-            (n) => n.id == notification.id,
-          );
-          if (mainIndex != -1) {
-            _allNotifications[mainIndex] = NotificationModel(
-              id: notification.id,
-              title: notification.title,
-              message: notification.message,
-              timestamp: notification.timestamp,
-              type: notification.type,
-              isRead: true,
-            );
-            _applyFilters();
-          }
-        });
+        final cubit = context.read<NotificationsCubit>(); // capture here
+        cubit.markAsRead(notification.id);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value:
+                  cubit, // use captured cubit, not context.read inside builder
+              child: NotificationDetailScreen(notification: notification),
+            ),
+          ),
+        );
       },
     );
   }
 
+  // ─── Empty state ───────────────────────────────────────────────────────
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -359,7 +385,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           SizedBox(height: 16.h),
           Text(
-            "Nothing here",
+            'Nothing here',
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
@@ -368,8 +394,32 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           SizedBox(height: 4.h),
           Text(
-            "No notifications for this category.",
+            'No notifications for this category.',
             style: TextStyle(color: Colors.grey, fontSize: 13.sp),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Error state ───────────────────────────────────────────────────────
+  Widget _buildError(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 60.sp, color: Colors.red.shade200),
+          SizedBox(height: 12.h),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black54, fontSize: 14.sp),
+          ),
+          SizedBox(height: 16.h),
+          ElevatedButton(
+            onPressed: () =>
+                context.read<NotificationsCubit>().fetchNotifications(),
+            child: const Text('Retry'),
           ),
         ],
       ),

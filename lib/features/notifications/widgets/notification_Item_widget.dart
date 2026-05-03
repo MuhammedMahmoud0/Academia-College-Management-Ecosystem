@@ -37,7 +37,7 @@ class NotificationItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    notification.title,
+                    _buildTitle(),
                     style: TextStyle(
                       fontSize: 15.sp,
                       fontWeight: notification.isRead
@@ -62,13 +62,13 @@ class NotificationItem extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8.w),
-            // Right-side column for Time and Unread Indicator
+            // Right-side column: time + unread dot
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  _formatTimestamp(notification.timestamp),
+                  _formatTimestamp(notification.createdAt),
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: Colors.grey.shade500,
@@ -93,22 +93,52 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
+  // ─── Derive a display title from the type string ──────────────────────────
+  String _buildTitle() {
+    switch (notification.type) {
+      case 'new_grade':
+        return 'Grade Posted';
+      case 'reminder':
+      case 'deadline':
+        return 'Upcoming Deadline';
+      case 'community':
+        return 'Community Update';
+      case 'announcement':
+        return 'Announcement';
+      default:
+        // Fallback: capitalise and replace underscores
+        return notification.type
+            .replaceAll('_', ' ')
+            .split(' ')
+            .map(
+              (w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}',
+            )
+            .join(' ');
+    }
+  }
+
+  // ─── Leading icon based on type string ───────────────────────────────────
   Widget _buildLeadingIcon() {
     IconData icon;
     Color color;
 
     switch (notification.type) {
-      case NotificationType.announcement:
-        icon = Icons.campaign_rounded;
-        color = Colors.orange;
+      case 'new_grade':
+        icon = Icons.stars_rounded;
+        color = Colors.green;
         break;
-      case NotificationType.assignment:
+      case 'reminder':
+      case 'deadline':
         icon = Icons.assignment_rounded;
         color = const Color(0xFF6C63FF);
         break;
-      case NotificationType.grade:
-        icon = Icons.stars_rounded;
-        color = Colors.green;
+      case 'announcement':
+        icon = Icons.campaign_rounded;
+        color = Colors.orange;
+        break;
+      case 'community':
+        icon = Icons.people_rounded;
+        color = Colors.teal;
         break;
       default:
         icon = Icons.notifications_active_rounded;
@@ -125,16 +155,11 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
+  // ─── Relative time formatter ──────────────────────────────────────────────
   String _formatTimestamp(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h';
-    } else {
-      return DateFormat('MMM d').format(dateTime);
-    }
+    final diff = DateTime.now().difference(dateTime);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
+    if (diff.inHours < 24) return '${diff.inHours}h';
+    return DateFormat('MMM d').format(dateTime);
   }
 }

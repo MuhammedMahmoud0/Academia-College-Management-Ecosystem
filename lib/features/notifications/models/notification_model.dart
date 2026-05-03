@@ -1,74 +1,90 @@
-enum NotificationType { announcement, assignment, grade, reminder }
-
 class NotificationModel {
-  final String id;
-  final String title;
+  final int id;
   final String message;
-  final DateTime timestamp;
-  final NotificationType type;
+  final String type;
   final bool isRead;
+  final DateTime createdAt;
 
   NotificationModel({
     required this.id,
-    required this.title,
     required this.message,
-    required this.timestamp,
     required this.type,
-    this.isRead = false,
+    required this.isRead,
+    required this.createdAt,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
+      id: json['id'] as int,
       message: json['message'] as String,
-      timestamp: DateTime.parse(json['timestamp']),
-      isRead: json['isRead'] ?? false,
-      type: _parseType(json['type']),
+      type: json['type'] as String,
+      isRead: json['is_read'] as bool,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 
-  static NotificationType _parseType(String? type) {
-    switch (type?.toLowerCase()) {
-      case 'announcement':
-        return NotificationType.announcement;
-      case 'assignment':
-        return NotificationType.assignment;
-      case 'grade':
-        return NotificationType.grade;
-      default:
-        return NotificationType.reminder;
-    }
-  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'message': message,
+    'type': type,
+    'is_read': isRead,
+    'created_at': createdAt.toIso8601String(),
+  };
 
-  // Mock data generator for testing
-  static List<NotificationModel> getMockNotifications() {
-    return [
-      NotificationModel(
-        id: '1',
-        title: 'New Study Material',
-        message: 'Professor added "Linear Algebra Basics" to the Math section.',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-        type: NotificationType.announcement,
-        isRead: false,
+  NotificationModel copyWith({bool? isRead}) {
+    return NotificationModel(
+      id: id,
+      message: message,
+      type: type,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt,
+    );
+  }
+}
+
+class PaginationModel {
+  final int page;
+  final int limit;
+  final int totalCount;
+  final int totalPages;
+
+  PaginationModel({
+    required this.page,
+    required this.limit,
+    required this.totalCount,
+    required this.totalPages,
+  });
+
+  factory PaginationModel.fromJson(Map<String, dynamic> json) {
+    return PaginationModel(
+      page: json['page'] as int,
+      limit: json['limit'] as int,
+      totalCount: json['totalCount'] as int,
+      totalPages: json['totalPages'] as int,
+    );
+  }
+}
+
+class NotificationsResponse {
+  final List<NotificationModel> notifications;
+  final PaginationModel pagination;
+  final int unreadCount;
+
+  NotificationsResponse({
+    required this.notifications,
+    required this.pagination,
+    required this.unreadCount,
+  });
+
+  factory NotificationsResponse.fromJson(Map<String, dynamic> json) {
+    return NotificationsResponse(
+      notifications: (json['notifications'] as List<dynamic>)
+          .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      pagination: PaginationModel.fromJson(
+        json['pagination'] as Map<String, dynamic>,
       ),
-      NotificationModel(
-        id: '2',
-        title: 'Assignment Deadline',
-        message:
-            'Your Algorithms assignment is due in 2 hours. Don\'t forget to upload!',
-        timestamp: DateTime.now().subtract(const Duration(hours: 3)),
-        type: NotificationType.reminder,
-        isRead: false,
-      ),
-      NotificationModel(
-        id: '3',
-        title: 'New Grade Released',
-        message: 'Your Mobile Dev Project has been graded. Tap to see results.',
-        timestamp: DateTime.now().subtract(const Duration(days: 1)),
-        type: NotificationType.grade,
-        isRead: true,
-      ),
-    ];
+      unreadCount: json['unreadCount'] as int,
+    );
   }
 }

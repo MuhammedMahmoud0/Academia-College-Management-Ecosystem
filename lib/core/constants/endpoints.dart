@@ -44,4 +44,10 @@ class Endpoints {
   static const String createPaymobPayment = '/payments/invoices/paymob-order';
 
   static const String faq = '/faq';
+
+  static const String notification = "/notifications";
+  static const String notificationUnreadCount = "/notifications/unread-count";
+  static const String notificationMarkAllRead = "/notifications/mark-all-read";
+  static String notificationRead(int id) => "/notifications/$id/read";
+  static String deleteNotification(int id) => "/notifications/$id";
 }
