@@ -16,4 +16,5 @@ class AppRoutes {
   static const String pdfScreenRoute = '/pdfScreen';
   static const String paymentHistoryScreen = '/paymentHistoryScreen';
   static const String changePasswordScreen = '/changePasswordScreen';
+  static const String tasksScreen = '/tasksScreen';
 }

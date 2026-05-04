@@ -50,4 +50,10 @@ class Endpoints {
   static const String notificationMarkAllRead = "/notifications/mark-all-read";
   static String notificationRead(int id) => "/notifications/$id/read";
   static String deleteNotification(int id) => "/notifications/$id";
+
+  static const String tasks = "/tasks";
+  static String taskById(int taskId) => "/tasks/$taskId";
+  static String submitTask(int taskId) => "/tasks/$taskId/submit";
+  static String myTaskSubmission(int taskId) => "/tasks/$taskId/my-submission";
+  static const String myAvailableTasks = "/tasks/my/available";
 }

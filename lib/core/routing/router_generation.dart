@@ -16,6 +16,9 @@ import 'package:college_project/features/settings/settings_screen.dart';
 import 'package:college_project/features/splash/splash_screen.dart';
 import 'package:college_project/features/student_id/student_id_screen.dart';
 import 'package:college_project/features/student_schedule/student_schedule_screen.dart';
+import 'package:college_project/features/tasks/cubit/tasks_cubit.dart';
+import 'package:college_project/features/tasks/tasks_screen.dart';
+import 'package:college_project/features/tasks/widgets/task_item_widget.dart';
 import 'package:college_project/layout/home_layout.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -109,6 +112,14 @@ class RouterGenerationConfig {
         path: AppRoutes.changePasswordScreen,
         name: AppRoutes.changePasswordScreen,
         builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tasksScreen,
+        name: AppRoutes.tasksScreen,
+        builder: (context, state) => BlocProvider(
+          create: (context) => TasksCubit(),
+          child: const TasksScreen(),
+        ),
       ),
     ],
   );
