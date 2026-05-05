@@ -11,7 +11,7 @@ class TaskItemWidget extends StatelessWidget {
   /// the cubit's state so it never goes stale between navigations.
   final int taskId;
 
-  const TaskItemWidget({Key? key, required this.taskId}) : super(key: key);
+  const TaskItemWidget({super.key, required this.taskId});
 
   static const Color _primary = Color(0xFF6C63FF);
 
@@ -528,7 +528,7 @@ void _showSubmitSheet(BuildContext context, TaskModel task) {
 // ─── View submission bottom sheet ─────────────────────────────────────────────
 void _showSubmissionSheet(BuildContext context, TaskModel task) {
   final cubit = context.read<TasksCubit>();
-
+  //  debugPrint("task submission ${task.submission?.toString()}");
   String statusLabel(String s) {
     switch (s) {
       case 'pending_review':

@@ -1,6 +1,7 @@
 import 'package:college_project/features/tasks/cubit/tasks_states.dart';
 import 'package:college_project/features/tasks/models/task_model.dart';
 import 'package:college_project/features/tasks/repo/tasks_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TasksCubit extends Cubit<TasksState> {
@@ -34,6 +35,7 @@ class TasksCubit extends Cubit<TasksState> {
       final enriched = await Future.wait(
         tasks.map((task) async {
           if (!task.isSubmitted) return task;
+          debugPrint("task id ${task.id}");
           final full = await _repo.getMySubmission(task.id);
           return full != null ? task.copyWith(submission: full) : task;
         }),

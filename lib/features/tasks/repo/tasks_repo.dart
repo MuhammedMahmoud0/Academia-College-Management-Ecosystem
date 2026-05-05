@@ -18,7 +18,9 @@ class TasksRepo {
       final response = await _dio.get(Endpoints.myTaskSubmission(taskId));
       final data = response.data as Map<String, dynamic>?;
       if (data == null) return null;
-      return TaskSubmission.fromJson(data);
+      //  debugPrint("submission for $taskId ${TaskSubmission.fromJson(data).toString()}");
+      debugPrint("submission ${data['submission'].toString()}");
+      return TaskSubmission.fromJson(data['submission']);
     } catch (_) {
       return null;
     }
