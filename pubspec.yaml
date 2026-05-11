@@ -55,6 +55,8 @@ dependencies:
   flutter_cached_pdfview: ^0.4.3
   geolocator: ^14.0.2
   webview_flutter: ^4.10.0
+  web_socket_channel: ^3.0.1
+  flutter_local_notifications: ^17.2.2
 
 dev_dependencies:
   flutter_test:

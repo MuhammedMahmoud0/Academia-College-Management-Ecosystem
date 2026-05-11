@@ -136,7 +136,6 @@ class AuthCubit extends Cubit<AuthState> {
 
       // Also save to Constants for immediate use
       Constants.student = studentModel;
-
       emit(AuthSuccess());
     } on ApiException catch (e) {
       debugPrint('get student data failed: $e');

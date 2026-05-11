@@ -1,20 +1,63 @@
-import 'package:college_project/features/notifications/cubit/notification_states.dart';
-import 'package:college_project/features/notifications/repo/notification_repo.dart';
+import 'dart:async';
+import 'package:college_project/features/notifications/services/web_socket_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:college_project/features/notifications/cubit/notification_states.dart';
+import 'package:college_project/features/notifications/models/notification_model.dart';
+import 'package:college_project/features/notifications/repo/notification_repo.dart';
+import 'package:college_project/features/notifications/services/push_notification_service.dart';
 
 class NotificationsCubit extends Cubit<NotificationsState> {
   final _repo = NotificationsRepo();
+  final _ws = WebSocketService();
+  final _push = PushNotificationService();
 
   static const int _pageSize = 20;
 
+  StreamSubscription<NotificationModel>? _wsSubscription;
+
   NotificationsCubit() : super(NotificationsInitial());
 
-  // ─── Fetch first page ────────────────────────────────────────────────────
+  // ─── WebSocket lifecycle ──────────────────────────────────────────────────
+
+  /// Call this right after the user logs in, passing their auth token.
+  Future<void> startRealtime(String authToken) async {
+    await _ws.connect(authToken);
+
+    _wsSubscription = _ws.notificationStream.listen(_onWebSocketNotification);
+  }
+
+  /// Call on logout.
+  Future<void> stopRealtime() async {
+    await _wsSubscription?.cancel();
+    await _ws.disconnect();
+  }
+
+  /// Handles a notification pushed from the server in real time.
+  void _onWebSocketNotification(NotificationModel incoming) {
+    // 1. Show native system-tray notification (like WhatsApp)
+    _push.show(incoming);
+
+    // 2. Prepend it to the in-app list immediately
+    final current = state;
+    if (current is NotificationsLoaded) {
+      final updated = [incoming, ...current.notifications];
+      emit(
+        current.copyWith(
+          notifications: updated,
+          unreadCount: current.unreadCount + 1,
+        ),
+      );
+    } else {
+      // If the list hasn't loaded yet, trigger a fresh fetch
+      fetchNotifications();
+    }
+  }
+
+  // ─── Fetch first page ─────────────────────────────────────────────────────
   Future<void> fetchNotifications() async {
     emit(NotificationsLoading());
     try {
       final response = await _repo.getNotifications(page: 1, limit: _pageSize);
-
       emit(
         NotificationsLoaded(
           notifications: response.notifications,
@@ -30,7 +73,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
   }
 
-  // ─── Load next page (pagination) ─────────────────────────────────────────
+  // ─── Load next page (pagination) ──────────────────────────────────────────
   Future<void> loadMore() async {
     final current = state;
     if (current is! NotificationsLoaded) return;
@@ -49,9 +92,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         page: nextPage,
         limit: _pageSize,
       );
-
       final merged = [...current.notifications, ...response.notifications];
-
       emit(
         NotificationsLoaded(
           notifications: merged,
@@ -61,8 +102,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           hasReachedMax: nextPage >= response.pagination.totalPages,
         ),
       );
-    } catch (e) {
-      // On load-more failure, restore the existing list
+    } catch (_) {
       emit(
         NotificationsLoaded(
           notifications: current.notifications,
@@ -75,28 +115,25 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
   }
 
-  // ─── Mark single notification as read ────────────────────────────────────
+  // ─── Mark single as read ──────────────────────────────────────────────────
   Future<void> markAsRead(int id) async {
     final current = state;
     if (current is! NotificationsLoaded) return;
 
-    // Optimistic UI update
     final updated = current.notifications
         .map((n) => n.id == id ? n.copyWith(isRead: true) : n)
         .toList();
-
     final wasUnread = current.notifications.any((n) => n.id == id && !n.isRead);
-    final newUnreadCount = wasUnread
+    final newUnread = wasUnread
         ? (current.unreadCount - 1).clamp(0, 9999)
         : current.unreadCount;
 
-    emit(current.copyWith(notifications: updated, unreadCount: newUnreadCount));
+    emit(current.copyWith(notifications: updated, unreadCount: newUnread));
 
     try {
       await _repo.markAsRead(id);
     } catch (_) {
-      // Rollback on failure
-      emit(current);
+      emit(current); // rollback
     }
   }
 
@@ -113,11 +150,9 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
     try {
       await _repo.markAllAsRead();
-
       final updated = current.notifications
           .map((n) => n.copyWith(isRead: true))
           .toList();
-
       emit(current.copyWith(notifications: updated, unreadCount: 0));
     } catch (e) {
       emit(
@@ -130,28 +165,33 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
   }
 
-  // ─── Delete notification ──────────────────────────────────────────────────
+  // ─── Delete ───────────────────────────────────────────────────────────────
   Future<void> deleteNotification(int id) async {
     final current = state;
     if (current is! NotificationsLoaded) return;
 
     final wasUnread = current.notifications.any((n) => n.id == id && !n.isRead);
     final updated = current.notifications.where((n) => n.id != id).toList();
-    final newUnreadCount = wasUnread
+    final newUnread = wasUnread
         ? (current.unreadCount - 1).clamp(0, 9999)
         : current.unreadCount;
 
-    // Optimistic
-    emit(current.copyWith(notifications: updated, unreadCount: newUnreadCount));
+    emit(current.copyWith(notifications: updated, unreadCount: newUnread));
 
     try {
       await _repo.deleteNotification(id);
     } catch (_) {
-      emit(current); // rollback
+      emit(current);
     }
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────
+  // ─── Cleanup ──────────────────────────────────────────────────────────────
+  @override
+  Future<void> close() async {
+    await stopRealtime();
+    return super.close();
+  }
+
   String _friendlyError(Object e) =>
       e.toString().replaceFirst('Exception: ', '');
 }

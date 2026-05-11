@@ -6,7 +6,6 @@ import 'package:college_project/features/auth/login/login_screen.dart';
 import 'package:college_project/features/community/community_screen.dart';
 import 'package:college_project/features/community/groups/groups_screen.dart';
 import 'package:college_project/features/leaderboard/leaderboard_screen.dart';
-import 'package:college_project/features/material/cubit/materials_cubit.dart';
 import 'package:college_project/features/material/material_screen.dart';
 import 'package:college_project/features/material/widgets/pdf_screen.dart';
 import 'package:college_project/features/notifications/notification_screen.dart';
@@ -18,13 +17,17 @@ import 'package:college_project/features/student_id/student_id_screen.dart';
 import 'package:college_project/features/student_schedule/student_schedule_screen.dart';
 import 'package:college_project/features/tasks/cubit/tasks_cubit.dart';
 import 'package:college_project/features/tasks/tasks_screen.dart';
-import 'package:college_project/features/tasks/widgets/task_item_widget.dart';
 import 'package:college_project/layout/home_layout.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class RouterGenerationConfig {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
   static GoRouter goRouter = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: AppRoutes.splashScreen,
     routes: [
       GoRoute(
