@@ -1,19 +1,6 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthToken = () => localStorage.getItem('auth_token');
-
-const authHeaders = () => ({
-  Authorization: `Bearer ${getAuthToken()}`,
-});
+const authHeaders = () => ({});  // token auto-attached by apiClient interceptor
 
 /**
  * POST /tasks
@@ -24,9 +11,7 @@ const authHeaders = () => ({
  * @returns {Promise<{ message: string, task: object }>}
  */
 export const createTask = async (taskData) => {
-  const response = await api.post('/tasks', taskData, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.post('/tasks', taskData);
   return response.data;
 };
 
@@ -39,10 +24,7 @@ export const createTask = async (taskData) => {
  * @returns {Promise<{ tasks: object[], total: number }>}
  */
 export const getTasks = async (params = {}) => {
-  const response = await api.get('/tasks', {
-    params,
-    headers: authHeaders(),
-  });
+  const response = await apiClient.get('/tasks', { params });
   return response.data;
 };
 
@@ -54,9 +36,7 @@ export const getTasks = async (params = {}) => {
  * @returns {Promise<object>} task object
  */
 export const getTaskById = async (taskId) => {
-  const response = await api.get(`/tasks/${taskId}`, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.get(`/tasks/${taskId}`);
   return response.data;
 };
 
@@ -69,9 +49,7 @@ export const getTaskById = async (taskId) => {
  * @returns {Promise<{ message: string, task: object }>}
  */
 export const updateTask = async (taskId, updates) => {
-  const response = await api.put(`/tasks/${taskId}`, updates, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.put(`/tasks/${taskId}`, updates);
   return response.data;
 };
 
@@ -83,9 +61,7 @@ export const updateTask = async (taskId, updates) => {
  * @returns {Promise<{ message: string }>}
  */
 export const deleteTask = async (taskId) => {
-  const response = await api.delete(`/tasks/${taskId}`, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.delete(`/tasks/${taskId}`);
   return response.data;
 };
 
@@ -156,9 +132,7 @@ export const extractScheduleOptions = (scheduleData) => {
  * @returns {Promise<{ submissions: object[], total: number }>}
  */
 export const getTaskSubmissions = async (taskId) => {
-  const response = await api.get(`/tasks/${taskId}/submissions`, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.get(`/tasks/${taskId}/submissions`);
   return response.data;
 };
 
@@ -172,10 +146,9 @@ export const getTaskSubmissions = async (taskId) => {
  * @returns {Promise<{ message: string, submission: object }>}
  */
 export const gradeSubmission = async (taskId, submissionId, grade) => {
-  const response = await api.put(
+  const response = await apiClient.put(
     `/tasks/${taskId}/submissions/${submissionId}/grade`,
-    { grade },
-    { headers: authHeaders() }
+    { grade }
   );
   return response.data;
 };
@@ -193,9 +166,7 @@ export const gradeSubmission = async (taskId, submissionId, grade) => {
  * @returns {Promise<{ count: number, tasks: object[] }>}
  */
 export const getMyAvailableTasks = async () => {
-  const response = await api.get('/tasks/my/available', {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.get('/tasks/my/available');
   return response.data;
 };
 
@@ -208,10 +179,9 @@ export const getMyAvailableTasks = async () => {
  * @returns {Promise<{ message: string, submission: object }>}
  */
 export const submitTask = async (taskId, submissionContent) => {
-  const response = await api.post(
+  const response = await apiClient.post(
     `/tasks/${taskId}/submit`,
-    { submission_content: submissionContent },
-    { headers: authHeaders() }
+    { submission_content: submissionContent }
   );
   return response.data;
 };
@@ -225,9 +195,7 @@ export const submitTask = async (taskId, submissionContent) => {
  * @returns {Promise<object>} submission object
  */
 export const getMySubmission = async (taskId) => {
-  const response = await api.get(`/tasks/${taskId}/my-submission`, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.get(`/tasks/${taskId}/my-submission`);
   return response.data;
 };
 
@@ -240,8 +208,6 @@ export const getMySubmission = async (taskId) => {
  * @returns {Promise<{ message: string }>}
  */
 export const deleteMySubmission = async (taskId) => {
-  const response = await api.delete(`/tasks/${taskId}/my-submission`, {
-    headers: authHeaders(),
-  });
+  const response = await apiClient.delete(`/tasks/${taskId}/my-submission`);
   return response.data;
 };

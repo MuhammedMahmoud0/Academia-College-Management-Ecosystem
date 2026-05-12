@@ -1,25 +1,9 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import apiClient from './apiClient';
 
 // GET /admin/alerts — Get system alerts (needs attention)
 // Response: { count, data: [{ priority, message, link }] }
 export const getAdminAlerts = async () => {
-  const response = await api.get('/admin/alerts', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/admin/alerts');
   return response.data;
 };
 
@@ -27,8 +11,7 @@ export const getAdminAlerts = async () => {
 // Params: limit (max 50, default 10)
 // Response: { count, data: [{ type, timestamp, description, link }] }
 export const getAdminActivity = async (limit = 10) => {
-  const response = await api.get('/admin/activity', {
-    headers: getAuthHeaders(),
+  const response = await apiClient.get('/admin/activity', {
     params: { limit },
   });
   return response.data;
@@ -38,8 +21,7 @@ export const getAdminActivity = async (limit = 10) => {
 // Params: from (default 2021), to (default current year)
 // Response: { data: [{ year, student_count }] }
 export const getEnrollmentTrends = async (from = 2021, to = new Date().getFullYear()) => {
-  const response = await api.get('/admin/stats/enrollment-trends', {
-    headers: getAuthHeaders(),
+  const response = await apiClient.get('/admin/stats/enrollment-trends', {
     params: { from, to },
   });
   return response.data;
@@ -48,9 +30,7 @@ export const getEnrollmentTrends = async (from = 2021, to = new Date().getFullYe
 // GET /admin/stats/payment-aging — Get outstanding payment aging buckets
 // Response: { total_overdue_students, data: [{ label, student_count }] }
 export const getPaymentAging = async () => {
-  const response = await api.get('/admin/stats/payment-aging', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/admin/stats/payment-aging');
   return response.data;
 };
 
@@ -59,8 +39,6 @@ export const getPaymentAging = async () => {
 // body: optional filters e.g. { department_id, limit, student_id, ... }
 // Response: { report_type, generated_at, total, data: [...] }
 export const generateReport = async (reportType, body = {}) => {
-  const response = await api.post(`/admin/reports/${reportType}`, body, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.post(`/admin/reports/${reportType}`, body);
   return response.data;
 };

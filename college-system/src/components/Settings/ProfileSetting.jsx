@@ -28,9 +28,7 @@ export default function ProfileSetting() {
     try {
       setLoading(true);
       setToast(null);
-      const token = localStorage.getItem('auth_token');
-      
-      const authUser = await getCurrentUser(token);
+    const authUser = await getCurrentUser();
       const isUserStudent = authUser.role === 'student';
       setIsStudent(isUserStudent);
 

@@ -1,33 +1,11 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-};
+import apiClient from './apiClient';
 
 /**
  * Fetch payment management cards data for admin
  * @returns {Promise<Object>} Cards data and metadata
  */
 export const getPaymentCards = async () => {
-  const response = await api.get('/payments/admin/cards', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/payments/admin/cards');
   return response.data;
 };
 
@@ -38,14 +16,12 @@ export const getPaymentCards = async () => {
  */
 export const getStudentPayments = async (filters = {}) => {
   const params = new URLSearchParams();
-  
+
   if (filters.date) params.append('date', filters.date);
   if (filters.payMethod && filters.payMethod !== 'all') params.append('payMethod', filters.payMethod);
   if (filters.status && filters.status !== 'all') params.append('status', filters.status);
   if (filters.limit) params.append('limit', filters.limit);
 
-  const response = await api.get(`/payments/admin/student-payments?${params.toString()}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get(`/payments/admin/student-payments?${params.toString()}`);
   return response.data;
 };

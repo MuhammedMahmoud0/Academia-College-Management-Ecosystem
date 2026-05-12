@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { getAccessToken } from '../../../services/apiClient';
 import QRCode from 'react-qr-code';
 import {
     startAttendanceSession,
@@ -222,7 +223,7 @@ export default function LiveAttendancePage() {
     // ── Socket.io setup ───────────────────────────────────────────────────────
     const setupSocket = useCallback((sid) => {
         const socket = io(SOCKET_URL, {
-            auth: { token: localStorage.getItem('auth_token') },
+            auth: { token: getAccessToken() },
             transports: ['websocket'],
             reconnectionAttempts: 5,
         });

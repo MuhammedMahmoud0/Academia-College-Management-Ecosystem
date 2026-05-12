@@ -21,13 +21,8 @@ export default function LeaderBoardPage() {
     ];
 
     useEffect(() => {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-            navigate('/login');
-            return;
-        }
         fetchLeaderboard();
-    }, [navigate]);
+    }, []);
 
     const fetchLeaderboard = async () => {
         try {
@@ -37,11 +32,6 @@ export default function LeaderBoardPage() {
             setError(null);
         } catch (err) {
             console.error('Error fetching leaderboard:', err);
-            if (err.response?.status === 401) {
-                localStorage.removeItem('auth_token');
-                navigate('/login');
-                return;
-            }
             setError(err.response?.data?.message || 'Failed to load leaderboard');
         } finally {
             setLoading(false);

@@ -1,16 +1,10 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './apiClient';
 
 const getAuthToken = () => {
-    return localStorage.getItem('auth_token');
+  // Token is now in memory — access via apiClient interceptor.
+  // This helper exists only for code paths that need the raw value
+  // (e.g. socket auth). The interceptor handles all HTTP requests automatically.
+  import('./apiClient').then(({ getAccessToken }) => getAccessToken());
 };
 
 /**
@@ -19,12 +13,7 @@ const getAuthToken = () => {
  * @returns {Promise} Object containing students and grades
  */
 export const getLectureGrades = async (lectureId) => {
-  const token = getAuthToken();
-  const response = await api.get(`/grades/lecture/${lectureId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(`/grades/lecture/${lectureId}`);
   return response.data;
 };
 
@@ -34,12 +23,7 @@ export const getLectureGrades = async (lectureId) => {
  * @returns {Promise} Object containing students and grades
  */
 export const getTutorialLabGrades = async (tutorialLabId) => {
-  const token = getAuthToken();
-  const response = await api.get(`/grades/tutorial-lab/${tutorialLabId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(`/grades/tutorial-lab/${tutorialLabId}`);
   return response.data;
 };
 
@@ -48,10 +32,7 @@ export const getTutorialLabGrades = async (tutorialLabId) => {
  * @param {string|number} lectureId 
  */
 export const getGradeDistribution = async (lectureId) => {
-  const token = getAuthToken();
-  const response = await api.get(`/grades/lecture/${lectureId}/distribution`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const response = await apiClient.get(`/grades/lecture/${lectureId}/distribution`);
   return response.data;
 };
 
@@ -61,10 +42,7 @@ export const getGradeDistribution = async (lectureId) => {
  * @param {Object} data { work_max, mid_max, final_max }
  */
 export const setGradeDistribution = async (lectureId, data) => {
-  const token = getAuthToken();
-  const response = await api.put(`/grades/lecture/${lectureId}/distribution`, data, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const response = await apiClient.put(`/grades/lecture/${lectureId}/distribution`, data);
   return response.data;
 };
 
@@ -75,10 +53,7 @@ export const setGradeDistribution = async (lectureId, data) => {
  * @param {Object} data { mid_score, work_score, final_score }
  */
 export const updateStudentGradeForDoctor = async (lectureId, studentId, data) => {
-  const token = getAuthToken();
-  const response = await api.put(`/grades/lecture/${lectureId}/student/${studentId}`, data, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const response = await apiClient.put(`/grades/lecture/${lectureId}/student/${studentId}`, data);
   return response.data;
 };
 
@@ -89,10 +64,7 @@ export const updateStudentGradeForDoctor = async (lectureId, studentId, data) =>
  * @param {Object} data { mid_score, work_score, final_score }
  */
 export const updateStudentGradeForTA = async (tutorialLabId, studentId, data) => {
-  const token = getAuthToken();
-  const response = await api.put(`/grades/tutorial-lab/${tutorialLabId}/student/${studentId}`, data, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const response = await apiClient.put(`/grades/tutorial-lab/${tutorialLabId}/student/${studentId}`, data);
   return response.data;
 };
 
@@ -102,13 +74,7 @@ export const updateStudentGradeForTA = async (tutorialLabId, studentId, data) =>
  * @returns {Promise<{distribution: Array<{grade: string, count: number}>}>}
  */
 export const getMyGradeDistribution = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/grades/my/distribution', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const response = await apiClient.get('/grades/my/distribution');
   return response.data?.data || response.data;
 };
 
@@ -118,12 +84,6 @@ export const getMyGradeDistribution = async () => {
  * @returns {Promise<{current_cgpa: number, total_semesters: number, trend: Array}>}
  */
 export const getMyCgpaTrend = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/grades/my/cgpa-trend', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const response = await apiClient.get('/grades/my/cgpa-trend');
   return response.data?.data || response.data;
 };

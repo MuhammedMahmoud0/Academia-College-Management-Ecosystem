@@ -1,57 +1,33 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import apiClient from './apiClient';
 
 // GET /courses/all — Retrieve all courses
 export const getAllCourses = async () => {
-  const response = await api.get('/courses/all', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/courses/all');
   return response.data; // { courses: [...], total }
 };
 
 // POST /courses — Create a new course
 export const createCourse = async (courseData) => {
   // courseData: { code, name, credits, department, prerequisites: ["CODE1", ...] }
-  const response = await api.post('/courses', courseData, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.post('/courses', courseData);
   return response.data;
 };
 
 // PATCH /courses/{code} — Update a course
 export const updateCourse = async (code, courseData) => {
   // courseData: { name, prerequisites: ["CODE1", ...] }
-  const response = await api.patch(`/courses/${code}`, courseData, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.patch(`/courses/${code}`, courseData);
   return response.data;
 };
 
 // DELETE /courses/{code} — Delete a course
 export const deleteCourse = async (code) => {
-  const response = await api.delete(`/courses/${code}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.delete(`/courses/${code}`);
   return response.data;
 };
 
 // GET /courses/student — Get student's enrolled courses and grades
 export const getStudentCourses = async () => {
-  const response = await api.get('/courses/student', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/courses/student');
   return response.data;
 };

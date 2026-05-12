@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-	baseURL: BASE_URL,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-});
-
-const getAuthHeaders = () => ({
-	Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-});
+import apiClient from './apiClient';
 
 /**
  * Get notifications list for the authenticated user.
@@ -19,22 +6,9 @@ const getAuthHeaders = () => ({
  * @param {{ page?: number, limit?: number }} params
  */
 export const getNotifications = async ({ page = 1, limit = 20 } = {}) => {
-	const token = localStorage.getItem('auth_token');
-
-	if (!token) {
-		const authError = new Error('Authentication required');
-		authError.status = 401;
-		throw authError;
-	}
-
-	const response = await api.get('/notifications', {
-		params: {
-			page,
-			limit,
-		},
-		headers: getAuthHeaders(),
+	const response = await apiClient.get('/notifications', {
+		params: { page, limit },
 	});
-
 	return response.data?.data || response.data;
 };
 
@@ -43,9 +17,7 @@ export const getNotifications = async ({ page = 1, limit = 20 } = {}) => {
  * Endpoint: GET /notifications/unread-count
  */
 export const getUnreadCount = async () => {
-	const response = await api.get('/notifications/unread-count', {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.get('/notifications/unread-count');
 	return response.data;
 };
 
@@ -55,11 +27,7 @@ export const getUnreadCount = async () => {
  * @param {number|string} notificationId
  */
 export const markNotificationAsRead = async (notificationId) => {
-	const response = await api.patch(
-		`/notifications/${notificationId}/read`,
-		{},
-		{ headers: getAuthHeaders() }
-	);
+	const response = await apiClient.patch(`/notifications/${notificationId}/read`, {});
 	return response.data;
 };
 
@@ -68,11 +36,7 @@ export const markNotificationAsRead = async (notificationId) => {
  * Endpoint: PATCH /notifications/mark-all-read
  */
 export const markAllAsRead = async () => {
-	const response = await api.patch(
-		'/notifications/mark-all-read',
-		{},
-		{ headers: getAuthHeaders() }
-	);
+	const response = await apiClient.patch('/notifications/mark-all-read', {});
 	return response.data;
 };
 
@@ -82,9 +46,7 @@ export const markAllAsRead = async () => {
  * @param {number|string} notificationId
  */
 export const deleteNotification = async (notificationId) => {
-	const response = await api.delete(`/notifications/${notificationId}`, {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.delete(`/notifications/${notificationId}`);
 	return response.data;
 };
 
@@ -93,9 +55,7 @@ export const deleteNotification = async (notificationId) => {
  * Endpoint: DELETE /notifications
  */
 export const deleteAllNotifications = async () => {
-	const response = await api.delete('/notifications', {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.delete('/notifications');
 	return response.data;
 };
 
@@ -104,9 +64,7 @@ export const deleteAllNotifications = async () => {
  * Endpoint: GET /notifications/preferences
  */
 export const getNotificationPreferences = async () => {
-	const response = await api.get('/notifications/preferences', {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.get('/notifications/preferences');
 	return response.data;
 };
 
@@ -115,9 +73,7 @@ export const getNotificationPreferences = async () => {
  * Endpoint: GET /users
  */
 export const getUsersList = async () => {
-	const response = await api.get('/users', {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.get('/users');
 	return response.data?.data || response.data;
 };
 
@@ -127,11 +83,7 @@ export const getUsersList = async () => {
  * @param {Object} preferences - The preferences object to update
  */
 export const updateNotificationPreferences = async (preferences) => {
-	const response = await api.put(
-		'/notifications/preferences',
-		preferences,
-		{ headers: getAuthHeaders() }
-	);
+	const response = await apiClient.put('/notifications/preferences', preferences);
 	return response.data;
 };
 
@@ -141,9 +93,7 @@ export const updateNotificationPreferences = async (preferences) => {
  * @param {Object} notificationData - { user_id, message, type }
  */
 export const createNotification = async (notificationData) => {
-	const response = await api.post('/notifications', notificationData, {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.post('/notifications', notificationData);
 	return response.data;
 };
 
@@ -153,8 +103,6 @@ export const createNotification = async (notificationData) => {
  * @param {Object} bulkData - { user_ids: [], message, type }
  */
 export const createBulkNotifications = async (bulkData) => {
-	const response = await api.post('/notifications/bulk', bulkData, {
-		headers: getAuthHeaders(),
-	});
+	const response = await apiClient.post('/notifications/bulk', bulkData);
 	return response.data;
 };

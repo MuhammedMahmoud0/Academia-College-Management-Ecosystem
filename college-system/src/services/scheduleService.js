@@ -1,30 +1,11 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Get authorization token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('auth_token');
-};
+import apiClient from './apiClient';
 
 /**
  * Get teacher's schedule (Doctor/TA can view their own schedule only)
  * @returns {Promise} Object containing teacherId, teacherName, and schedule data
  */
 export const getTeacherSchedule = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/teachers/schedule', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/teachers/schedule');
   return response.data;
 };
 
@@ -33,12 +14,7 @@ export const getTeacherSchedule = async () => {
  * @returns {Promise} Object containing student schedule data
  */
 export const getStudentSchedule = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/students/schedule', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/students/schedule');
   return response.data;
 };
 
@@ -48,14 +24,10 @@ export const getStudentSchedule = async () => {
  * @returns {Promise<{ schedule: Array<{ day: string, date: string, classes: Array }> }>}
  */
 export const getStudentScheduleByWeek = async (weekOffset = 0) => {
-  const token = getAuthToken();
   // Only send the `week` param when it's non-zero; passing 0 causes a 500 on
   // some backend versions that don't handle an explicit zero offset.
   const params = weekOffset !== 0 ? { week: weekOffset } : undefined;
-  const response = await api.get('/schedule', {
-    params,
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await apiClient.get('/schedule', { params });
   return response.data; // { schedule: [{ day, date, classes: [...] }] }
 };
 
@@ -64,12 +36,7 @@ export const getStudentScheduleByWeek = async (weekOffset = 0) => {
  * @returns {Promise} Object containing exam schedule data
  */
 export const getStudentExamSchedule = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/exams/schedule', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/exams/schedule');
   return response.data; // { success, count, data: [...] }
 };
 
@@ -91,7 +58,7 @@ export const extractCoursesFromSchedule = (scheduleData) => {
     if (daySchedule.slots && Array.isArray(daySchedule.slots)) {
       daySchedule.slots.forEach(slot => {
         const courseCode = slot.courseCode;
-        
+
         if (courseCode && slot.lectureId) {
           if (!coursesMap.has(courseCode)) {
             coursesMap.set(courseCode, {
@@ -101,14 +68,14 @@ export const extractCoursesFromSchedule = (scheduleData) => {
               slots: []
             });
           }
-          
+
           const course = coursesMap.get(courseCode);
-          
+
           // Add unique lecture IDs
           if (!course.lectureIds.includes(slot.lectureId)) {
             course.lectureIds.push(slot.lectureId);
           }
-          
+
           // Store slot information
           course.slots.push({
             day: daySchedule.day,

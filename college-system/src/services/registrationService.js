@@ -1,25 +1,11 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import apiClient from './apiClient';
 
 /**
  * GET /registration/available-offerings
  * Returns { semester, offerings: [{ courseName, courseCode, creditHours, lectures: [...], labs: [...] }] }
  */
 export const getAvailableOfferings = async () => {
-  const response = await api.get('/registration/available-offerings', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/registration/available-offerings');
   return response.data;
 };
 
@@ -29,11 +15,10 @@ export const getAvailableOfferings = async () => {
  * Returns: { message, enrollments, details: [{ student_user_id, lecture_id, tutorial_lab_id, status }] }
  */
 export const registerCourses = async (selectedLectureIds, selectedLabIds) => {
-  const response = await api.post(
-    '/registration/register',
-    { selectedLectureIds, selectedLabIds },
-    { headers: getAuthHeaders() }
-  );
+  const response = await apiClient.post('/registration/register', {
+    selectedLectureIds,
+    selectedLabIds,
+  });
   return response.data;
 };
 
@@ -43,9 +28,7 @@ export const registerCourses = async (selectedLectureIds, selectedLabIds) => {
  * Response: { courses: [{ id, code, name, credits, instructor, semester, year, grade, status }], cumulativeGPA, totalCredits }
  */
 export const getStudentCourses = async () => {
-  const response = await api.get('/courses/student', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/courses/student');
   return response.data;
 };
 
@@ -55,9 +38,7 @@ export const getStudentCourses = async () => {
  * Response: { labs: [{ id, code, name, credits, instructor, type, group, semester, year, grade, status }] }
  */
 export const getStudentLabs = async () => {
-  const response = await api.get('/courses/student/labs', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/courses/student/labs');
   return response.data;
 };
 
@@ -74,10 +55,7 @@ export const unregisterCourse = async (lectureId, tutorialLabId) => {
     ? { lectureId }
     : { tutorialLabId };
 
-  const response = await api.delete('/registration/unregister', {
-    headers: getAuthHeaders(),
-    data,
-  });
+  const response = await apiClient.delete('/registration/unregister', { data });
   return response.data;
 };
 
@@ -88,10 +66,6 @@ export const unregisterCourse = async (lectureId, tutorialLabId) => {
  * Returns: 201 on success
  */
 export const registerLab = async (lectureId, labId) => {
-  const response = await api.post(
-    '/registration/register-lab',
-    { lectureId, labId },
-    { headers: getAuthHeaders() }
-  );
+  const response = await apiClient.post('/registration/register-lab', { lectureId, labId });
   return response.data;
 };

@@ -1,23 +1,10 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-});
+import apiClient from './apiClient';
 
 /**
  * Fetch digital student ID front data.
  */
 export const getDigitalIdFront = async () => {
-  const response = await api.get('/student/digital-id/front', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/student/digital-id/front');
   return response.data;
 };
 
@@ -25,8 +12,6 @@ export const getDigitalIdFront = async () => {
  * Fetch digital student ID back data.
  */
 export const getDigitalIdBack = async () => {
-  const response = await api.get('/student/digital-id/back', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/student/digital-id/back');
   return response.data;
 };

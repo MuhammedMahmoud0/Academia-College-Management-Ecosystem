@@ -1,15 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-});
+import apiClient from './apiClient';
 
 /**
  * GET /financials
@@ -19,10 +8,7 @@ const getAuthHeaders = () => ({
 export const getFinancials = async (departmentId) => {
   const params = {};
   if (departmentId) params.departmentId = departmentId;
-  const response = await api.get('/financials', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/financials', { params });
   return response.data; // { financials: [...] }
 };
 
@@ -32,9 +18,7 @@ export const getFinancials = async (departmentId) => {
  * @param {number} id
  */
 export const getFinancialById = async (id) => {
-  const response = await api.get(`/financials/${id}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get(`/financials/${id}`);
   return response.data;
 };
 
@@ -44,9 +28,7 @@ export const getFinancialById = async (id) => {
  * @param {{ department_id: string, credit_price: number }} payload
  */
 export const createFinancial = async (payload) => {
-  const response = await api.post('/financials', payload, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.post('/financials', payload);
   return response.data;
 };
 
@@ -57,11 +39,7 @@ export const createFinancial = async (payload) => {
  * @param {number} credit_price
  */
 export const updateFinancial = async (id, credit_price) => {
-  const response = await api.patch(
-    `/financials/${id}`,
-    { credit_price },
-    { headers: getAuthHeaders() }
-  );
+  const response = await apiClient.patch(`/financials/${id}`, { credit_price });
   return response.data;
 };
 
@@ -71,8 +49,6 @@ export const updateFinancial = async (id, credit_price) => {
  * @param {number} id
  */
 export const deleteFinancial = async (id) => {
-  const response = await api.delete(`/financials/${id}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.delete(`/financials/${id}`);
   return response.data;
 };

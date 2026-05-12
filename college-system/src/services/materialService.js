@@ -1,18 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Get authorization token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('auth_token');
-};
+import apiClient from './apiClient';
 
 /**
  * Get course materials filtered by lecture or tutorial/lab
@@ -22,20 +8,16 @@ const getAuthToken = () => {
  * @returns {Promise} Array of materials
  */
 export const getMaterials = async (params = {}) => {
-  const token = getAuthToken();
-  const response = await api.get('/materials', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const response = await apiClient.get('/materials', {
     params,
     validateStatus: (status) => status < 500, // Treat 404 as valid response, not error
   });
-  
+
   // If 404 (no materials found), return empty array
   if (response.status === 404) {
     return [];
   }
-  
+
   return response.data;
 };
 
@@ -48,25 +30,25 @@ export const getMaterialsForCourse = async (lectureIds = []) => {
   if (!lectureIds || lectureIds.length === 0) {
     return [];
   }
-  
+
   // If only one lecture ID, use the single endpoint
   if (lectureIds.length === 1) {
     return getMaterials({ lecture_id: lectureIds[0] });
   }
 
   // For multiple lecture IDs, fetch materials for each and combine
-  const promises = lectureIds.map(lectureId => 
+  const promises = lectureIds.map(lectureId =>
     getMaterials({ lecture_id: lectureId })
   );
-  
+
   const results = await Promise.all(promises);
-  
+
   // Combine all results and remove duplicates by material ID
   const allMaterials = results.flat();
   const uniqueMaterials = Array.from(
     new Map(allMaterials.map(m => [m.id, m])).values()
   );
-  
+
   return uniqueMaterials;
 };
 
@@ -82,19 +64,18 @@ export const getMaterialsForCourse = async (lectureIds = []) => {
  * @returns {Promise} Created material data
  */
 export const createMaterial = async (materialData) => {
-  const token = getAuthToken();
   const formData = new FormData();
-  
+
   formData.append('type', materialData.type);
-  
+
   if (materialData.lecture_id) {
     formData.append('lecture_id', materialData.lecture_id);
   }
-  
+
   if (materialData.tutorial_lab_id) {
     formData.append('tutorial_lab_id', materialData.tutorial_lab_id);
   }
-  
+
   if (materialData.type === 'link') {
     formData.append('title', materialData.title);
     formData.append('url', materialData.url);
@@ -103,13 +84,10 @@ export const createMaterial = async (materialData) => {
     formData.append('file', materialData.file);
   }
 
-  const response = await api.post('/materials', formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
-    },
+  const response = await apiClient.post('/materials', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
-  
+
   return response.data;
 };
 
@@ -122,12 +100,7 @@ export const createMaterial = async (materialData) => {
  * @returns {Promise} Updated material data
  */
 export const updateMaterial = async (id, updateData) => {
-  const token = getAuthToken();
-  const response = await api.put(`/materials/${id}`, updateData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.put(`/materials/${id}`, updateData);
   return response.data;
 };
 
@@ -137,12 +110,7 @@ export const updateMaterial = async (id, updateData) => {
  * @returns {Promise} Success message
  */
 export const deleteMaterial = async (id) => {
-  const token = getAuthToken();
-  const response = await api.delete(`/materials/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.delete(`/materials/${id}`);
   return response.data;
 };
 
@@ -153,12 +121,7 @@ export const deleteMaterial = async (id) => {
  * @returns {Promise} Object containing download_url and material info
  */
 export const getMaterialDownloadUrl = async (id) => {
-  const token = getAuthToken();
-  const response = await api.get(`/materials/${id}/download`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(`/materials/${id}/download`);
   return response.data;
 };
 
@@ -169,11 +132,7 @@ export const getMaterialDownloadUrl = async (id) => {
  * @returns {Promise} File blob or redirect
  */
 export const streamMaterial = async (id) => {
-  const token = getAuthToken();
-  const response = await api.get(`/materials/${id}/stream`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const response = await apiClient.get(`/materials/${id}/stream`, {
     responseType: 'blob',
   });
   return response.data;
@@ -212,27 +171,22 @@ export const viewMaterial = async (id, type, url) => {
  */
 export const downloadMaterial = async (id, fileName) => {
   try {
-    const token = getAuthToken();
-    
     // Use stream endpoint for direct download
-    const response = await api.get(`/materials/${id}/stream`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const response = await apiClient.get(`/materials/${id}/stream`, {
       responseType: 'blob',
     });
 
     // Get filename from Content-Disposition header if available
     const contentDisposition = response.headers['content-disposition'];
     let downloadFileName = fileName;
-    
+
     if (!downloadFileName && contentDisposition) {
       const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
       if (fileNameMatch && fileNameMatch[1]) {
         downloadFileName = fileNameMatch[1].replace(/['"]/g, '');
       }
     }
-    
+
     // response.data is already a Blob when responseType is 'blob'
     const blob = response.data;
     const url = window.URL.createObjectURL(blob);
@@ -242,7 +196,7 @@ export const downloadMaterial = async (id, fileName) => {
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
-    
+
     // Cleanup after a slight delay to ensure download starts
     setTimeout(() => {
       document.body.removeChild(link);

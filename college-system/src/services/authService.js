@@ -1,39 +1,42 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-// Always use relative path — Vite proxy handles dev, Netlify redirect handles production
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
+/**
+ * Authenticate with email + password.
+ * Returns { message, accessToken, requiresPasswordChange }.
+ * The backend also sets an HttpOnly refresh cookie automatically.
+ */
 export const login = async (email, password) => {
-  const response = await api.post('/auth/login', {
-    email,
-    password,
-  });
+  const response = await apiClient.post('/auth/login', { email, password });
   return response.data;
 };
 
-export const getCurrentUser = async (token) => {
-  const response = await api.get('/auth/me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  
+/**
+ * Fetch the currently authenticated user's profile.
+ * The Authorization header is attached automatically by the apiClient interceptor.
+ */
+export const getCurrentUser = async () => {
+  const response = await apiClient.get('/auth/me');
+
   // Handle different response structures from backend
   const userData = response.data.user || response.data;
-  
+
+  // Cache user profile (non-sensitive data) for instant display on page load
   localStorage.setItem('currentUser', JSON.stringify(userData));
   return userData;
 };
 
-export const logout = () => {
-  localStorage.removeItem('auth_token');
-  localStorage.removeItem('message');
-  localStorage.removeItem('currentUser');
+/**
+ * Revoke the refresh token and clear the HttpOnly cookie server-side.
+ */
+export const logoutAPI = async () => {
+  await apiClient.post('/auth/logout');
+};
+
+/**
+ * Attempt a silent token refresh using the HttpOnly refresh cookie.
+ * Returns the new accessToken string on success, throws on failure.
+ */
+export const refreshToken = async () => {
+  const response = await apiClient.post('/auth/refresh');
+  return response.data.accessToken;
 };
