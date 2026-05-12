@@ -1,18 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import apiClient from './apiClient';
 
 /**
  * Get average attendance rate for a lecture or tutorial
@@ -21,10 +7,7 @@ const getAuthHeaders = () => {
  * @param {number} [params.tutorial_lab_id]
  */
 export const getAverageAttendance = async (params = {}) => {
-  const response = await api.get('/attendance/stats/avg', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/attendance/stats/avg', { params });
   return response.data;
 };
 
@@ -36,10 +19,7 @@ export const getAverageAttendance = async (params = {}) => {
  * @param {number} [params.limit=3]
  */
 export const getLowestAttendance = async (params = {}) => {
-  const response = await api.get('/attendance/stats/lowest', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/attendance/stats/lowest', { params });
   return response.data;
 };
 
@@ -50,10 +30,7 @@ export const getLowestAttendance = async (params = {}) => {
  * @param {number} [params.tutorial_lab_id]
  */
 export const getAttendanceTrend = async (params = {}) => {
-  const response = await api.get('/attendance/stats/trend', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/attendance/stats/trend', { params });
   return response.data;
 };
 
@@ -64,10 +41,7 @@ export const getAttendanceTrend = async (params = {}) => {
  * @param {number} [params.tutorial_lab_id]
  */
 export const getAttendanceGrid = async (params = {}) => {
-  const response = await api.get('/attendance/grid', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/attendance/grid', { params });
   return response.data;
 };
 
@@ -81,8 +55,6 @@ export const getAttendanceGrid = async (params = {}) => {
  * @param {string} data.status
  */
 export const updateAttendanceRecord = async (data) => {
-  const response = await api.put('/attendance/records/update', data, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.put('/attendance/records/update', data);
   return response.data;
 };

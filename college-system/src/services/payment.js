@@ -1,15 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-});
+import apiClient from './apiClient';
 
 /**
  * GET /payments/invoices/me
@@ -21,10 +10,7 @@ export const getMyInvoices = async (status) => {
   const params = {};
   if (status) params.status = status;
 
-  const response = await api.get('/payments/invoices/me', {
-    headers: getAuthHeaders(),
-    params,
-  });
+  const response = await apiClient.get('/payments/invoices/me', { params });
   return response.data;
 };
 
@@ -33,9 +19,7 @@ export const getMyInvoices = async (status) => {
  * Returns semester-level payment records (payment history) for the current student.
  */
 export const getMyPaymentHistory = async () => {
-  const response = await api.get('/payments/me', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/payments/me');
   return response.data;
 };
 
@@ -46,10 +30,6 @@ export const getMyPaymentHistory = async () => {
  * @param {boolean} payAll - should always be true (all-or-nothing)
  */
 export const createPaymobOrder = async (payAll = true) => {
-  const response = await api.post(
-    '/payments/invoices/paymob-order',
-    { payAll },
-    { headers: getAuthHeaders() }
-  );
+  const response = await apiClient.post('/payments/invoices/paymob-order', { payAll });
   return response.data;
 };

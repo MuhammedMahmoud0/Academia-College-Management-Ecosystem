@@ -32,7 +32,7 @@ export const useNotification = () => {
  * Manages notification state and real-time updates
  */
 export const NotificationProvider = ({ children }) => {
-	const { user, token, isAuthenticated } = useAuth();
+	const { user, isAuthenticated } = useAuth();
 	const socketUserId = user?.id || user?.user_id || user?.userId || user?.uuid;
 
 	// State
@@ -367,7 +367,7 @@ export const NotificationProvider = ({ children }) => {
 	 * Connect to socket when authenticated
 	 */
 	useEffect(() => {
-		if (isAuthenticated && token && socketUserId) {
+		if (isAuthenticated && socketUserId) {
 			// Connect to socket
 			socketService.connect(socketUserId);
 			
@@ -384,11 +384,11 @@ export const NotificationProvider = ({ children }) => {
 		return () => {
 			socketService.disconnect();
 		};
-	}, [isAuthenticated, token, socketUserId, setupSocketListeners, fetchNotifications, fetchUnreadCount, fetchPreferences]);
+	}, [isAuthenticated, socketUserId, setupSocketListeners, fetchNotifications, fetchUnreadCount, fetchPreferences]);
 
 	// Fallback sync: only refresh list when unread count actually changes.
 	useEffect(() => {
-		if (!isAuthenticated || !token || !socketUserId) return;
+		if (!isAuthenticated || !socketUserId) return;
 
 		const intervalId = setInterval(async () => {
 			if (document.hidden) return;
@@ -412,7 +412,7 @@ export const NotificationProvider = ({ children }) => {
 		}, 10000);
 
 		return () => clearInterval(intervalId);
-	}, [isAuthenticated, token, socketUserId, fetchNotifications]);
+	}, [isAuthenticated, socketUserId, fetchNotifications]);
 
 	/**
 	 * Refresh notifications (useful after mutations)

@@ -1,29 +1,11 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthToken = () => {
-    return localStorage.getItem('auth_token');
-};
+import apiClient from './apiClient';
 
 /**
  * Get doctor alerts (active tasks, expired tasks, ungraded submissions, low score counts)
  * @returns {Promise} Object containing alerts data
  */
 export const getDoctorAlerts = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/doctor/alerts', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/doctor/alerts');
   return response.data;
 };
 
@@ -32,12 +14,7 @@ export const getDoctorAlerts = async () => {
  * @returns {Promise} Object containing alerts data
  */
 export const getTAAlerts = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/teaching-assistant/alerts', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/teaching-assistant/alerts');
   return response.data;
 };
 
@@ -46,12 +23,7 @@ export const getTAAlerts = async () => {
  * @returns {Promise} Object containing courses data
  */
 export const getDoctorCourses = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/doctor/courses', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/doctor/courses');
   return response.data;
 };
 
@@ -60,11 +32,6 @@ export const getDoctorCourses = async () => {
  * @returns {Promise} Object containing schedule data
  */
 export const getTASchedule = async () => {
-  const token = getAuthToken();
-  const response = await api.get('/teachers/schedule', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get('/teachers/schedule');
   return response.data;
 };

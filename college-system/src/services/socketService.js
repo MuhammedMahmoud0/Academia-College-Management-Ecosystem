@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client';
+import { getAccessToken } from './apiClient';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://college-system-backend.onrender.com';
 
@@ -29,7 +30,7 @@ class SocketService {
 			return;
 		}
 
-		const token = localStorage.getItem('auth_token');
+		const token = getAccessToken();
 
 		if (this.socket) {
 			this.socket.auth = { token };

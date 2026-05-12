@@ -1,35 +1,18 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-	baseURL: BASE_URL,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-});
-
-const getAuthHeaders = () => {
-	const token = localStorage.getItem('auth_token');
-	return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import apiClient from './apiClient';
 
 export const getManagedStudents = async ({ page = 1, limit = 10, search = '' } = {}) => {
-	const response = await api.get('/users/management/students', {
-		headers: getAuthHeaders(),
+	const response = await apiClient.get('/users/management/students', {
 		params: {
 			page,
 			limit,
 			...(search ? { search } : {}),
 		},
 	});
-
 	return response.data;
 };
 
 export const getManagedDoctors = async ({ page = 1, limit = 10, search = '', role = '' } = {}) => {
-	const response = await api.get('/users/management/staff', {
-		headers: getAuthHeaders(),
+	const response = await apiClient.get('/users/management/staff', {
 		params: {
 			page,
 			limit,
@@ -37,23 +20,16 @@ export const getManagedDoctors = async ({ page = 1, limit = 10, search = '', rol
 			...(role && role !== 'all' ? { role } : {}),
 		},
 	});
-
 	return response.data;
 };
 
 export const createStudentUser = async (payload) => {
-	const response = await api.post('/users/students', payload, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.post('/users/students', payload);
 	return response.data;
 };
 
 export const createNonStudentUser = async (payload) => {
-	const response = await api.post('/users', payload, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.post('/users', payload);
 	return response.data;
 };
 
@@ -61,13 +37,9 @@ export const uploadStudentsExcelFile = async (file) => {
 	const formData = new FormData();
 	formData.append('file', file);
 
-	const response = await api.post('/users/upload-excel/students', formData, {
-		headers: {
-			...getAuthHeaders(),
-			'Content-Type': 'multipart/form-data',
-		},
+	const response = await apiClient.post('/users/upload-excel/students', formData, {
+		headers: { 'Content-Type': 'multipart/form-data' },
 	});
-
 	return response.data;
 };
 
@@ -75,67 +47,47 @@ export const uploadNonStudentsExcelFile = async (file) => {
 	const formData = new FormData();
 	formData.append('file', file);
 
-	const response = await api.post('/users/upload-excel', formData, {
-		headers: {
-			...getAuthHeaders(),
-			'Content-Type': 'multipart/form-data',
-		},
+	const response = await apiClient.post('/users/upload-excel', formData, {
+		headers: { 'Content-Type': 'multipart/form-data' },
 	});
-
 	return response.data;
 };
 
 export const getDepartments = async (search = '') => {
-	const response = await api.get('/departments', {
-		headers: getAuthHeaders(),
+	const response = await apiClient.get('/departments', {
 		params: search ? { search } : {},
 	});
-
 	return response.data;
 };
 
 export const deleteStudentUser = async (userId) => {
-	const response = await api.delete(`/users/${userId}`, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.delete(`/users/${userId}`);
 	return response.data;
 };
 
 export const deleteManagedUser = async (userId) => {
-	const response = await api.delete(`/users/${userId}`, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.delete(`/users/${userId}`);
 	return response.data;
 };
 
 export const updateManagedUser = async (userId, payload) => {
 	const isFormDataPayload = typeof FormData !== 'undefined' && payload instanceof FormData;
 
-	const response = await api.patch(`/users/${userId}`, payload, {
+	const response = await apiClient.patch(`/users/${userId}`, payload, {
 		headers: {
-			...getAuthHeaders(),
 			...(isFormDataPayload ? { 'Content-Type': 'multipart/form-data' } : {}),
 		},
 	});
-
 	return response.data;
 };
 
 export const updateStudentUser = async (userId, payload) => {
-	const response = await api.patch(`/users/${userId}`, payload, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.patch(`/users/${userId}`, payload);
 	return response.data;
 };
 
 export const updateStudentLeaderRole = async (userId, role) => {
-	const response = await api.patch(`/users/students/${userId}/role`, { role }, {
-		headers: getAuthHeaders(),
-	});
-
+	const response = await apiClient.patch(`/users/students/${userId}/role`, { role });
 	return response.data;
 };
 

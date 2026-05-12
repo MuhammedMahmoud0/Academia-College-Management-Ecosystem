@@ -1,80 +1,73 @@
-import { createContext, useState, useEffect } from "react";
-import { login as loginAPI , getCurrentUser} from "../services/authService";
+import { createContext, useState, useEffect, useCallback } from "react";
+import { login as loginAPI, getCurrentUser, logoutAPI, refreshToken } from "../services/authService";
+import { setAccessToken } from "../services/apiClient";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    // Load cached user profile for instant UI display while we verify the session
+    try {
+      const cached = localStorage.getItem('currentUser');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const isUsableToken = (value) => {
-    if (!value || typeof value !== 'string') return false;
-    const normalized = value.trim().toLowerCase();
-    return normalized !== 'undefined' && normalized !== 'null' && normalized.length > 0;
-  };
-
-  const extractToken = (data) => {
-    return (
-      data?.token ||
-      data?.access_token ||
-      data?.accessToken ||
-      data?.data?.token ||
-      data?.data?.access_token ||
-      data?.data?.accessToken ||
-      null
-    );
-  };
-
-  // Check if user is already logged in (on app load)
+  /**
+   * On mount: attempt a silent refresh using the HttpOnly cookie.
+   * If the cookie is valid the backend returns a new access token and we restore
+   * the session without any user interaction. If it fails the user goes to login.
+   */
   useEffect(() => {
-    const savedToken = localStorage.getItem('auth_token');
-    const savedUser = localStorage.getItem('currentUser');
-    
-    // Load cached user data immediately for instant display
-    if (savedUser) {
+    const initAuth = async () => {
       try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing cached user data:', error);
+        const newToken = await refreshToken();
+        setAccessToken(newToken);
+
+        // Fetch fresh user profile
+        const userData = await getCurrentUser();
+        if (userData && (userData.name || userData.role)) {
+          setUser(userData);
+        }
+        setIsAuthenticated(true);
+      } catch {
+        // No valid refresh cookie — user needs to log in
+        setAccessToken(null);
+        localStorage.removeItem('currentUser');
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    if (isUsableToken(savedToken)) {
-      setToken(savedToken);
-      setIsAuthenticated(true);
-    } else if (savedToken) {
-      // Clean up invalid token strings such as "undefined" or "null".
-      localStorage.removeItem('auth_token');
-    }
-    setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  // Login function
-  const login = async (email, password) => {
+  /** Login: store token in memory only, fetch user profile, set auth state. */
+  const login = useCallback(async (email, password) => {
     setIsLoading(true);
     try {
       const data = await loginAPI(email, password);
-      const newToken = extractToken(data);
-      const message = data.message;
+      const newToken = data.accessToken;
 
-      if (!isUsableToken(newToken)) {
-        throw new Error('Login succeeded but no valid token was returned by the server.');
+      if (!newToken) {
+        throw new Error('Login succeeded but no access token was returned.');
       }
-      
-      // Store token
-      localStorage.setItem('auth_token', newToken);
-      localStorage.setItem('message', message);
-      setToken(newToken);
 
-      // Fetch user immediately so RoleRoute has the role before the redirect
+      // Store token in memory ONLY — never in localStorage
+      setAccessToken(newToken);
+
+      // Fetch user profile immediately so RoleRoute has the role before redirect
       let userData = null;
       try {
-        userData = await getCurrentUser(newToken);
+        userData = await getCurrentUser();
         if (userData && (userData.name || userData.role)) {
           setUser(userData);
-          localStorage.setItem('currentUser', JSON.stringify(userData));
         }
       } catch (userErr) {
         console.error('Could not fetch user profile after login:', userErr);
@@ -88,53 +81,28 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch current user data when token changes
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (token) {
-        try {
-          const userData = await getCurrentUser(token);
-          // Only update if we got valid user data
-          if (userData && userData.name) {
-            setUser(userData);
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          // If token is invalid/expired, clear auth state to stop repeated unauthorized calls.
-          // If token is invalid/expired, clear auth and force re-login.
-          if (error?.response?.status === 401) {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('message');
-            localStorage.removeItem('currentUser');
-            setToken(null);
-            setUser(null);
-            setIsAuthenticated(false);
-            return;
-          }
-
-          // Keep cached user data for non-auth related errors.
-        }
-      }
-    };
-    fetchUser();
-  }, [token]);
-
-
-  // Logout function
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('message');
-    localStorage.removeItem('currentUser');
-    setToken(null);
-    setUser(null);
-    setIsAuthenticated(false);
-  };
+  /**
+   * Logout: call the backend to revoke the refresh token / clear the cookie,
+   * then wipe the in-memory token and cached user data.
+   */
+  const logout = useCallback(async () => {
+    try {
+      await logoutAPI();
+    } catch (err) {
+      // Even if the API call fails we still clear local state
+      console.error('Logout API error:', err);
+    } finally {
+      setAccessToken(null);
+      localStorage.removeItem('currentUser');
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   const value = {
     user,
-    token,
     isAuthenticated,
     isLoading,
     login,
@@ -146,4 +114,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};      
+};

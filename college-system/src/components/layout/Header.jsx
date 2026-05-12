@@ -173,12 +173,12 @@ export default function Header({ onMenuToggle }) {
 
                     <div className="hidden md:flex flex-col items-end">
                         <span className="text-sm font-semibold text-slate-900">
-                            {user?.name || "Guest User"}
+                            {user?.full_name || "Guest User"}
                         </span>
                     </div>
                     <Avatar 
                         src={user?.avatar_url || ''} 
-                        alt={user?.name || "User Avatar"}
+                        alt={user?.full_name || "User Avatar"}
                         sx={{
                             width: 40,
                             height: 40,
@@ -187,7 +187,7 @@ export default function Header({ onMenuToggle }) {
                             fontWeight: 'bold',
                         }}
                     >
-                        {!user?.avatar_url && user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                        {!user?.avatar_url && user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
                     </Avatar>
                 </div>
             </div>

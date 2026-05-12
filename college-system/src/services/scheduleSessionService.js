@@ -1,17 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = '/api/v1';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-});
+import apiClient from './apiClient';
 
 // ─── Available Offerings (schedule grid data) ────────────────────────────────
 
@@ -20,9 +7,7 @@ const getAuthHeaders = () => ({
  * Response shape: { semester, offerings: [{ courseName, courseCode, creditHours, lectures: [...], labs: [...] }] }
  */
 export const getAvailableOfferings = async () => {
-  const response = await api.get('/registration/available-offerings', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/registration/available-offerings');
   return response.data;
 };
 
@@ -33,9 +18,7 @@ export const getAvailableOfferings = async () => {
  * Response shape: array or { data: [...] } or { teachers: [...] }
  */
 export const getAllTeachers = async () => {
-  const response = await api.get('/teachers', {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.get('/teachers');
   // Normalise to array
   const raw = response.data;
   if (Array.isArray(raw)) return raw;
@@ -51,9 +34,7 @@ export const getAllTeachers = async () => {
  * @param {{ offeringId, instructorId, capacity, dayOfWeek, startTime, endTime, location, group }} payload
  */
 export const createLecture = async (payload) => {
-  const response = await api.post('/courses/lectures', payload, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.post('/courses/lectures', payload);
   return response.data;
 };
 
@@ -63,9 +44,7 @@ export const createLecture = async (payload) => {
  * @param {{ instructorId, capacity, dayOfWeek, startTime, endTime, location, group }} payload
  */
 export const updateLecture = async (lectureId, payload) => {
-  const response = await api.patch(`/courses/lectures/${lectureId}`, payload, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.patch(`/courses/lectures/${lectureId}`, payload);
   return response.data;
 };
 
@@ -74,9 +53,7 @@ export const updateLecture = async (lectureId, payload) => {
  * @param {number} lectureId
  */
 export const deleteLecture = async (lectureId) => {
-  const response = await api.delete(`/courses/lectures/${lectureId}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.delete(`/courses/lectures/${lectureId}`);
   return response.data;
 };
 
@@ -87,9 +64,7 @@ export const deleteLecture = async (lectureId) => {
  * @param {{ offeringId, taId, type, capacity, dayOfWeek, startTime, endTime, location, group }} payload
  */
 export const createTutorialLab = async (payload) => {
-  const response = await api.post('/courses/tutorials-labs', payload, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.post('/courses/tutorials-labs', payload);
   return response.data;
 };
 
@@ -99,9 +74,7 @@ export const createTutorialLab = async (payload) => {
  * @param {{ taId, type, capacity, dayOfWeek, startTime, endTime, location, group }} payload
  */
 export const updateTutorialLab = async (tutorialLabId, payload) => {
-  const response = await api.patch(`/courses/tutorials-labs/${tutorialLabId}`, payload, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.patch(`/courses/tutorials-labs/${tutorialLabId}`, payload);
   return response.data;
 };
 
@@ -110,8 +83,6 @@ export const updateTutorialLab = async (tutorialLabId, payload) => {
  * @param {number} tutorialLabId
  */
 export const deleteTutorialLab = async (tutorialLabId) => {
-  const response = await api.delete(`/courses/tutorials-labs/${tutorialLabId}`, {
-    headers: getAuthHeaders(),
-  });
+  const response = await apiClient.delete(`/courses/tutorials-labs/${tutorialLabId}`);
   return response.data;
 };

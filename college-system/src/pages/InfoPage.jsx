@@ -11,14 +11,8 @@ export default function Info() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-            navigate('/login');
-            return;
-        }
-        
         fetchStudentProfile();
-    }, [navigate]);
+    }, []);
 
     const fetchStudentProfile = async () => {
         try {
@@ -44,11 +38,6 @@ export default function Info() {
             setStudentData(transformedData);
             setError(null);
         } catch (err) {
-            if (err.response?.status === 401) {
-                localStorage.removeItem('auth_token');
-                navigate('/login');
-                return;
-            }
             if (err.response?.status === 403) {
                 setError('Your account cannot access student profile data.');
                 return;
