@@ -422,6 +422,18 @@ export const NotificationProvider = ({ children }) => {
 		fetchUnreadCount();
 	}, [fetchNotifications, fetchUnreadCount]);
 
+	const showNotification = useCallback((message, type = 'success') => {
+		const handlers = {
+			success: toast.success,
+			error: toast.error,
+			warning: toast,
+			info: toast,
+		};
+
+		const notify = handlers[type] || toast;
+		notify(message);
+	}, []);
+
 	const value = {
 		// State
 		notifications,
@@ -442,6 +454,7 @@ export const NotificationProvider = ({ children }) => {
 		fetchPreferences,
 		updatePreferences,
 		refresh,
+		showNotification,
 	};
 
 	return (

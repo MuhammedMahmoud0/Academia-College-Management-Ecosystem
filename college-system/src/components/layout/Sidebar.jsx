@@ -35,6 +35,7 @@ const buildMenu = (role) => {
         config:      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
         finance:     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
         report:      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>,
+        sparkles:    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/></svg>,
     };
 
     const item = (name, path, icon) => ({ name, path, icon });
@@ -63,6 +64,7 @@ const buildMenu = (role) => {
                 item('Student Tasks',    '/dashboard/student-tasks',  icons.check),
                 item('Material',         '/dashboard/material',       icons.folder),
                 item('Summarize PDF',    '/dashboard/summarization',  icons.file),
+                item('Course Recommender', '/dashboard/recommendation-courses', icons.sparkles),
             ]
         },
         {
@@ -184,6 +186,7 @@ export const ROUTE_ACCESS = {
     '/dashboard/student-tasks':         ['student'],
     '/dashboard/material':              ['student'],
     '/dashboard/summarization':         ['student'],
+    '/dashboard/recommendation-courses':['student'],
     '/dashboard/analytics':             ['student'],
     '/dashboard/leaderboard':           ['student'],
     '/dashboard/payment':               ['student'],

@@ -8,8 +8,9 @@ const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { login, user, isLoading } = useAuth();
+  const { login, user } = useAuth();
   
   const containerRef = useRef(null);
 
@@ -70,6 +71,7 @@ const LoginCard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
     
     try {
       const data = await login(email, password);
@@ -80,6 +82,8 @@ const LoginCard = () => {
       setError(error.response?.data?.message || "Login failed. Please try again.");
       console.error("Login failed:", error);
       gsap.fromTo(".gsap-error", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -178,10 +182,10 @@ const LoginCard = () => {
           {/* Login Button */}
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition-all active:scale-[0.98] mt-6 text-base disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-indigo-600/20 gsap-button flex items-center justify-center gap-2"
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
