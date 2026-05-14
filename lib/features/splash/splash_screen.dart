@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
           _navigateToHome();
         } else if (state is AuthTokenExpired) {
           // Token invalid and couldn't refresh → go to login
-          debugPrint('Token expired');
+          debugPrint('Token expiredd');
           _navigateToLogin();
         } else if (state is AuthError) {
           // Other errors → go to login

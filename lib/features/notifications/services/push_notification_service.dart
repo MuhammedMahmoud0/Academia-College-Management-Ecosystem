@@ -32,7 +32,7 @@ class PushNotificationService {
     );
 
     await _plugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
@@ -49,13 +49,29 @@ class PushNotificationService {
   /// Shows a system-tray notification styled for the given [notification].
   /// Uses a grouped channel per notification type (like WhatsApp grouping by chat).
   Future<void> show(NotificationModel notification) async {
-    final typeTitle = NotificationTypeHelper.title(notification.type);
-    final color = NotificationTypeHelper.color(notification.type);
+    await showRaw(
+      id: notification.id,
+      type: notification.type,
+      body: notification.message,
+      payload: notification.id.toString(),
+    );
+  }
 
-    // Each notification type gets its own channel on Android
-    // (appears as separate groups in the system shade)
-    final channelId = 'college_${notification.type}';
-    final channelName = typeTitle;
+  /// Generic system-tray display used by both WS pushes and FCM messages.
+  /// [type] drives the channel + title; falls back gracefully if missing.
+  Future<void> showRaw({
+    required int id,
+    required String body,
+    String? title,
+    String? type,
+    String? payload,
+  }) async {
+    final effectiveType = type ?? 'default';
+    final typeTitle = title ?? NotificationTypeHelper.title(effectiveType);
+    final color = NotificationTypeHelper.color(effectiveType);
+
+    final channelId = 'college_$effectiveType';
+    final channelName = NotificationTypeHelper.title(effectiveType);
 
     final androidDetails = AndroidNotificationDetails(
       channelId,
@@ -64,9 +80,8 @@ class PushNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       color: color,
-      // Group key so notifications of the same type collapse together
       groupKey: channelId,
-      styleInformation: BigTextStyleInformation(notification.message),
+      styleInformation: BigTextStyleInformation(body),
       category: AndroidNotificationCategory.message,
       enableLights: true,
       ledColor: color,
@@ -86,13 +101,11 @@ class PushNotificationService {
     );
 
     await _plugin.show(
-      // Use the notification's own ID so duplicate pushes replace, not stack
-      notification.id,
-      typeTitle,
-      notification.message,
-      details,
-      // Pass the notification ID as payload so taps can navigate to the right screen
-      payload: notification.id.toString(),
+      id: id,
+      title: typeTitle,
+      body: body,
+      notificationDetails: details,
+      payload: payload ?? id.toString(),
     );
   }
 

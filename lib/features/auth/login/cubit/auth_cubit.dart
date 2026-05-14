@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/core/data/local/hive_storage_helper.dart';
 import 'package:college_project/core/data/network/api_client.dart';
@@ -5,16 +7,35 @@ import 'package:college_project/core/data/network/api_exception.dart';
 import 'package:college_project/features/auth/login/cubit/auth_states.dart';
 import 'package:college_project/features/auth/login/repo/auth_repo.dart';
 import 'package:college_project/features/home/models/student_profile_model.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+  AuthCubit() : super(AuthInitial()) {
+    _apiClient.addTokenRefreshedListener(_persistRefreshedToken);
+    _apiClient.onRefreshFailed = () {
+      debugPrint('Refresh failed — session expired');
+      _stopRefreshTimer();
+      emit(AuthTokenExpired());
+    };
+  }
+
+  void _persistRefreshedToken(String newToken) async {
+    await secureStorage.write(key: 'token', value: newToken);
+    debugPrint('Access token refreshed and persisted');
+  }
 
   final AuthRepo _authRepo = AuthRepo();
   final ApiClient _apiClient = ApiClient();
   final secureStorage = FlutterSecureStorage();
+
+  // Refresh slightly before the 15-min server-side expiry so the access
+  // token is always valid when an in-flight request goes out. The 401
+  // interceptor in ApiClient is the safety net if this ever races.
+  static const Duration _refreshInterval = Duration(minutes: 14);
+  Timer? _refreshTimer;
 
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
@@ -30,9 +51,19 @@ class AuthCubit extends Cubit<AuthState> {
           password: password,
         );
         _apiClient.setToken(loginModel.token!);
+        _startRefreshTimer();
         debugPrint('Login successful');
 
         await getStudentData();
+
+        // notifications
+        await FirebaseMessaging.instance.requestPermission();
+        String? newPushToken = await FirebaseMessaging.instance.getToken();
+
+        if (newPushToken != null) {
+          debugPrint('Push token: $newPushToken');
+          await _authRepo.updateFCMToken(newPushToken);
+        }
       } else {
         emit(AuthError(loginModel.msg ?? 'Login failed'));
       }
@@ -53,43 +84,32 @@ class AuthCubit extends Cubit<AuthState> {
     await secureStorage.write(key: 'token', value: token);
     await secureStorage.write(key: 'email', value: email);
     await secureStorage.write(key: 'password', value: password);
-    // Set expiration time to 2 days from now
-    final expirationTime = DateTime.now().add(const Duration(days: 2));
+    final expirationTime = DateTime.now().add(const Duration(days: 3));
     await secureStorage.write(
       key: 'expirationTime',
       value: expirationTime.toIso8601String(),
     );
   }
 
-  /// Refresh token using stored credentials
+  /// Manually refresh the access token via /auth/refresh. The new token is
+  /// persisted by the ApiClient's onTokenRefreshed callback.
   Future<bool> refreshToken() async {
-    try {
-      final email = await secureStorage.read(key: 'email');
-      final password = await secureStorage.read(key: 'password');
+    final newToken = await _apiClient.refreshAccessToken();
+    return newToken != null;
+  }
 
-      if (email == null || password == null) {
-        return false;
-      }
+  /// Schedule a refresh of the access token every 15 minutes.
+  void _startRefreshTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(_refreshInterval, (_) async {
+      final ok = await refreshToken();
+      debugPrint('Scheduled refresh: ${ok ? 'ok' : 'failed'}');
+    });
+  }
 
-      final loginModel = await _authRepo.login(
-        email: email,
-        password: password,
-      );
-
-      if (loginModel.token != null) {
-        await _saveTokenAndCredentials(
-          token: loginModel.token!,
-          email: email,
-          password: password,
-        );
-        _apiClient.setToken(loginModel.token!);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      debugPrint('Token refresh failed: $e');
-      return false;
-    }
+  void _stopRefreshTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
   }
 
   /// Try to restore session from stored token
@@ -103,17 +123,13 @@ class AuthCubit extends Cubit<AuthState> {
       }
 
       _apiClient.setToken(token);
+      // The ApiClient's 401 interceptor will transparently refresh + retry
+      // if the stored token has expired.
       await getStudentData(rethrowApiException: true);
+      _startRefreshTimer();
     } on ApiException catch (e) {
-      // Check if token is invalid/expired
       if (e.message.contains('Authentication invalid') || e.statusCode == 401) {
-        // Try to refresh token
-        final refreshed = await refreshToken();
-        if (refreshed) {
-          await getStudentData();
-        } else {
-          emit(AuthTokenExpired());
-        }
+        emit(AuthTokenExpired());
       } else {
         emit(AuthError(e.message));
       }
@@ -127,14 +143,12 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final studentModel = await _authRepo.getStudentData();
 
-      // Save student data in Hive for offline access
       final studentProfileModel = StudentProfileModel.fromStudentModel(
         studentModel,
       );
       await HiveStorageService.saveStudent(studentProfileModel);
       debugPrint('Student data saved to Hive successfully');
 
-      // Also save to Constants for immediate use
       Constants.student = studentModel;
       emit(AuthSuccess());
     } on ApiException catch (e) {
@@ -150,16 +164,24 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
+    _stopRefreshTimer();
     _apiClient.clearToken();
     await secureStorage.delete(key: 'token');
     await secureStorage.delete(key: 'email');
     await secureStorage.delete(key: 'password');
     await secureStorage.delete(key: 'expirationTime');
 
-    // Clear Hive data on logout
     await HiveStorageService.clearAll();
     debugPrint('Logged out and cleared all data');
 
     emit(AuthInitial());
+  }
+
+  @override
+  Future<void> close() {
+    _stopRefreshTimer();
+    _apiClient.removeTokenRefreshedListener(_persistRefreshedToken);
+    _apiClient.onRefreshFailed = null;
+    return super.close();
   }
 }

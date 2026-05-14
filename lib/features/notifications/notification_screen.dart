@@ -7,18 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// Wraps the screen in its own [BlocProvider].
-/// If you provide the cubit higher up in the tree, replace this with
-/// [BlocProvider.value] and remove the [NotificationsRepo] parameter.
+/// Uses the globally-provided [NotificationsCubit] so WebSocket pushes flow
+/// into the same list/badge that home shows.
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => NotificationsCubit()..fetchNotifications(),
-      child: const _NotificationsView(),
-    );
+    return const _NotificationsView();
   }
 }
 
@@ -61,6 +57,8 @@ class _NotificationsViewState extends State<_NotificationsView> {
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
+    // Hydrate the global cubit on entry (WS pushes prepend into the same list).
+    context.read<NotificationsCubit>().fetchNotifications();
   }
 
   @override

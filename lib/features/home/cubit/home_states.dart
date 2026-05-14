@@ -13,13 +13,13 @@ class HomeLoadedState extends HomeStates {
   final StudentModel student;
   final List<Exam> upcomingExams;
   final List<Grade> recentGrades;
-  final List<AppNotification> notifications;
+  // final List<AppNotification> notifications;
 
   HomeLoadedState({
     required this.student,
     required this.upcomingExams,
     required this.recentGrades,
-    required this.notifications,
+    // required this.notifications,
   });
 }
 
@@ -33,12 +33,12 @@ class HomeRefreshingState extends HomeStates {
   final StudentModel student;
   final List<Exam> upcomingExams;
   final List<Grade> recentGrades;
-  final List<AppNotification> notifications;
+  // final List<AppNotification> notifications;
 
   HomeRefreshingState({
     required this.student,
     required this.upcomingExams,
     required this.recentGrades,
-    required this.notifications,
+    // required this.notifications,
   });
 }

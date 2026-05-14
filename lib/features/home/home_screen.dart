@@ -15,6 +15,8 @@ import 'package:college_project/features/home/widgets/recent_grades.dart';
 import 'package:college_project/features/home/widgets/attendance_card.dart';
 import 'package:college_project/features/home/widgets/payment_card.dart';
 import 'package:college_project/features/home/widgets/upcoming_exam_card.dart';
+import 'package:college_project/features/notifications/cubit/notification_cubit.dart';
+import 'package:college_project/features/notifications/cubit/notification_states.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +28,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // NotificationsCubit is provided globally in main.dart, so realtime WS
+    // pushes flow into the badge here too. The unread-count refresh lives in
+    // HomeView.initState so it doesn't fire on every rebuild.
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => HomeCubit()..loadHomeData()),
@@ -45,6 +50,12 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   bool isScanPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NotificationsCubit>().getUnreadCount();
+  }
 
   void _showAttendanceResultDialog(
     BuildContext context, {
@@ -276,16 +287,16 @@ Widget _buildContent(
     final recentGrades = state is HomeLoadedState
         ? state.recentGrades
         : (state as HomeRefreshingState).recentGrades;
-    final notifications = state is HomeLoadedState
-        ? state.notifications
-        : (state as HomeRefreshingState).notifications;
-
+    /*
+      final notifications = state is HomeLoadedState
+          ? state.notifications
+          : (state as HomeRefreshingState).notifications;
+    */
     return _buildHomeContent(
       context,
       student: student,
       upcomingExams: upcomingExams,
       recentGrades: recentGrades,
-      notifications: notifications,
       isRefreshing: state is HomeRefreshingState,
       isDark: isDark,
       isScanPressed: isScanPressed,
@@ -353,7 +364,6 @@ Widget _buildHomeContent(
   required StudentModel student,
   required upcomingExams,
   required recentGrades,
-  required notifications,
   required bool isRefreshing,
   required bool isDark,
   required bool isScanPressed,
@@ -409,42 +419,58 @@ Widget _buildHomeContent(
                       onTap: () => GoRouter.of(
                         context,
                       ).pushNamed(AppRoutes.notificationScreen),
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.getCardBackground(isDark),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(
-                                    alpha: isDark ? 0.3 : 0.05,
-                                  ),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
+                      child: BlocSelector<NotificationsCubit, NotificationsState, int>(
+                        selector: (_) =>
+                            context.read<NotificationsCubit>().unreadCount,
+                        builder: (context, unread) {
+                          // Live badge: rebuilds only when unread count changes
+                          // (fetch, mark-as-read, mark-all, WS push, delete, FCM).
+                          return Stack(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.getCardBackground(isDark),
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: isDark ? 0.3 : 0.05,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.notifications_outlined,
-                              color: AppColors.getTextColor(isDark),
-                            ),
-                          ),
-                          if (cubit.unreadNotificationCount > 0)
-                            Positioned(
-                              right: 8,
-                              top: 8,
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.errorColor,
-                                  shape: BoxShape.circle,
+                                child: Icon(
+                                  Icons.notifications_outlined,
+                                  color: AppColors.getTextColor(isDark),
                                 ),
                               ),
-                            ),
-                        ],
+                              if (unread > 0)
+                                PositionedDirectional(
+                                  end: 8,
+                                  top: 8,
+                                  child: Container(
+                                    width: 15,
+                                    height: 15,
+                                    alignment: Alignment.center,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.errorColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      '$unread',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ],

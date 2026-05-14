@@ -78,3 +78,17 @@ class NotificationsMarkAllReadError extends NotificationsState {
     required this.message,
   });
 }
+
+class NotificationsGetUnreadCountSuccess extends NotificationsState {
+  final int unreadCount;
+
+  NotificationsGetUnreadCountSuccess({required this.unreadCount});
+}
+
+/// Emitted when a realtime notification arrives but the full list state
+/// (`NotificationsLoaded`) has not been hydrated yet — keeps the badge live.
+class NotificationsRealtimeBadgeUpdated extends NotificationsState {
+  final int unreadCount;
+
+  NotificationsRealtimeBadgeUpdated({required this.unreadCount});
+}

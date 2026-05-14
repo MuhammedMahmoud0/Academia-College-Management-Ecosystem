@@ -15,7 +15,7 @@ class HomeCubit extends Cubit<HomeStates> {
   StudentModel? student;
   List<Exam> upcomingExams = [];
   List<Grade> recentGrades = [];
-  List<AppNotification> notifications = [];
+  // List<AppNotification> notifications = [];
 
   /// Load all home screen data
   Future<void> loadHomeData() async {
@@ -29,14 +29,14 @@ class HomeCubit extends Cubit<HomeStates> {
       student = Constants.student!;
       upcomingExams = Exam.mockExams;
       recentGrades = Grade.mockRecentGrades;
-      notifications = AppNotification.mockNotifications;
+      //  notifications = AppNotification.mockNotifications;
 
       emit(
         HomeLoadedState(
           student: student!,
           upcomingExams: upcomingExams,
           recentGrades: recentGrades,
-          notifications: notifications,
+          //  notifications: notifications,
         ),
       );
     } catch (error) {
@@ -56,7 +56,7 @@ class HomeCubit extends Cubit<HomeStates> {
         student: student!,
         upcomingExams: upcomingExams,
         recentGrades: recentGrades,
-        notifications: notifications,
+        //    notifications: notifications,
       ),
     );
 
@@ -68,14 +68,14 @@ class HomeCubit extends Cubit<HomeStates> {
       student = Constants.student!;
       upcomingExams = Exam.mockExams;
       recentGrades = Grade.mockRecentGrades;
-      notifications = AppNotification.mockNotifications;
+      //  notifications = AppNotification.mockNotifications;
 
       emit(
         HomeLoadedState(
           student: student!,
           upcomingExams: upcomingExams,
           recentGrades: recentGrades,
-          notifications: notifications,
+          //    notifications: notifications,
         ),
       );
     } catch (error) {
@@ -83,6 +83,7 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
+  /*
   /// Mark notification as read
   void markNotificationAsRead(String notificationId) {
     final index = notifications.indexWhere((n) => n.id == notificationId);
@@ -114,7 +115,7 @@ class HomeCubit extends Cubit<HomeStates> {
   int get unreadNotificationCount {
     return notifications.where((n) => !n.isRead).length;
   }
-
+*/
   /// Get upcoming exams count
   int get upcomingExamsCount {
     return upcomingExams.length;

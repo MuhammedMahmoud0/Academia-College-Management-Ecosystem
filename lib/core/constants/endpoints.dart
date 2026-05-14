@@ -2,7 +2,19 @@ class Endpoints {
   static const String baseUrl =
       "https://college-system-backend.onrender.com/api/v1";
 
+  // Socket.IO origin for realtime notifications.
+  // The server runs Socket.IO on the default namespace ("/"). JWT is passed
+  // via the auth map (setAuth({'token': jwt})) — NOT as a query param.
+  // Events received from server:
+  //   - "new-notification" → NotificationModel JSON
+  //   - "unread-count"     → int or { count|unreadCount: int }
+  static const String notificationsSocketIO =
+      "https://college-system-backend.onrender.com";
+
   static const String login = "/auth/login";
+  static const String logout = "/auth/logout";
+  static const String refreshToken = "/auth/refresh";
+
   static const String profile = "/student/profile";
   static const String editProfile = "/student/profile";
   static const String changePassword = "/settings/password";
@@ -46,8 +58,10 @@ class Endpoints {
   static const String faq = '/faq';
 
   static const String notification = "/notifications";
+  static const String registerDevice = "/notifications/register-device";
   static const String notificationUnreadCount = "/notifications/unread-count";
   static const String notificationMarkAllRead = "/notifications/mark-all-read";
+
   static String notificationRead(int id) => "/notifications/$id/read";
   static String deleteNotification(int id) => "/notifications/$id";
 

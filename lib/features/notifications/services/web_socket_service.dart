@@ -1,54 +1,93 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
+import 'package:college_project/core/constants/endpoints.dart';
 import 'package:college_project/features/notifications/models/notification_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
-enum WebSocketStatus { disconnected, connecting, connected, error }
+enum WebSocketStatus { disconnected, connecting, connected, error, tokenExpired }
 
-/// Manages a persistent WebSocket connection to the college backend.
-/// Emits [NotificationModel] events whenever the server pushes a new notification.
+/// Socket.IO client that mirrors the backend contract documented in
+/// `socketIO.js`:
+///   - Default namespace ("/").
+///   - JWT is passed via `auth: { token: <jwt> }` (NOT a query string).
+///   - Server auto-joins `notifications:<userId>`; no client "join" emit.
+///   - Server emits:
+///       * `new-notification` → NotificationModel JSON
+///       * `unread-count`     → int OR `{ count|unreadCount: int }`
+///   - On expired JWT the server raises `connect_error` with message
+///     "Token expired. Reconnect required." — surfaced as
+///     [WebSocketStatus.tokenExpired] so callers can refresh & reconnect.
 class WebSocketService {
-  // ─── Configuration ────────────────────────────────────────────────────────
-  /// Replace with your real WS endpoint, e.g. wss://api.college.edu/ws/notifications
-  static const String _wsBaseUrl = 'wss://your-backend.com/ws/notifications';
+  static final WebSocketService _instance = WebSocketService._internal();
+  factory WebSocketService() => _instance;
+  WebSocketService._internal();
 
-  static const Duration _reconnectDelay = Duration(seconds: 5);
-  static const Duration _pingInterval = Duration(seconds: 25);
-
-  // ─── State ────────────────────────────────────────────────────────────────
-  WebSocketChannel? _channel;
-  Timer? _reconnectTimer;
-  Timer? _pingTimer;
-  bool _intentionalClose = false;
+  io.Socket? _socket;
   String? _authToken;
 
   final _statusController = StreamController<WebSocketStatus>.broadcast();
   final _notificationController =
       StreamController<NotificationModel>.broadcast();
+  final _unreadCountController = StreamController<int>.broadcast();
 
   Stream<WebSocketStatus> get statusStream => _statusController.stream;
   Stream<NotificationModel> get notificationStream =>
       _notificationController.stream;
+  Stream<int> get unreadCountStream => _unreadCountController.stream;
 
   WebSocketStatus _currentStatus = WebSocketStatus.disconnected;
   WebSocketStatus get currentStatus => _currentStatus;
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
-  /// Call this once when the user logs in, passing their JWT / session token.
+  /// Open (or refresh) the Socket.IO connection with the given JWT.
+  /// Safe to call multiple times — an existing socket is torn down first
+  /// so a new token is honoured.
   Future<void> connect(String authToken) async {
+    if (_socket != null && _authToken == authToken && _socket!.connected) {
+      return;
+    }
     _authToken = authToken;
-    _intentionalClose = false;
-    await _connect();
+    await _teardown();
+    _setStatus(WebSocketStatus.connecting);
+
+    final socket = io.io(
+      Endpoints.notificationsSocketIO,
+      io.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .setAuth({'token': authToken})
+          .build(),
+    );
+
+    socket
+      ..onConnect((_) {
+        debugPrint('[SocketIO] connected (sid=${socket.id})');
+        _setStatus(WebSocketStatus.connected);
+      })
+      ..onDisconnect((reason) {
+        debugPrint('[SocketIO] disconnected: $reason');
+        _setStatus(WebSocketStatus.disconnected);
+      })
+      ..onConnectError((err) {
+        debugPrint('[SocketIO] connect_error: $err');
+        if (_isTokenExpired(err)) {
+          _setStatus(WebSocketStatus.tokenExpired);
+        } else {
+          _setStatus(WebSocketStatus.error);
+        }
+      })
+      ..onError((err) => debugPrint('[SocketIO] error: $err'))
+      ..on('new-notification', _onNewNotification)
+      ..on('unread-count', _onUnreadCount);
+
+    _socket = socket;
+    socket.connect();
   }
 
-  /// Call on logout or app disposal.
+  /// Close the connection — call on logout.
   Future<void> disconnect() async {
-    _intentionalClose = true;
-    _cancelTimers();
-    await _channel?.sink.close(status.goingAway);
+    await _teardown();
     _setStatus(WebSocketStatus.disconnected);
   }
 
@@ -56,93 +95,66 @@ class WebSocketService {
     await disconnect();
     await _statusController.close();
     await _notificationController.close();
+    await _unreadCountController.close();
   }
 
-  // ─── Internal ─────────────────────────────────────────────────────────────
+  // ─── Event handlers ───────────────────────────────────────────────────────
 
-  Future<void> _connect() async {
-    _setStatus(WebSocketStatus.connecting);
-
+  void _onNewNotification(dynamic data) {
     try {
-      // Pass the token as a query param (adjust to match your backend auth)
-      final uri = Uri.parse('$_wsBaseUrl?token=$_authToken');
-      _channel = WebSocketChannel.connect(uri);
-
-      // Wait for the handshake to complete
-      await _channel!.ready;
-
-      _setStatus(WebSocketStatus.connected);
-      _startPing();
-
-      _channel!.stream.listen(
-        _onMessage,
-        onError: _onError,
-        onDone: _onDone,
-        cancelOnError: false,
-      );
+      final map = _asMap(data);
+      if (map == null) {
+        debugPrint('[SocketIO] new-notification: unexpected payload $data');
+        return;
+      }
+      _notificationController.add(NotificationModel.fromJson(map));
     } catch (e) {
-      debugPrint('[WS] Connection failed: $e');
-      _setStatus(WebSocketStatus.error);
-      _scheduleReconnect();
+      debugPrint('[SocketIO] new-notification parse error: $e  raw=$data');
     }
   }
 
-  void _onMessage(dynamic raw) {
-    try {
-      final Map<String, dynamic> data = jsonDecode(raw as String);
-
-      // Expected server envelope: { "type": "notification", "payload": { ...NotificationModel fields } }
-      if (data['type'] == 'notification') {
-        final notification = NotificationModel.fromJson(
-          data['payload'] as Map<String, dynamic>,
-        );
-        _notificationController.add(notification);
-      } else if (data['type'] == 'pong') {
-        // Server acknowledged our ping – connection is healthy
-        debugPrint('[WS] pong received');
-      }
-    } catch (e) {
-      debugPrint('[WS] Message parse error: $e  raw=$raw');
+  void _onUnreadCount(dynamic data) {
+    final value = _asUnreadCount(data);
+    if (value == null) {
+      debugPrint('[SocketIO] unread-count: unexpected payload $data');
+      return;
     }
+    _unreadCountController.add(value);
   }
 
-  void _onError(Object error, StackTrace stack) {
-    debugPrint('[WS] Error: $error');
-    _setStatus(WebSocketStatus.error);
-    if (!_intentionalClose) _scheduleReconnect();
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  Future<void> _teardown() async {
+    final s = _socket;
+    if (s == null) return;
+    s
+      ..clearListeners()
+      ..disconnect()
+      ..dispose();
+    _socket = null;
   }
 
-  void _onDone() {
-    debugPrint('[WS] Connection closed');
-    _cancelTimers();
-    if (!_intentionalClose) {
-      _setStatus(WebSocketStatus.disconnected);
-      _scheduleReconnect();
+  bool _isTokenExpired(Object? err) {
+    final msg = err?.toString().toLowerCase() ?? '';
+    return msg.contains('token expired') || msg.contains('reconnect required');
+  }
+
+  Map<String, dynamic>? _asMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return null;
+  }
+
+  int? _asUnreadCount(dynamic data) {
+    if (data is int) return data;
+    if (data is num) return data.toInt();
+    final map = _asMap(data);
+    if (map != null) {
+      final v = map['count'] ?? map['unreadCount'] ?? map['unread_count'];
+      if (v is int) return v;
+      if (v is num) return v.toInt();
     }
-  }
-
-  void _scheduleReconnect() {
-    _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(_reconnectDelay, () async {
-      if (!_intentionalClose) {
-        debugPrint('[WS] Reconnecting…');
-        await _connect();
-      }
-    });
-  }
-
-  void _startPing() {
-    _pingTimer?.cancel();
-    _pingTimer = Timer.periodic(_pingInterval, (_) {
-      if (_currentStatus == WebSocketStatus.connected) {
-        _channel?.sink.add(jsonEncode({'type': 'ping'}));
-      }
-    });
-  }
-
-  void _cancelTimers() {
-    _reconnectTimer?.cancel();
-    _pingTimer?.cancel();
+    return null;
   }
 
   void _setStatus(WebSocketStatus s) {

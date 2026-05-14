@@ -6,6 +6,31 @@ class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
   late final Dio _dio;
 
+  /// Multi-listener token-refresh callbacks. Register via
+  /// [addTokenRefreshedListener] so several subsystems (auth persistence,
+  /// WebSocket reconnect, …) can react to the same refresh event.
+  final List<void Function(String newToken)> _tokenRefreshedListeners = [];
+
+  /// Back-compat single-setter form. Setting this APPENDS a listener; the
+  /// list-based API is preferred for new code.
+  set onTokenRefreshed(void Function(String newToken)? cb) {
+    if (cb != null) _tokenRefreshedListeners.add(cb);
+  }
+
+  void addTokenRefreshedListener(void Function(String newToken) cb) {
+    _tokenRefreshedListeners.add(cb);
+  }
+
+  void removeTokenRefreshedListener(void Function(String newToken) cb) {
+    _tokenRefreshedListeners.remove(cb);
+  }
+
+  /// Called when the refresh attempt itself fails (e.g. server rejects it).
+  /// Use this to surface a logged-out / expired state to the UI.
+  void Function()? onRefreshFailed;
+
+  Future<String?>? _refreshFuture;
+
   factory ApiClient() => _instance;
 
   ApiClient._internal() {
@@ -23,20 +48,64 @@ class ApiClient {
 
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // Add auth token if available
-          // final token = getToken();
-          // if (token != null) {
-          //   options.headers['Authorization'] = 'Bearer $token';
-          // }
-          return handler.next(options);
-        },
-        onError: (error, handler) {
-          return handler.next(error);
+        onError: (error, handler) async {
+          final req = error.requestOptions;
+          final isUnauthorized = error.response?.statusCode == 401;
+          final isRefreshCall = req.path == Endpoints.refreshToken;
+          final alreadyRetried = req.extra['_retried'] == true;
+
+          if (!isUnauthorized || isRefreshCall || alreadyRetried) {
+            return handler.next(error);
+          }
+
+          final newToken = await _refreshAccessToken();
+          if (newToken == null) {
+            onRefreshFailed?.call();
+            return handler.next(error);
+          }
+
+          // Retry the original request once with the new token.
+          req.headers['Authorization'] = 'Bearer $newToken';
+          req.extra['_retried'] = true;
+          try {
+            final retry = await _dio.fetch(req);
+            return handler.resolve(retry);
+          } on DioException catch (e) {
+            return handler.next(e);
+          }
         },
       ),
     );
   }
+
+  /// Calls /auth/refresh, dedupes concurrent callers via a shared future.
+  Future<String?> _refreshAccessToken() {
+    return _refreshFuture ??= _doRefresh().whenComplete(() {
+      _refreshFuture = null;
+    });
+  }
+
+  Future<String?> _doRefresh() async {
+    try {
+      final response = await _dio.post(Endpoints.refreshToken);
+      final newToken = response.data is Map ? response.data['accessToken'] : null;
+      if (newToken is String && newToken.isNotEmpty) {
+        setToken(newToken);
+        for (final cb in List.of(_tokenRefreshedListeners)) {
+          try {
+            cb(newToken);
+          } catch (_) {}
+        }
+        return newToken;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Manually trigger a refresh (used by the periodic 15-min timer).
+  Future<String?> refreshAccessToken() => _refreshAccessToken();
 
   /// Set authorization token
   void setToken(String token) {

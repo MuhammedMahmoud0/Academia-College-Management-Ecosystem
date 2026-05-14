@@ -40,7 +40,7 @@ dependencies:
   go_router: ^16.3.0
   flutter_screenutil: ^5.9.3
   intl: ^0.20.2
-  dio: ^5.4.0
+  dio: ^5.9.2
   cached_network_image: ^3.4.1
   shared_preferences: ^2.2.2
   image_picker: ^1.0.7
@@ -55,8 +55,10 @@ dependencies:
   flutter_cached_pdfview: ^0.4.3
   geolocator: ^14.0.2
   webview_flutter: ^4.10.0
-  web_socket_channel: ^3.0.1
-  flutter_local_notifications: ^17.2.2
+  socket_io_client: ^3.1.2
+  flutter_local_notifications: ^21.0.0
+  firebase_core: ^4.8.0
+  firebase_messaging: ^16.2.2
 
 dev_dependencies:
   flutter_test:
