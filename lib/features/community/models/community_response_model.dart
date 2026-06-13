@@ -35,7 +35,6 @@ class PostModel {
   final DateTime createdAt;
   final List<CommentModel> recentComments;
   final List<CommentModel> postComments;
-
   final bool isLiked;
 
   PostModel({
@@ -43,7 +42,7 @@ class PostModel {
     required this.authorName,
     this.authorAvatar,
     this.groupName,
-    required this.content,
+    this.content,
     this.imageUrl,
     required this.likesCount,
     required this.commentsCount,
@@ -59,7 +58,7 @@ class PostModel {
       authorName: json['author_name'] as String,
       authorAvatar: json['author_avatar'] as String?,
       groupName: json['group_name'] as String?,
-      content: json['content'] as String,
+      content: json['content'] as String?,
       imageUrl: json['image_url'] as String?,
       likesCount: json['likes_count'] as int,
       commentsCount: json['comments_count'] as int,
@@ -166,10 +165,10 @@ class CommentModel {
       content: json['content'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       authorName: json['users'] != null
-          ? json['users']['full_name']
+          ? json['users']['full_name'] as String
           : json['author_name'] as String,
       authorAvatar: json['users'] != null
-          ? json['users']['avatar_url']
+          ? json['users']['avatar_url'] as String?
           : json['author_avatar'] as String?,
     );
   }

@@ -1,4 +1,3 @@
-import 'package:college_project/features/attendance/model/active_sessions_model.dart';
 import 'package:college_project/features/attendance/model/attendance_model.dart';
 
 class AttendanceStates {}

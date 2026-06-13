@@ -6,17 +6,11 @@ import 'package:college_project/features/community/models/community_response_mod
 class CommunityRepo {
   final api = ApiClient();
 
-  Future<CommunityResponseModel> getFeed({
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<CommunityResponseModel> getFeed({int page = 1, int limit = 10}) async {
     try {
       final response = await api.get(
         Endpoints.community,
-        queryParameters: {
-          'page': page,
-          'limit': limit,
-        },
+        queryParameters: {'page': page, 'limit': limit},
       );
       return CommunityResponseModel.fromJson(response.data);
     } on ApiException {

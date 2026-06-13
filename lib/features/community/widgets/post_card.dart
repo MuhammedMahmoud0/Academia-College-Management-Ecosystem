@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/features/community/models/community_response_model.dart';
@@ -19,6 +22,13 @@ class PostCard extends StatelessWidget {
     this.onComment,
     this.onShare,
   });
+
+  bool _isBase64(String url) => url.startsWith('data:image');
+
+  Uint8List _decodeBase64(String url) {
+    final base64String = url.split(',').last;
+    return base64Decode(base64String);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,39 +144,53 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _buildImage() {
+    final imageUrl = post.imageUrl!;
+
     return Container(
       margin: const EdgeInsets.only(top: 12),
       constraints: const BoxConstraints(maxHeight: 300),
       width: double.infinity,
       child: ClipRRect(
-        child: CachedNetworkImage(
-          imageUrl: post.imageUrl!,
-          fit: BoxFit.cover,
-          placeholder: (context, url) {
-            return Container(
-              height: 200,
-              color: AppColors.getBorderColor(isDark),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                  strokeWidth: 2,
-                ),
+        child: _isBase64(imageUrl)
+            ? Image.memory(
+                _decodeBase64(imageUrl),
+                fit: BoxFit.cover,
+                width: double.infinity,
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildImageError(),
+              )
+            : CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildImagePlaceholder(),
+                errorWidget: (context, error, stackTrace) => _buildImageError(),
               ),
-            );
-          },
-          errorWidget: (context, error, stackTrace) {
-            return Container(
-              height: 200,
-              color: AppColors.getBorderColor(isDark),
-              child: Center(
-                child: Icon(
-                  Icons.image_not_supported_rounded,
-                  color: AppColors.getSubtitleColor(isDark),
-                  size: 48,
-                ),
-              ),
-            );
-          },
+      ),
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      height: 200,
+      color: AppColors.getBorderColor(isDark),
+      child: Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryColor,
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageError() {
+    return Container(
+      height: 200,
+      color: AppColors.getBorderColor(isDark),
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported_rounded,
+          color: AppColors.getSubtitleColor(isDark),
+          size: 48,
         ),
       ),
     );
@@ -271,7 +295,20 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _buildAvatar(String? avatarUrl, String name, double size) {
-    if (avatarUrl != null) {
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      if (_isBase64(avatarUrl)) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(size / 2),
+          child: Image.memory(
+            _decodeBase64(avatarUrl),
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildDefaultAvatar(name, size),
+          ),
+        );
+      }
       return ClipRRect(
         borderRadius: BorderRadius.circular(size / 2),
         child: CachedNetworkImage(
@@ -279,9 +316,8 @@ class PostCard extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorWidget: (context, error, stackTrace) {
-            return _buildDefaultAvatar(name, size);
-          },
+          errorWidget: (context, error, stackTrace) =>
+              _buildDefaultAvatar(name, size),
         ),
       );
     }
