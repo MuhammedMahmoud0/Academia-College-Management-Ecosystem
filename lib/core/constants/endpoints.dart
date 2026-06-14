@@ -46,7 +46,7 @@ class Endpoints {
   static const String attendanceActiveSession =
       "/attendance/sessions/my-active";
   static const String scanAttendance = "/attendance/scan";
-  static const String attendanceHistory = "/attendance/history";
+  static const String attendanceHistory = "/attendance/my-history";
 
   static const String materials = "/materials";
   static String downloadMaterial(int materialId) =>
@@ -70,4 +70,6 @@ class Endpoints {
   static String submitTask(int taskId) => "/tasks/$taskId/submit";
   static String myTaskSubmission(int taskId) => "/tasks/$taskId/my-submission";
   static const String myAvailableTasks = "/tasks/my/available";
+  static const String digitalIdFront = "/student/digital-id/front";
+  static const String digitalIdBack = "/student/digital-id/back";
 }

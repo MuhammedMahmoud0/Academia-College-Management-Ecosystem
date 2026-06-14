@@ -105,6 +105,8 @@
   "forgotPassword": "Forgot password?",
   "loginSuccessfully": "Login successfully",
   "login": "Login",
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "cancel": "Cancel",
   "emailAddress": "Email Address",
   "password": "Password",
   "pleaseEnterYourEmail": "Please enter your email",

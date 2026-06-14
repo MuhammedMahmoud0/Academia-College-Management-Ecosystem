@@ -57,6 +57,8 @@
   "changePassword": "تغيير كلمة المرور",
   "downloadTranscript": "تحميل كشف الدرجات",
   "logout": "تسجيل الخروج",
+  "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "cancel": "إلغاء",
   "gpa": "المعدل",
   "level": "المستوى",
   "status": "الحالة",

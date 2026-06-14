@@ -4,6 +4,7 @@ import 'package:college_project/core/routing/app_routes.dart';
 import 'package:college_project/core/styles/app_colors.dart';
 import 'package:college_project/core/styles/text_styles.dart';
 import 'package:college_project/core/widgets/widgets.dart';
+import 'package:college_project/features/auth/login/cubit/auth_cubit.dart';
 import 'package:college_project/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -248,7 +249,61 @@ class ProfileScreen extends StatelessWidget {
                   _buildActionButton(
                     S.of(context).logout,
                     Icons.logout_rounded,
-                    () {},
+                    () {
+                      final authCubit = context.read<AuthCubit>();
+                      final isDark = context.read<AppCubit>().isDarkMode;
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: AppColors.getCardBackground(isDark),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          title: Text(
+                            S.of(context).logout,
+                            style: AppTextStyles.heading2.copyWith(
+                              color: AppColors.getTextColor(isDark),
+                            ),
+                          ),
+                          content: Text(
+                            S.of(context).logoutConfirmation,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.getSubtitleColor(isDark),
+                            ),
+                          ),
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: Text(
+                                    S.of(context).cancel,
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.getSubtitleColor(isDark),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(ctx);
+                                    authCubit.logout();
+                                  },
+                                  child: Text(
+                                    S.of(context).logout,
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.errorColor,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                     isDestructive: true,
                     isDark: context.watch<AppCubit>().isDarkMode,
                   ),

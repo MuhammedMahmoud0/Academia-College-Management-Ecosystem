@@ -85,15 +85,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 
   final data = message.data;
-  final body =
-      data['message']?.toString() ?? data['body']?.toString() ?? '';
+  final body = data['message']?.toString() ?? data['body']?.toString() ?? '';
   if (body.isEmpty) return;
 
   final title = data['title']?.toString() ?? 'New notification';
   final type = data['type']?.toString() ?? 'default';
-  final idStr =
-      data['id']?.toString() ?? data['notificationId']?.toString();
-  final id = int.tryParse(idStr ?? '') ??
+  final idStr = data['id']?.toString() ?? data['notificationId']?.toString();
+  final id =
+      int.tryParse(idStr ?? '') ??
       DateTime.now().millisecondsSinceEpoch.remainder(1 << 31);
 
   final plugin = FlutterLocalNotificationsPlugin();
@@ -117,8 +116,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     id: id,
     title: title,
     body: body,
-    notificationDetails:
-        NotificationDetails(android: androidDetails, iOS: iosDetails),
+    notificationDetails: NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    ),
     payload: idStr,
   );
 }
@@ -230,6 +231,7 @@ class _MyAppState extends State<MyApp> {
             }
           } else if (state is AuthInitial || state is AuthTokenExpired) {
             context.read<NotificationsCubit>().stopRealtime();
+            RouterGenerationConfig.goRouter.goNamed(AppRoutes.loginScreen);
           }
         },
         child: BlocBuilder<AppCubit, AppStates>(

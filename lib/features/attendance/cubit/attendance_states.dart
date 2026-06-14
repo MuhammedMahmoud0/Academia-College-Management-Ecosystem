@@ -1,3 +1,4 @@
+import 'package:college_project/features/attendance/model/attendance_history_model.dart';
 import 'package:college_project/features/attendance/model/attendance_model.dart';
 
 class AttendanceStates {}
@@ -10,22 +11,17 @@ class AttendanceScanningState extends AttendanceStates {}
 
 class AttendanceLoadedState extends AttendanceStates {
   AttendanceModel attendance;
-
   AttendanceLoadedState({required this.attendance});
 }
 
 class AttendanceHistoryLoadedState extends AttendanceStates {
-  final List<AttendanceModel> attendance;
-
+  final AttendanceHistoryResponseModel attendance;
   AttendanceHistoryLoadedState({required this.attendance});
 }
 
-class AttendanceActiveSessionsLoadedState extends AttendanceStates {
-  AttendanceActiveSessionsLoadedState();
-}
+class AttendanceActiveSessionsLoadedState extends AttendanceStates {}
 
 class AttendanceErrorState extends AttendanceStates {
   final String error;
-
   AttendanceErrorState({required this.error});
 }

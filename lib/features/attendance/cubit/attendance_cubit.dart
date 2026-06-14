@@ -52,7 +52,6 @@ class AttendanceCubit extends Cubit<AttendanceStates> {
       final session = attendance.sessions!.first;
 
       if (!(session.isLive ?? false)) {
-        // Get current location
         final position = await _getCurrentLocation();
         if (position == null) {
           emit(AttendanceErrorState(error: "Could not get your location"));
@@ -91,21 +90,15 @@ class AttendanceCubit extends Cubit<AttendanceStates> {
 
   Future<Position?> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return null;
-    }
+    if (!serviceEnabled) return null;
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return null;
-      }
+      if (permission == LocationPermission.denied) return null;
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      return null;
-    }
+    if (permission == LocationPermission.deniedForever) return null;
 
     return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,

@@ -1,12 +1,14 @@
-import 'package:college_project/features/student_id/models/student_id_model.dart';
+import 'package:college_project/features/student_id/models/student_id_back_model.dart';
+import 'package:college_project/features/student_id/models/student_id_front_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:math';
 
 class StudentIdCard extends StatefulWidget {
-  final Student student;
+  final StudentIdFrontModel front;
+  final StudentIdBackModel back;
 
-  const StudentIdCard({super.key, required this.student});
+  const StudentIdCard({super.key, required this.front, required this.back});
 
   @override
   State<StudentIdCard> createState() => _StudentIdCardState();
@@ -73,6 +75,9 @@ class _StudentIdCardState extends State<StudentIdCard>
   }
 
   Widget _buildFront() {
+    final holder = widget.front.holder;
+    final validity = widget.front.cardValidity;
+
     return Container(
       width: 342.w,
       height: 215.h,
@@ -114,7 +119,7 @@ class _StudentIdCardState extends State<StudentIdCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.student.universityName.toUpperCase(),
+                          widget.front.systemName.toUpperCase(),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 11.sp,
@@ -123,7 +128,7 @@ class _StudentIdCardState extends State<StudentIdCard>
                           ),
                         ),
                         SizedBox(height: 6.h),
-                        _buildStatusBadge(),
+                        _buildStatusBadge(widget.front.identityLabel),
                       ],
                     ),
                     const Icon(
@@ -142,7 +147,7 @@ class _StudentIdCardState extends State<StudentIdCard>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.student.name,
+                            holder.fullName,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 22.sp,
@@ -152,7 +157,7 @@ class _StudentIdCardState extends State<StudentIdCard>
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            'ID: ${widget.student.idNumber}',
+                            'ID: ${holder.studentId}',
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.7),
                               fontSize: 13.sp,
@@ -168,9 +173,9 @@ class _StudentIdCardState extends State<StudentIdCard>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildMiniInfo('LEVEL', widget.student.level),
-                    _buildMiniInfo('MAJOR', widget.student.major),
-                    _buildMiniInfo('GPA', widget.student.gpa),
+                    _buildMiniInfo('LEVEL', holder.level),
+                    _buildMiniInfo('MAJOR', holder.department),
+                    _buildMiniInfo('VALID', validity.formattedExpiry),
                   ],
                 ),
               ],
@@ -182,6 +187,9 @@ class _StudentIdCardState extends State<StudentIdCard>
   }
 
   Widget _buildBack() {
+    final qr = widget.back.qrCode;
+    final validity = widget.front.cardValidity;
+
     return Container(
       width: 342.w,
       height: 215.h,
@@ -216,14 +224,24 @@ class _StudentIdCardState extends State<StudentIdCard>
                       ),
                     ),
                     Text(
-                      widget.student.validUntil,
+                      validity.formattedExpiry,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(height: 12.h),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'ID: ${qr.studentId}',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
                     Text(
                       'IF FOUND, PLEASE RETURN TO CAMPUS OFFICE',
                       style: TextStyle(
@@ -261,15 +279,13 @@ class _StudentIdCardState extends State<StudentIdCard>
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white24, width: 2),
         borderRadius: BorderRadius.circular(20.r),
-        image: DecorationImage(
-          image: NetworkImage(widget.student.profileImageUrl),
-          fit: BoxFit.cover,
-        ),
+        color: Colors.white.withOpacity(0.1),
       ),
+      child: Icon(Icons.person_rounded, color: Colors.white54, size: 40.w),
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(String label) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
       decoration: BoxDecoration(
@@ -277,7 +293,7 @@ class _StudentIdCardState extends State<StudentIdCard>
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Text(
-        'STUDENT PASS',
+        label.toUpperCase(),
         style: TextStyle(
           color: Colors.white,
           fontSize: 10.sp,

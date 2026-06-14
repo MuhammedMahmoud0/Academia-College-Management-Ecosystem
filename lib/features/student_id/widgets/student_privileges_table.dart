@@ -1,11 +1,26 @@
-import 'package:college_project/features/student_id/models/student_id_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StudentPrivilegesTable extends StatelessWidget {
-  final List<StudentPrivilege> privileges;
+  final List<String> privileges;
 
   const StudentPrivilegesTable({super.key, required this.privileges});
+
+  IconData _iconForPrivilege(String label) {
+    final lower = label.toLowerCase();
+    if (lower.contains('library')) return Icons.menu_book_rounded;
+    if (lower.contains('gym') || lower.contains('sport'))
+      return Icons.fitness_center_rounded;
+    if (lower.contains('lab')) return Icons.science_rounded;
+    if (lower.contains('clinic') || lower.contains('health'))
+      return Icons.local_hospital_rounded;
+    if (lower.contains('gate') || lower.contains('main'))
+      return Icons.door_front_door_rounded;
+    if (lower.contains('park')) return Icons.local_parking_rounded;
+    if (lower.contains('cafe') || lower.contains('food'))
+      return Icons.restaurant_rounded;
+    return Icons.verified_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +63,9 @@ class StudentPrivilegesTable extends StatelessWidget {
           SizedBox(height: 16.h),
           const Divider(color: Color(0xFFF1F5F9), height: 1),
           SizedBox(height: 16.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 16.w,
+            runSpacing: 16.h,
             children: privileges.map((p) => _buildPrivilegeItem(p)).toList(),
           ),
         ],
@@ -57,8 +73,9 @@ class StudentPrivilegesTable extends StatelessWidget {
     );
   }
 
-  Widget _buildPrivilegeItem(StudentPrivilege privilege) {
+  Widget _buildPrivilegeItem(String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Stack(
           children: [
@@ -71,10 +88,8 @@ class StudentPrivilegesTable extends StatelessWidget {
                 border: Border.all(color: const Color(0xFFF1F5F9)),
               ),
               child: Icon(
-                privilege.icon,
-                color: privilege.isGranted
-                    ? const Color(0xFF4F46E5)
-                    : const Color(0xFF94A3B8),
+                _iconForPrivilege(label),
+                color: const Color(0xFF4F46E5),
                 size: 20.w,
               ),
             ),
@@ -84,26 +99,26 @@ class StudentPrivilegesTable extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(2.w),
                 decoration: BoxDecoration(
-                  color: privilege.isGranted ? Colors.green : Colors.red,
+                  color: Colors.green,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 1.5),
                 ),
-                child: Icon(
-                  privilege.isGranted ? Icons.check : Icons.close,
-                  color: Colors.white,
-                  size: 8.w,
-                ),
+                child: Icon(Icons.check, color: Colors.white, size: 8.w),
               ),
             ),
           ],
         ),
         SizedBox(height: 8.h),
-        Text(
-          privilege.label,
-          style: TextStyle(
-            color: const Color(0xFF64748B),
-            fontSize: 10.sp,
-            fontWeight: FontWeight.w700,
+        SizedBox(
+          width: 60.w,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFF64748B),
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],

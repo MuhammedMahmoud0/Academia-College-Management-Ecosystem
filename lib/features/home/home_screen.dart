@@ -492,7 +492,7 @@ Widget _buildHomeContent(
                         color: AppColors.primaryColor,
                         onTap: () => GoRouter.of(
                           context,
-                        ).pushNamed(AppRoutes.tasksScreen),
+                        ).pushNamed(AppRoutes.leaderboard),
                       ),
                       QuickAction(
                         label: S.of(context).materials,

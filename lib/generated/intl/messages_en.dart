@@ -40,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "availableCourses":
             MessageLookupByLibrary.simpleMessage("Available Courses"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "changePassword":
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "chooseImageSource":
@@ -98,6 +99,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfully":
             MessageLookupByLibrary.simpleMessage("Login successfully"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
+        "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to logout?"),
         "materials": MessageLookupByLibrary.simpleMessage("Materials"),
         "missed": MessageLookupByLibrary.simpleMessage("Missed"),
         "myProfile": MessageLookupByLibrary.simpleMessage("My Profile"),

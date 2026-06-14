@@ -39,6 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "availableCourses":
             MessageLookupByLibrary.simpleMessage("المقررات المتاحة"),
         "camera": MessageLookupByLibrary.simpleMessage("الكاميرا"),
+        "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
         "changePassword":
             MessageLookupByLibrary.simpleMessage("تغيير كلمة المرور"),
         "chooseImageSource":
@@ -99,6 +100,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSuccessfully":
             MessageLookupByLibrary.simpleMessage("تم تسجيل الدخول بنجاح"),
         "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),
+        "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+            "هل أنت متأكد أنك تريد تسجيل الخروج؟"),
         "materials": MessageLookupByLibrary.simpleMessage("المحتوي الاكاديمى"),
         "missed": MessageLookupByLibrary.simpleMessage("فائتة"),
         "myProfile": MessageLookupByLibrary.simpleMessage("ملفي الشخصي"),
