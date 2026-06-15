@@ -16,12 +16,17 @@ class LeaderboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       padding: EdgeInsetsDirectional.only(end: 16.0, top: 14.h, bottom: 14.h),
       decoration: BoxDecoration(
         color: isCurrentUser
             ? primaryColor.withValues(alpha: 0.08)
+            : isDark
+            ? colorScheme.surfaceContainerHighest
             : Colors.white,
         borderRadius: BorderRadius.circular(16.r),
         border: isCurrentUser
@@ -37,19 +42,13 @@ class LeaderboardCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Rank Indicator
-          SizedBox(width: 48.w, child: _buildRankIndicator()),
-
-          // Avatar
+          SizedBox(width: 48.w, child: _buildRankIndicator(context)),
           _buildAvatar(),
           SizedBox(width: 12.w),
-
-          // Student Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Name row with badge
                 Row(
                   children: [
                     Flexible(
@@ -58,7 +57,9 @@ class LeaderboardCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
-                          color: isCurrentUser ? primaryColor : Colors.black87,
+                          color: isCurrentUser
+                              ? primaryColor
+                              : colorScheme.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -70,37 +71,34 @@ class LeaderboardCard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 2.h),
-                // Student ID
                 Text(
                   student.studentId,
                   style: TextStyle(
                     fontSize: 11.sp,
-                    color: Colors.grey.shade600,
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
                 SizedBox(height: 4.h),
-                // Department & Level
                 Wrap(
-                  spacing: 8.w, // مسافة أفقية
-                  runSpacing: 4.h, // مسافة رأسية لو نزل سطر جديد
+                  spacing: 8.w,
+                  runSpacing: 4.h,
                   children: [
                     _buildInfoChip(
                       icon: Icons.school_outlined,
                       label: student.department,
+                      context: context,
                     ),
                     _buildInfoChip(
                       icon: Icons.layers_outlined,
                       label: 'Level ${student.level}',
+                      context: context,
                     ),
                   ],
                 ),
               ],
             ),
           ),
-
           SizedBox(width: 8.w),
-
-          // Score Display
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -116,7 +114,7 @@ class LeaderboardCard extends StatelessWidget {
                 "Score",
                 style: TextStyle(
                   fontSize: 10.sp,
-                  color: Colors.grey.shade400,
+                  color: colorScheme.onSurface.withValues(alpha: 0.4),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -128,7 +126,6 @@ class LeaderboardCard extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    // Check if avatar is a URL
     final isUrl = student.avatar.startsWith('http');
 
     return CircleAvatar(
@@ -153,7 +150,6 @@ class LeaderboardCard extends StatelessWidget {
   }
 
   Widget _buildBadge() {
-    // Map badge names to icons and colors
     final badgeConfig = _getBadgeConfig(student.badge);
 
     return Container(
@@ -196,23 +192,34 @@ class LeaderboardCard extends StatelessWidget {
     return _BadgeConfig(Icons.verified, primaryColor);
   }
 
-  Widget _buildInfoChip({required IconData icon, required String label}) {
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    required BuildContext context,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: isDark ? colorScheme.surface : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(6.r),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 11.sp, color: Colors.grey.shade600),
+          Icon(
+            icon,
+            size: 11.sp,
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
           SizedBox(width: 3.w),
           Text(
             label,
             style: TextStyle(
               fontSize: 10.sp,
-              color: Colors.grey.shade700,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -221,7 +228,10 @@ class LeaderboardCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRankIndicator() {
+  Widget _buildRankIndicator(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     Color? medalColor;
     IconData? medalIcon;
 
@@ -257,7 +267,7 @@ class LeaderboardCard extends StatelessWidget {
         width: 36.w,
         height: 36.h,
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: isDark ? colorScheme.surface : Colors.grey.shade100,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
@@ -265,7 +275,7 @@ class LeaderboardCard extends StatelessWidget {
           "#${student.rank}",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             fontSize: 12.sp,
           ),
         ),

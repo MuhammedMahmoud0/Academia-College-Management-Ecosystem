@@ -22,7 +22,7 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F8),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: BlocConsumer<TasksCubit, TasksState>(
           listener: (context, state) {
@@ -65,7 +65,9 @@ class _TasksScreenState extends State<TasksScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
                     SizedBox(height: 20.h),
@@ -111,7 +113,9 @@ class _TasksScreenState extends State<TasksScreen> {
                               child: Container(
                                 padding: EdgeInsets.all(8.w),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                                   borderRadius: BorderRadius.circular(12.r),
                                   boxShadow: [
                                     BoxShadow(
@@ -124,7 +128,9 @@ class _TasksScreenState extends State<TasksScreen> {
                                 child: Icon(
                                   Icons.arrow_back_ios_new_rounded,
                                   size: 18.sp,
-                                  color: Colors.black87,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -134,7 +140,7 @@ class _TasksScreenState extends State<TasksScreen> {
                               style: TextStyle(
                                 fontSize: 26.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -146,7 +152,9 @@ class _TasksScreenState extends State<TasksScreen> {
                           'and check your grades. Keep an eye on the due dates!',
                           style: TextStyle(
                             fontSize: 13.sp,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
                             height: 1.4,
                           ),
                         ),
@@ -196,14 +204,18 @@ class _TasksScreenState extends State<TasksScreen> {
                           Icon(
                             Icons.assignment_outlined,
                             size: 64.sp,
-                            color: Colors.grey.shade300,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.2),
                           ),
                           SizedBox(height: 16.h),
                           Text(
                             'No TasksScreen yet',
                             style: TextStyle(
                               fontSize: 16.sp,
-                              color: Colors.grey.shade500,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.45),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -284,7 +296,7 @@ class _CounterChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14.r),
         boxShadow: [
           BoxShadow(
@@ -301,7 +313,7 @@ class _CounterChip extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 13.sp,
-              color: Colors.grey.shade700,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
               fontWeight: FontWeight.w500,
             ),
           ),

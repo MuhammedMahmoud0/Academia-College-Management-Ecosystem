@@ -51,7 +51,7 @@ class _MaterialCardState extends State<MaterialCard> {
         margin: EdgeInsets.only(bottom: 12.h),
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
@@ -69,7 +69,7 @@ class _MaterialCardState extends State<MaterialCard> {
               width: 48.w,
               decoration: BoxDecoration(
                 color: isFile
-                    ? Colors.red.shade50
+                    ? Theme.of(context).colorScheme.errorContainer
                     : AppColors.primaryColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12.r),
               ),
@@ -91,7 +91,7 @@ class _MaterialCardState extends State<MaterialCard> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14.sp,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -103,7 +103,7 @@ class _MaterialCardState extends State<MaterialCard> {
                         widget.material.formattedDate,
                         style: TextStyle(
                           fontSize: 10.sp,
-                          color: Colors.grey.shade500,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       if (isFile)
@@ -112,7 +112,7 @@ class _MaterialCardState extends State<MaterialCard> {
                           width: 3.w,
                           height: 3.h,
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: Theme.of(context).colorScheme.outlineVariant,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -145,8 +145,8 @@ class _MaterialCardState extends State<MaterialCard> {
             // Action Button
             Container(
               padding: EdgeInsets.all(8.w),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF8F9FE),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 shape: BoxShape.circle,
               ),
               child: isLoad
@@ -159,7 +159,7 @@ class _MaterialCardState extends State<MaterialCard> {
                       isFile
                           ? Icons.arrow_forward_ios_rounded
                           : Icons.open_in_new_rounded,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 20.sp,
                     ),
             ),

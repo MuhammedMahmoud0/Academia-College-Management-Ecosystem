@@ -28,7 +28,7 @@ class TaskItemWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
@@ -78,7 +78,7 @@ class TaskItemWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -88,7 +88,9 @@ class TaskItemWidget extends StatelessWidget {
                   task.description,
                   style: TextStyle(
                     fontSize: 13.sp,
-                    color: Colors.grey.shade600,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                     height: 1.4,
                   ),
                   maxLines: 2,
@@ -102,7 +104,9 @@ class TaskItemWidget extends StatelessWidget {
                     Icon(
                       Icons.calendar_today_outlined,
                       size: 14.sp,
-                      color: Colors.grey.shade500,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.5),
                     ),
                     SizedBox(width: 6.w),
                     Text(
@@ -117,7 +121,9 @@ class TaskItemWidget extends StatelessWidget {
                       DateFormat('M/d/yyyy').format(task.createdAt.toLocal()),
                       style: TextStyle(
                         fontSize: 12.sp,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.5),
                       ),
                     ),
                   ],
@@ -146,7 +152,9 @@ class TaskItemWidget extends StatelessWidget {
                         'Due By',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.grey.shade700,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                       const Spacer(),
@@ -293,8 +301,10 @@ class _ViewSubmissionButton extends StatelessWidget {
         icon: Icon(Icons.remove_red_eye_outlined, size: 18.sp),
         label: Text('View My Submission', style: TextStyle(fontSize: 14.sp)),
         style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.black87,
-          side: BorderSide(color: Colors.grey.shade300),
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14.r),
           ),
@@ -312,7 +322,7 @@ void _showSubmitSheet(BuildContext context, TaskModel task) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
     ),
@@ -403,10 +413,10 @@ void _showSubmitSheet(BuildContext context, TaskModel task) {
                   'Paste your GitHub repository link, drive link, or plain text solution here...',
               hintStyle: TextStyle(
                 fontSize: 13.sp,
-                color: Colors.grey.shade600,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.r),
                 borderSide: BorderSide.none,
@@ -621,7 +631,9 @@ void _showSubmissionSheet(BuildContext context, TaskModel task) {
                     width: 40.w,
                     height: 4.h,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(2.r),
                     ),
                   ),
@@ -647,7 +659,9 @@ void _showSubmissionSheet(BuildContext context, TaskModel task) {
                             liveTask.title,
                             style: TextStyle(
                               fontSize: 13.sp,
-                              color: Colors.grey.shade500,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.5),
                             ),
                           ),
                         ],
@@ -694,14 +708,16 @@ void _showSubmissionSheet(BuildContext context, TaskModel task) {
                   width: double.infinity,
                   padding: EdgeInsets.all(14.w),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: Text(
                     submission.content,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.5,
                     ),
                   ),
@@ -714,14 +730,18 @@ void _showSubmissionSheet(BuildContext context, TaskModel task) {
                     Icon(
                       Icons.access_time_rounded,
                       size: 15.sp,
-                      color: Colors.grey.shade500,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.5),
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       'Submitted on: ',
                       style: TextStyle(
                         fontSize: 13.sp,
-                        color: Colors.grey.shade500,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.5),
                       ),
                     ),
                     Text(
@@ -762,7 +782,9 @@ void _showSubmissionSheet(BuildContext context, TaskModel task) {
                           'Grade: ',
                           style: TextStyle(
                             fontSize: 13.sp,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
                           ),
                         ),
                         Text(

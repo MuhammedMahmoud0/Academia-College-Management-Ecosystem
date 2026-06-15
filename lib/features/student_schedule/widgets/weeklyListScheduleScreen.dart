@@ -52,16 +52,19 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
               children: [
                 Text(
                   '${selectedDay.day}, ${_formatDate(selectedDay.date)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C2C2C),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '${classes.length} Classes Today',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 if (classes.isEmpty)
@@ -80,7 +83,9 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                             'No classes scheduled for this day',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -208,7 +213,7 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(28.r),
             topRight: Radius.circular(28.r),
@@ -415,7 +420,7 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: Colors.grey.shade200),
       ),
@@ -438,7 +443,7 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                   title,
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: Colors.grey.shade500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -447,7 +452,7 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                   value,
                   style: TextStyle(
                     fontSize: 15.sp,
-                    color: Colors.grey.shade800,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -479,7 +484,7 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border(
                   left: BorderSide(color: classItem.color, width: 4),
@@ -501,10 +506,10 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                       Expanded(
                         child: Text(
                           '${classItem.courseCode} - ${classItem.courseName}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2C2C2C),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -535,7 +540,10 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                       const SizedBox(width: 6),
                       Text(
                         classItem.timeRange,
-                        style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -546,7 +554,10 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                       const SizedBox(width: 6),
                       Text(
                         classItem.location,
-                        style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Icon(Icons.person, size: 16, color: classItem.color),
@@ -556,7 +567,9 @@ class _WeeklyListScheduleScreenState extends State<WeeklyListScheduleScreen> {
                           classItem.instructor,
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

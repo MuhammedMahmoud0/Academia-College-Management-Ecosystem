@@ -144,7 +144,7 @@ class _StudentScheduleViewState extends State<_StudentScheduleView> {
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.black.withOpacity(0.2),
         borderRadius: BorderRadius.circular(24.r),
       ),
       child: Row(
@@ -177,7 +177,9 @@ class _StudentScheduleViewState extends State<_StudentScheduleView> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected
+              ? Colors.white.withOpacity(0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(20.r),
         ),
         alignment: Alignment.center,
@@ -186,14 +188,16 @@ class _StudentScheduleViewState extends State<_StudentScheduleView> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primaryColor : Colors.white,
+              color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
               size: 20.sp,
             ),
             SizedBox(width: 8.w),
             Text(
               title,
               style: TextStyle(
-                color: isSelected ? AppColors.primaryColor : Colors.white,
+                color: isSelected
+                    ? Colors.white
+                    : Colors.white.withOpacity(0.5),
                 fontWeight: FontWeight.bold,
                 fontSize: 13.sp,
               ),

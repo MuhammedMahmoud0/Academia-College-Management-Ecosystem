@@ -43,7 +43,7 @@ class NotificationItem extends StatelessWidget {
                       fontWeight: notification.isRead
                           ? FontWeight.w500
                           : FontWeight.bold,
-                      color: Colors.black87,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

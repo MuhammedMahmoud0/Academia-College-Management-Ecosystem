@@ -55,7 +55,7 @@ class NotificationDetailScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ── Coloured header ────────────────────────────────────────────
+          // ── Coloured header ──────────────────────────────────────────────
           Padding(
             padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 24.h),
             child: Row(
@@ -117,12 +117,12 @@ class NotificationDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // ── White body ─────────────────────────────────────────────────
+          // ── Body ────────────────────────────────────────────────────────
           Expanded(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),
@@ -134,33 +134,32 @@ class NotificationDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Section label
                     Text(
                       'MESSAGE',
                       style: TextStyle(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade400,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.45),
                         letterSpacing: 1.4,
                       ),
                     ),
                     SizedBox(height: 12.h),
 
-                    // ── Full message (no maxLines) ──────────────────────
                     Text(
                       notification.message,
                       style: TextStyle(
                         fontSize: 15.sp,
-                        color: Colors.black87,
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.75,
                       ),
                     ),
 
                     SizedBox(height: 32.h),
-                    Divider(color: Colors.grey.shade100),
+                    Divider(color: Theme.of(context).dividerColor),
                     SizedBox(height: 24.h),
 
-                    // ── Meta rows ──────────────────────────────────────
                     _MetaRow(
                       icon: Icons.category_outlined,
                       label: 'Type',
@@ -180,7 +179,6 @@ class NotificationDetailScreen extends StatelessWidget {
 
                     SizedBox(height: 40.h),
 
-                    // ── Delete button ──────────────────────────────────
                     SizedBox(
                       width: double.infinity,
                       height: 52.h,
@@ -220,7 +218,7 @@ class NotificationDetailScreen extends StatelessWidget {
   void _confirmDelete(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
@@ -229,12 +227,11 @@ class NotificationDetailScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag handle
             Container(
               width: 40.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(2.r),
               ),
             ),
@@ -247,12 +244,19 @@ class NotificationDetailScreen extends StatelessWidget {
             SizedBox(height: 12.h),
             Text(
               'Delete Notification?',
-              style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             SizedBox(height: 8.h),
             Text(
               'This action cannot be undone.',
-              style: TextStyle(color: Colors.grey, fontSize: 13.sp),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 13.sp,
+              ),
             ),
             SizedBox(height: 28.h),
             Row(
@@ -273,11 +277,11 @@ class NotificationDetailScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(sheetContext); // close sheet
+                      Navigator.pop(sheetContext);
                       context.read<NotificationsCubit>().deleteNotification(
                         notification.id,
                       );
-                      Navigator.pop(context); // back to list
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red.shade400,
@@ -340,7 +344,12 @@ class _MetaRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey.shade400),
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.45),
+                ),
               ),
               SizedBox(height: 3.h),
               Text(
@@ -348,7 +357,7 @@ class _MetaRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],

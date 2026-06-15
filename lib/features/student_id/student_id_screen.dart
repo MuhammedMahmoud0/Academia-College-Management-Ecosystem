@@ -27,13 +27,16 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0F172A)),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Student Identification',
           style: TextStyle(
-            color: const Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
             fontSize: 20.sp,
           ),
@@ -92,7 +95,9 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
                     Text(
                       'Tap card to flip for more details',
                       style: TextStyle(
-                        color: const Color(0xFF64748B),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
                       ),

@@ -98,7 +98,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
           padding: EdgeInsets.all(16.w),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(20.r),
               boxShadow: [
                 BoxShadow(
@@ -198,10 +198,18 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
           height: cellHeight,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isEvenRow ? Colors.grey.shade50 : Colors.white,
+            color: isEvenRow
+                ? Theme.of(context).colorScheme.surfaceContainerLow
+                : Theme.of(context).colorScheme.surface,
             border: Border(
-              right: BorderSide(color: Colors.grey.shade200, width: 1),
-              bottom: BorderSide(color: Colors.grey.shade200, width: 1),
+              right: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                width: 1,
+              ),
+              bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                width: 1,
+              ),
             ),
           ),
           child: Column(
@@ -221,7 +229,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                 style: TextStyle(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade500,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -236,7 +244,9 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
             height: cellHeight,
             padding: EdgeInsets.all(6.w),
             decoration: BoxDecoration(
-              color: isEvenRow ? Colors.grey.shade50 : Colors.white,
+              color: isEvenRow
+                  ? Theme.of(context).colorScheme.surfaceContainerLow
+                  : Theme.of(context).colorScheme.surface,
               border: Border(
                 right: isLastColumn
                     ? BorderSide.none
@@ -336,7 +346,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                 Icon(
                   Icons.access_time_filled_rounded,
                   size: 11.sp,
-                  color: Colors.grey.shade600,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 SizedBox(width: 4.w),
                 Expanded(
@@ -344,7 +354,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                     classData.timeRange,
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -358,7 +368,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                 Icon(
                   Icons.location_on_rounded,
                   size: 11.sp,
-                  color: Colors.grey.shade600,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 SizedBox(width: 4.w),
                 Expanded(
@@ -366,7 +376,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                     classData.location,
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -408,7 +418,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(28.r),
             topRight: Radius.circular(28.r),
@@ -615,9 +625,9 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -638,7 +648,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                   title,
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: Colors.grey.shade500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -647,7 +657,7 @@ class _WeeklyGridScheduleScreenState extends State<WeeklyGridScheduleScreen> {
                   value,
                   style: TextStyle(
                     fontSize: 15.sp,
-                    color: Colors.grey.shade800,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

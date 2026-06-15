@@ -88,7 +88,7 @@ class _MaterialsViewState extends State<MaterialsView> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.backgroundColor,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),
@@ -125,7 +125,7 @@ class _MaterialsViewState extends State<MaterialsView> {
       child: Container(
         padding: EdgeInsets.all(4.w),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
+          color: Colors.black.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
@@ -136,7 +136,11 @@ class _MaterialsViewState extends State<MaterialsView> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
-                    color: !_isGroupedView ? Colors.white : Colors.transparent,
+                    color: !_isGroupedView
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.onPrimary.withOpacity(0.15)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Row(
@@ -145,17 +149,13 @@ class _MaterialsViewState extends State<MaterialsView> {
                       Icon(
                         Icons.list_rounded,
                         size: 18.sp,
-                        color: !_isGroupedView
-                            ? AppColors.primaryColor
-                            : Colors.white,
+                        color: Colors.white,
                       ),
                       SizedBox(width: 6.w),
                       Text(
                         'All',
                         style: TextStyle(
-                          color: !_isGroupedView
-                              ? AppColors.primaryColor
-                              : Colors.white,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 13.sp,
                         ),
@@ -171,7 +171,11 @@ class _MaterialsViewState extends State<MaterialsView> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   decoration: BoxDecoration(
-                    color: _isGroupedView ? Colors.white : Colors.transparent,
+                    color: _isGroupedView
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.onPrimary.withOpacity(0.15)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Row(
@@ -180,17 +184,13 @@ class _MaterialsViewState extends State<MaterialsView> {
                       Icon(
                         Icons.folder_rounded,
                         size: 18.sp,
-                        color: _isGroupedView
-                            ? AppColors.primaryColor
-                            : Colors.white,
+                        color: Colors.white,
                       ),
                       SizedBox(width: 6.w),
                       Text(
                         'By Lecture',
                         style: TextStyle(
-                          color: _isGroupedView
-                              ? AppColors.primaryColor
-                              : Colors.white,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 13.sp,
                         ),
@@ -226,7 +226,7 @@ class _MaterialsViewState extends State<MaterialsView> {
           Text(
             error,
             style: TextStyle(
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -238,7 +238,7 @@ class _MaterialsViewState extends State<MaterialsView> {
               context.read<MaterialsCubit>().getMaterials();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
@@ -267,7 +267,7 @@ class _MaterialsViewState extends State<MaterialsView> {
           Text(
             "No materials found",
             style: TextStyle(
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -474,20 +474,20 @@ class _MaterialsViewState extends State<MaterialsView> {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
               "$count",
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 10.sp,
                 fontWeight: FontWeight.bold,
               ),

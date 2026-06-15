@@ -14,6 +14,7 @@ import 'package:college_project/features/home/widgets/quick_actions_row.dart';
 import 'package:college_project/features/home/widgets/recent_grades.dart';
 import 'package:college_project/features/home/widgets/attendance_card.dart';
 import 'package:college_project/features/home/widgets/payment_card.dart';
+import 'package:college_project/features/home/widgets/tasks_card.dart';
 import 'package:college_project/features/home/widgets/upcoming_exam_card.dart';
 import 'package:college_project/features/notifications/cubit/notification_cubit.dart';
 import 'package:college_project/features/notifications/cubit/notification_states.dart';
@@ -531,6 +532,12 @@ Widget _buildHomeContent(
                       if (isScanPressed) return;
                       await context.read<AttendanceCubit>().getActiveSessions();
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  TasksCard(
+                    isDark: isDark,
+                    onTap: () =>
+                        GoRouter.of(context).pushNamed(AppRoutes.tasksScreen),
                   ),
                   const SizedBox(height: 16),
                   PaymentCard(

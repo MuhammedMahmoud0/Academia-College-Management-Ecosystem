@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// Uses the globally-provided [NotificationsCubit] so WebSocket pushes flow
-/// into the same list/badge that home shows.
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
@@ -17,8 +15,6 @@ class NotificationsScreen extends StatelessWidget {
     return const _NotificationsView();
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _NotificationsView extends StatefulWidget {
   const _NotificationsView();
@@ -30,7 +26,6 @@ class _NotificationsView extends StatefulWidget {
 class _NotificationsViewState extends State<_NotificationsView> {
   final Color primaryColor = const Color(0xFF6C63FF);
 
-  // First two are special (All / Unread), rest are raw API type strings
   final List<String> _categories = [
     "All",
     "Unread",
@@ -40,7 +35,6 @@ class _NotificationsViewState extends State<_NotificationsView> {
     "campus_announcement",
   ];
 
-  // Human-readable chip labels (index matches _categories)
   final List<String> _categoryLabels = [
     "All",
     "Unread",
@@ -57,7 +51,6 @@ class _NotificationsViewState extends State<_NotificationsView> {
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
-    // Hydrate the global cubit on entry (WS pushes prepend into the same list).
     context.read<NotificationsCubit>().fetchNotifications();
   }
 
@@ -74,12 +67,10 @@ class _NotificationsViewState extends State<_NotificationsView> {
     }
   }
 
-  // ─── Local filter (client-side on already-fetched list) ──────────────────
   List<NotificationModel> _applyFilter(List<NotificationModel> all) {
     final cat = _categories[_selectedCategoryIndex];
     if (cat == 'All') return all;
     if (cat == 'Unread') return all.where((n) => !n.isRead).toList();
-    // For type categories the value IS the API type string
     return all.where((n) => n.type == cat).toList();
   }
 
@@ -125,7 +116,7 @@ class _NotificationsViewState extends State<_NotificationsView> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),
@@ -143,17 +134,14 @@ class _NotificationsViewState extends State<_NotificationsView> {
                   }
                 },
                 builder: (context, state) {
-                  // ── Loading first page ──────────────────────────────────
                   if (state is NotificationsLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  // ── Hard error ──────────────────────────────────────────
                   if (state is NotificationsError) {
                     return _buildError(context, state.message);
                   }
 
-                  // ── Derive notification list from any "data" state ──────
                   List<NotificationModel> notifications = [];
                   bool isLoadingMore = false;
                   bool isMarkingAll = false;
@@ -172,7 +160,7 @@ class _NotificationsViewState extends State<_NotificationsView> {
 
                   final filtered = _applyFilter(notifications);
 
-                  if (filtered.isEmpty) return _buildEmptyState();
+                  if (filtered.isEmpty) return _buildEmptyState(context);
 
                   final groups = _group(filtered);
                   const groupKeys = [
@@ -195,7 +183,6 @@ class _NotificationsViewState extends State<_NotificationsView> {
                           physics: const BouncingScrollPhysics(),
                           itemCount: groupKeys.length + 1,
                           itemBuilder: (context, index) {
-                            // Last item = load-more indicator
                             if (index == groupKeys.length) {
                               return isLoadingMore
                                   ? Padding(
@@ -227,7 +214,9 @@ class _NotificationsViewState extends State<_NotificationsView> {
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.grey.shade400,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.85),
                                     ),
                                   ),
                                 ),
@@ -237,11 +226,12 @@ class _NotificationsViewState extends State<_NotificationsView> {
                           },
                         ),
 
-                        // Mark-all overlay spinner
                         if (isMarkingAll)
                           Positioned.fill(
                             child: ColoredBox(
-                              color: Colors.white54,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.6),
                               child: const Center(
                                 child: CircularProgressIndicator(),
                               ),
@@ -259,7 +249,6 @@ class _NotificationsViewState extends State<_NotificationsView> {
     );
   }
 
-  // ─── AppBar ────────────────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -306,7 +295,6 @@ class _NotificationsViewState extends State<_NotificationsView> {
     );
   }
 
-  // ─── Category filter chips ─────────────────────────────────────────────
   Widget _buildCategoryFilter() {
     return SizedBox(
       height: 38.h,
@@ -349,19 +337,17 @@ class _NotificationsViewState extends State<_NotificationsView> {
     );
   }
 
-  // ─── Single item ───────────────────────────────────────────────────────
   Widget _buildItem(BuildContext context, NotificationModel notification) {
     return NotificationItem(
       notification: notification,
       onTap: () {
-        final cubit = context.read<NotificationsCubit>(); // capture here
+        final cubit = context.read<NotificationsCubit>();
         cubit.markAsRead(notification.id);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value:
-                  cubit, // use captured cubit, not context.read inside builder
+              value: cubit,
               child: NotificationDetailScreen(notification: notification),
             ),
           ),
@@ -370,8 +356,7 @@ class _NotificationsViewState extends State<_NotificationsView> {
     );
   }
 
-  // ─── Empty state ───────────────────────────────────────────────────────
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -379,7 +364,7 @@ class _NotificationsViewState extends State<_NotificationsView> {
           Icon(
             Icons.notifications_none_rounded,
             size: 70.sp,
-            color: Colors.grey.shade300,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
           ),
           SizedBox(height: 16.h),
           Text(
@@ -387,20 +372,22 @@ class _NotificationsViewState extends State<_NotificationsView> {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           SizedBox(height: 4.h),
           Text(
             'No notifications for this category.',
-            style: TextStyle(color: Colors.grey, fontSize: 13.sp),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 13.sp,
+            ),
           ),
         ],
       ),
     );
   }
 
-  // ─── Error state ───────────────────────────────────────────────────────
   Widget _buildError(BuildContext context, String message) {
     return Center(
       child: Column(
@@ -411,7 +398,10 @@ class _NotificationsViewState extends State<_NotificationsView> {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black54, fontSize: 14.sp),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              fontSize: 14.sp,
+            ),
           ),
           SizedBox(height: 16.h),
           ElevatedButton(

@@ -24,12 +24,16 @@ class StudentPrivilegesTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 24.w),
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? colorScheme.surfaceContainerHighest
+            : Colors.white, // ← بدل Colors.white
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
@@ -48,7 +52,7 @@ class StudentPrivilegesTable extends StatelessWidget {
               Text(
                 'Access Privileges',
                 style: TextStyle(
-                  color: const Color(0xFF0F172A),
+                  color: colorScheme.onSurface, // ← بدل Color(0xFF0F172A)
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w800,
                 ),
@@ -61,19 +65,25 @@ class StudentPrivilegesTable extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          const Divider(color: Color(0xFFF1F5F9), height: 1),
+          Divider(
+            color: colorScheme.outline.withValues(alpha: 0.3),
+            height: 1,
+          ), // ← بدل hardcoded
           SizedBox(height: 16.h),
           Wrap(
             spacing: 16.w,
             runSpacing: 16.h,
-            children: privileges.map((p) => _buildPrivilegeItem(p)).toList(),
+            children: privileges
+                .map((p) => _buildPrivilegeItem(p, colorScheme))
+                .toList(), // ← pass colorScheme
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPrivilegeItem(String label) {
+  Widget _buildPrivilegeItem(String label, ColorScheme colorScheme) {
+    // ← أضفي colorScheme
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -83,9 +93,11 @@ class StudentPrivilegesTable extends StatelessWidget {
               height: 44.h,
               width: 44.w,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: colorScheme.surface, // ← بدل Color(0xFFF8FAFC)
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFF1F5F9)),
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.3),
+                ),
               ),
               child: Icon(
                 _iconForPrivilege(label),
@@ -101,7 +113,10 @@ class StudentPrivilegesTable extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.green,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1.5),
+                  border: Border.all(
+                    color: colorScheme.surface,
+                    width: 1.5,
+                  ), // ← بدل Colors.white
                 ),
                 child: Icon(Icons.check, color: Colors.white, size: 8.w),
               ),
@@ -115,7 +130,9 @@ class StudentPrivilegesTable extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: const Color(0xFF64748B),
+              color: colorScheme.onSurface.withValues(
+                alpha: 0.6,
+              ), // ← بدل Color(0xFF64748B)
               fontSize: 10.sp,
               fontWeight: FontWeight.w700,
             ),

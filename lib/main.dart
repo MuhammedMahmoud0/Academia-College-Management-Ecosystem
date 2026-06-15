@@ -259,9 +259,16 @@ class _MyAppState extends State<MyApp> {
                   scaffoldBackgroundColor: AppColors.getBackground(true),
                   fontFamily: 'Poppins',
                   brightness: Brightness.dark,
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                  ),
                   colorScheme: ColorScheme.fromSeed(
                     seedColor: AppColors.primaryColor,
                     brightness: Brightness.dark,
+                    surface: const Color(0xFF1E1E2E),
+                    onSurface: Colors.white,
                   ),
                 ),
                 themeMode: isDark ? ThemeMode.dark : ThemeMode.light,

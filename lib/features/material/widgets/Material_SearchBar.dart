@@ -19,7 +19,7 @@ class MaterialSearchBar extends StatelessWidget {
       height: 48.h,
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(24.r),
       ),
       child: TextField(

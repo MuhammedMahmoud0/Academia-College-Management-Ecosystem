@@ -83,7 +83,9 @@ class __LeaderboardScreenViewState extends State<_LeaderboardScreenView> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.backgroundColor,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.getBackground(true)
+                    : AppColors.backgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32.r),
                   topRight: Radius.circular(32.r),

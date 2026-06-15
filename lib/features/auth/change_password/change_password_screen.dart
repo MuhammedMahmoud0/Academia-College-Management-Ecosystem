@@ -53,6 +53,8 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocConsumer<ChangePasswordCubit, ChangePasswordState>(
       listener: (context, state) {
         if (state is ChangePasswordSuccess) {
@@ -74,13 +76,13 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text(
+            title: Text(
               'Change Password',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             elevation: 0,
             backgroundColor: Colors.transparent,
-            foregroundColor: const Color(0xFF0F172A),
+            foregroundColor: colorScheme.onSurface,
           ),
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
@@ -94,7 +96,7 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                     style: TextStyle(
                       fontSize: 22.sp,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -102,12 +104,11 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                     'Enter your current password, then choose a new one.',
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: const Color(0xFF64748B),
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   SizedBox(height: 40.h),
 
-                  // Current Password
                   _PasswordField(
                     controller: _currentPasswordController,
                     label: 'Current Password',
@@ -123,7 +124,6 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // New Password
                   _PasswordField(
                     controller: _newPasswordController,
                     label: 'New Password',
@@ -144,7 +144,6 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Confirm New Password
                   _PasswordField(
                     controller: _confirmPasswordController,
                     label: 'Confirm New Password',
@@ -163,7 +162,6 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                   ),
                   SizedBox(height: 40.h),
 
-                  // Submit Button
                   SizedBox(
                     width: double.infinity,
                     height: 52.h,
@@ -173,7 +171,7 @@ class _ChangePasswordScreenViewState extends State<_ChangePasswordScreenView> {
                         backgroundColor: const Color(0xFF4338CA),
                         disabledBackgroundColor: const Color(
                           0xFF4338CA,
-                        ).withOpacity(0.6),
+                        ).withValues(alpha: 0.6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14.r),
                         ),
@@ -224,31 +222,38 @@ class _PasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return TextFormField(
       controller: controller,
       obscureText: obscure,
       validator: validator,
-      style: TextStyle(fontSize: 15.sp, color: const Color(0xFF0F172A)),
+      style: TextStyle(fontSize: 15.sp, color: colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(fontSize: 14.sp, color: const Color(0xFF64748B)),
+        labelStyle: TextStyle(
+          fontSize: 14.sp,
+          color: colorScheme.onSurface.withValues(alpha: 0.6),
+        ),
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: const Color(0xFF94A3B8),
+            color: colorScheme.onSurface.withValues(alpha: 0.4),
             size: 20.w,
           ),
           onPressed: onToggle,
         ),
         filled: true,
-        fillColor: const Color(0xFFF8FAFC),
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? colorScheme.surfaceContainerHighest
+            : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14.r),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14.r),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14.r),
