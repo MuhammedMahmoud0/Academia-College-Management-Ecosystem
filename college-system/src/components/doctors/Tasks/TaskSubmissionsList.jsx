@@ -248,7 +248,7 @@ export default function TaskSubmissionsList() {
                                                             </div>
                                                             <div>
                                                                 <div className="text-sm font-bold text-gray-900">
-                                                                    {sub.users?.full_name || 'Unknown Student'}
+                                                                    {sub?.full_name || 'Unknown Student'}
                                                                 </div>
                                                                 <div className="text-xs text-gray-400 flex items-center gap-1 font-mono mt-0.5">
                                                                     <User size={11} />

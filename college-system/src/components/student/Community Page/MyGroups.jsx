@@ -208,7 +208,7 @@ export default function MyGroups() {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '_');
-  const isAdminUser = normalizedRole === 'admin' || normalizedRole === 'super_admin';
+  const isAdminUser = normalizedRole === 'admin' || normalizedRole === 'super_admin' || normalizedRole === 'doctor' || normalizedRole === 'teaching_assistant';
 
   return (
     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">

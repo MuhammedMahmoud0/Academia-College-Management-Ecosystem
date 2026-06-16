@@ -13,7 +13,8 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function CommunityPage() {
   const { isAuthenticated, user } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  console.log('Authenticated:', isAuthenticated, 'User:', user);
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.role === 'doctor' || user?.role === 'teaching_assistant';
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -439,17 +440,17 @@ export default function CommunityPage() {
                   {(studentProfile?.avatar_url || user?.avatar_url || user?.avatar) ? (
                     <img
                       src={studentProfile?.avatar_url || user?.avatar_url || user?.avatar}
-                      alt={studentProfile?.full_name || user?.name || 'User'}
+                      alt={studentProfile?.full_name || user?.full_name || 'User'}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    getInitials(studentProfile?.full_name || user?.name || 'User')
+                    getInitials(studentProfile?.full_name || user?.full_name || 'User')
                   )}
                 </div>
                 <textarea
                   value={newPostContent}
                   onChange={(e) => setNewPostContent(e.target.value)}
-                  placeholder={`What's on your mind, ${studentProfile?.full_name?.split(' ')[0] || user?.name?.split(' ')[0] || 'there'}?`}
+                  placeholder={`What's on your mind, ${studentProfile?.full_name?.split(' ')[0] || user?.full_name || ''}?`}
                   className="flex-1 border-none outline-none text-sm sm:text-base bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg resize-none min-h-[44px] max-h-[200px]"
                   rows={1}
                   onInput={(e) => {

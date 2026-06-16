@@ -172,13 +172,6 @@ export default function UserPosts() {
 						</div>
 					</div>
 				</div>
-				<button
-					onClick={() => fetchPosts(1)}
-					className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-				>
-					<RefreshIcon fontSize="small" />
-					<span className="hidden sm:inline">Refresh</span>
-				</button>
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-5">

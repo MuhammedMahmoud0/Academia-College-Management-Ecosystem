@@ -17,8 +17,8 @@ export default function ProfileCard() {
         if (error?.response?.status !== 403) {
           console.error('Error fetching student profile:', error);
         }
-        if (authUser?.name) {
-          setUser({ studentProfile: { full_name: authUser.name } });
+        if (authUser?.name || authUser?.full_name) {
+          setUser({ studentProfile: { full_name: authUser.name || authUser.full_name } });
         }
       } finally {
         setLoading(false);
@@ -44,19 +44,19 @@ export default function ProfileCard() {
         {(user?.studentProfile?.avatar_url || authUser?.avatar_url || authUser?.avatar) ? (
           <img
             src={user?.studentProfile?.avatar_url || authUser?.avatar_url || authUser?.avatar}
-            alt={user?.studentProfile?.full_name || authUser?.name || 'User'}
+            alt={user?.studentProfile?.full_name || authUser?.full_name || 'User'}
             className="w-full h-full object-cover"
           />
         ) : (
-          getInitials(user?.studentProfile?.full_name || authUser?.name || 'User')
+          getInitials(user?.studentProfile?.full_name || authUser?.full_name || 'User')
         )}
       </div>
       <div className="text-center">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          {loading ? 'Loading...' : user?.studentProfile?.full_name || 'N/A'}
+          {loading ? 'Loading...' : user?.studentProfile?.full_name || authUser?.full_name || 'N/A'}
         </h3>
         <p className="text-xs sm:text-sm text-gray-600 mt-1">
-          {user?.studentProfile?.student_profiles?.departments?.name || 'N/A'}
+          {user?.studentProfile?.student_profiles?.departments?.name || ''}
         </p>
       </div>
     </div>
