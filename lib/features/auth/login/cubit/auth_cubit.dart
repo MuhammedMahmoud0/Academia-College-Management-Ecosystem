@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:college_project/core/constants/constants.dart';
 import 'package:college_project/core/data/local/hive_storage_helper.dart';
 import 'package:college_project/core/data/network/api_client.dart';
@@ -14,10 +12,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial()) {
+    // The ApiClient's 401 interceptor refreshes the access token on demand and
+    // silently retries the failed request. We only need to (a) persist the
+    // refreshed token and (b) surface a logged-out state if the refresh itself
+    // fails — no periodic timer required.
     _apiClient.addTokenRefreshedListener(_persistRefreshedToken);
     _apiClient.onRefreshFailed = () {
       debugPrint('Refresh failed — session expired');
-      _stopRefreshTimer();
       emit(AuthTokenExpired());
     };
   }
@@ -30,12 +31,6 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepo _authRepo = AuthRepo();
   final ApiClient _apiClient = ApiClient();
   final secureStorage = FlutterSecureStorage();
-
-  // Refresh slightly before the 15-min server-side expiry so the access
-  // token is always valid when an in-flight request goes out. The 401
-  // interceptor in ApiClient is the safety net if this ever races.
-  static const Duration _refreshInterval = Duration(minutes: 14);
-  Timer? _refreshTimer;
 
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
@@ -51,7 +46,6 @@ class AuthCubit extends Cubit<AuthState> {
           password: password,
         );
         _apiClient.setToken(loginModel.token!);
-        _startRefreshTimer();
         debugPrint('Login successful');
 
         await getStudentData();
@@ -91,27 +85,6 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  /// Manually refresh the access token via /auth/refresh. The new token is
-  /// persisted by the ApiClient's onTokenRefreshed callback.
-  Future<bool> refreshToken() async {
-    final newToken = await _apiClient.refreshAccessToken();
-    return newToken != null;
-  }
-
-  /// Schedule a refresh of the access token every 15 minutes.
-  void _startRefreshTimer() {
-    _refreshTimer?.cancel();
-    _refreshTimer = Timer.periodic(_refreshInterval, (_) async {
-      final ok = await refreshToken();
-      debugPrint('Scheduled refresh: ${ok ? 'ok' : 'failed'}');
-    });
-  }
-
-  void _stopRefreshTimer() {
-    _refreshTimer?.cancel();
-    _refreshTimer = null;
-  }
-
   /// Try to restore session from stored token
   Future<void> tryAutoLogin() async {
     emit(AuthLoading());
@@ -126,7 +99,6 @@ class AuthCubit extends Cubit<AuthState> {
       // The ApiClient's 401 interceptor will transparently refresh + retry
       // if the stored token has expired.
       await getStudentData(rethrowApiException: true);
-      _startRefreshTimer();
     } on ApiException catch (e) {
       if (e.message.contains('Authentication invalid') || e.statusCode == 401) {
         emit(AuthTokenExpired());
@@ -164,8 +136,8 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
-    _stopRefreshTimer();
     _apiClient.clearToken();
+    await _apiClient.clearCookies();
     await secureStorage.delete(key: 'token');
     await secureStorage.delete(key: 'email');
     await secureStorage.delete(key: 'password');
@@ -179,7 +151,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   @override
   Future<void> close() {
-    _stopRefreshTimer();
     _apiClient.removeTokenRefreshedListener(_persistRefreshedToken);
     _apiClient.onRefreshFailed = null;
     return super.close();

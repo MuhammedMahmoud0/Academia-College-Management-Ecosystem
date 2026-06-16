@@ -28,6 +28,8 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Authenticate to unlock the app and access your account</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to verify attendance</string>
 	<key>NSLocationAlwaysUsageDescription</key>

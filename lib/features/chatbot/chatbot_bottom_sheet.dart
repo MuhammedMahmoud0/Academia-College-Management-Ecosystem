@@ -216,7 +216,7 @@ class _ChatbotSheetState extends State<ChatbotSheet> {
                         )
                       : _buildBody(scrollController),
                 ),
-                _buildInputBar(),
+                //   _buildInputBar(),
               ],
             ),
           ),

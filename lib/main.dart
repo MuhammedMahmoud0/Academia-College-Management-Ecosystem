@@ -28,6 +28,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPrefHelper().init();
   await HiveStorageService.init();
+  // Set up the persistent cookie jar before any request so the refresh-token
+  // cookie is captured at login and resent on /auth/refresh.
+  await ApiClient().initCookieJar();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 

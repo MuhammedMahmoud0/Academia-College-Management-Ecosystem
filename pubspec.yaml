@@ -41,6 +41,8 @@ dependencies:
   flutter_screenutil: ^5.9.3
   intl: ^0.20.2
   dio: ^5.9.2
+  dio_cookie_manager: ^3.1.1
+  cookie_jar: ^4.0.8
   cached_network_image: ^3.4.1
   shared_preferences: ^2.2.2
   image_picker: ^1.0.7
@@ -59,6 +61,7 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   firebase_core: ^4.8.0
   firebase_messaging: ^16.2.2
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +74,20 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   intl_utils: ^2.8.7
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  min_sdk_android: 21
+  adaptive_icon_foreground_inset: 0
+  image_path_android: "assets/logo.png"
+  adaptive_icon_foreground: "assets/logo.png"
+  adaptive_icon_background: "#02061b"
+  ios: true
+  remove_alpha_ios: true
+  image_path_ios: "assets/logo.png"
+  image_path_ios_dark_transparent: "assets/logo.png"
+  background_color_ios: "#02061b"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -83,6 +100,7 @@ flutter:
   uses-material-design: true
   assets:
     - shorebird.yaml
+    - assets/
     - assets/data/chatbot_data.json
   # To add assets to your application, add an assets section, like this:
   # assets:

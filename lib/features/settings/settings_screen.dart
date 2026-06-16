@@ -39,7 +39,9 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildThemeSection(context, context.watch<AppCubit>().isDarkMode),
+
             const SizedBox(height: 32),
+            /*
             Text(
               S.of(context).language,
               style: TextStyle(
@@ -50,11 +52,13 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
+        
             const SizedBox(height: 16),
             _buildLanguageSection(
               context,
               context.watch<AppCubit>().isDarkMode,
             ),
+            */
           ],
         ),
       ),

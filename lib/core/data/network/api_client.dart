@@ -1,10 +1,27 @@
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../constants/endpoints.dart';
 import 'api_exception.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
+
+  /// Main client — carries the bearer access token on every request.
   late final Dio _dio;
+
+  /// Dedicated client for POST /auth/refresh. It deliberately carries NO
+  /// Authorization header: the server authenticates the refresh via the
+  /// httpOnly refresh-token cookie that login set, not the (expired) access
+  /// token. Sending the expired token here makes the server reject the refresh.
+  late final Dio _refreshDio;
+
+  /// Shared, disk-backed cookie store so the refresh-token cookie survives
+  /// app restarts (the refresh token typically lives far longer than the
+  /// short-lived access token). Set up lazily in [initCookieJar].
+  PersistCookieJar? _cookieJar;
 
   /// Multi-listener token-refresh callbacks. Register via
   /// [addTokenRefreshedListener] so several subsystems (auth persistence,
@@ -34,17 +51,20 @@ class ApiClient {
   factory ApiClient() => _instance;
 
   ApiClient._internal() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: Endpoints.baseUrl,
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
+    BaseOptions buildOptions() => BaseOptions(
+      baseUrl: Endpoints.baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
+
+    // Separate BaseOptions per client so setToken() on the main client never
+    // leaks an Authorization header onto the refresh client.
+    _dio = Dio(buildOptions());
+    _refreshDio = Dio(buildOptions());
 
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -78,6 +98,28 @@ class ApiClient {
     );
   }
 
+  /// Sets up the disk-backed cookie jar and wires it into both clients so the
+  /// login `Set-Cookie` (refresh token) is stored and resent automatically.
+  /// Must be awaited once on startup, before the first request.
+  Future<void> initCookieJar() async {
+    if (_cookieJar != null) return;
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      _cookieJar = PersistCookieJar(
+        storage: FileStorage('${dir.path}/.cookies/'),
+      );
+      _dio.interceptors.add(CookieManager(_cookieJar!));
+      _refreshDio.interceptors.add(CookieManager(_cookieJar!));
+    } catch (e) {
+      debugPrint('Cookie jar init failed: $e');
+    }
+  }
+
+  /// Clear stored cookies (call on logout so the refresh token can't be reused).
+  Future<void> clearCookies() async {
+    await _cookieJar?.deleteAll();
+  }
+
   /// Calls /auth/refresh, dedupes concurrent callers via a shared future.
   Future<String?> _refreshAccessToken() {
     return _refreshFuture ??= _doRefresh().whenComplete(() {
@@ -86,9 +128,14 @@ class ApiClient {
   }
 
   Future<String?> _doRefresh() async {
+    debugPrint('Refresh token...');
     try {
-      final response = await _dio.post(Endpoints.refreshToken);
-      final newToken = response.data is Map ? response.data['accessToken'] : null;
+      // Use the tokenless client: the server authenticates this via the
+      // refresh-token cookie, not the expired access token.
+      final response = await _refreshDio.post(Endpoints.refreshToken);
+      final newToken = response.data is Map
+          ? response.data['accessToken']
+          : null;
       if (newToken is String && newToken.isNotEmpty) {
         setToken(newToken);
         for (final cb in List.of(_tokenRefreshedListeners)) {
@@ -103,9 +150,6 @@ class ApiClient {
       return null;
     }
   }
-
-  /// Manually trigger a refresh (used by the periodic 15-min timer).
-  Future<String?> refreshAccessToken() => _refreshAccessToken();
 
   /// Set authorization token
   void setToken(String token) {
