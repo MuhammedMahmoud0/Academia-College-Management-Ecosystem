@@ -117,7 +117,7 @@ const AdminPaymentPage = () => {
   return (
     <div className="max-w-8xl px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50 rounded-xl">
       <div>
-         <h1 className="text-3xl font-bold text-slate-900 mb-6">Payment Management</h1>
+         <h1 className="text-3xl font-bold text-slate-900 mb-6">Payment Reports</h1>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <PaymentStatsCard
