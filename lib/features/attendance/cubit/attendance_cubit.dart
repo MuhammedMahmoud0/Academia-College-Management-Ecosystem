@@ -62,13 +62,9 @@ class AttendanceCubit extends Cubit<AttendanceStates> {
         final distanceInMeters = Geolocator.distanceBetween(
           position.latitude,
           position.longitude,
-          // for testing
-          position.latitude,
-          position.longitude,
-          /*
+
           session.latitude ?? 0.0,
           session.longitude ?? 0.0,
-          */
         );
 
         if (distanceInMeters > Constants.availableMeters) {
