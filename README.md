@@ -10,76 +10,19 @@ A cross-platform student portal that brings the entire campus experience — gra
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.8+-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.8+-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![State](https://img.shields.io/badge/State-flutter__bloc-13B9FD)](https://bloclibrary.dev)
-[![Architecture](https://img.shields.io/badge/Architecture-Feature--First-6E40C9)](#-architecture)
+[![State Management](https://img.shields.io/badge/State-flutter__bloc-13B9FD)](https://bloclibrary.dev)
 [![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Desktop-555)](#-platform-support)
-[![i18n](https://img.shields.io/badge/i18n-EN%20%7C%20AR%20(RTL)-success)](#-localization)
 [![License](https://img.shields.io/badge/License-Unspecified-lightgrey)](#-license)
 
-<a href="#-getting-started"><b>Getting Started</b></a> ·
-<a href="#-features"><b>Features</b></a> ·
-<a href="#-architecture"><b>Architecture</b></a> ·
-<a href="#-screenshots"><b>Screenshots</b></a> ·
-<a href="#-roadmap"><b>Roadmap</b></a>
-
 </div>
-
----
-
-## ⭐ Highlights
-
-- 🎯 **17 self-contained features** built on a clean, scalable **feature-first** architecture (`Screen → Cubit → Repo → ApiClient`).
-- 🔐 **Production-grade auth** — JWT access tokens with silent refresh, persistent refresh-token cookie, and a **biometric app lock**.
-- 🔔 **Dual-channel real-time notifications** — Socket.IO live events **and** Firebase Cloud Messaging push, unified into system-tray notifications.
-- 🌍 **Fully localized** — English & Arabic with automatic **RTL** layout, switchable at runtime.
-- 🌓 **Material 3** design with persisted **light/dark** themes and responsive sizing on every screen.
-- 💳 **Real integrations** — Paymob online payments, QR attendance scanning, in-app PDF viewing, and a campus FAQ assistant.
-- 🧩 **~25K lines of Dart** organized for readability and testability across 6 platforms.
 
 ---
 
 ## 📖 Overview
 
-**Academia** is a feature-rich mobile application that acts as a digital companion for university students. It connects to a dedicated backend (the College System API) and lets students manage their entire academic life from one place: viewing grades and GPA, registering for courses, checking exam timetables, scanning attendance QR codes, paying invoices, browsing study materials, chatting with a campus FAQ assistant, and engaging with the student community — wrapped in a polished, responsive UI with full **dark mode** and **English / Arabic (RTL)** support.
+**Academia** is a feature-rich mobile application that acts as a digital companion for university students. It connects to a dedicated backend (the College System API) and lets students manage their entire academic life from one place: viewing grades and GPA, registering for courses, checking exam timetables, scanning attendance QR codes, paying invoices, browsing study materials, chatting with a campus FAQ assistant, and engaging with the student community — all wrapped in a polished, responsive UI with full **dark mode** and **English / Arabic (RTL)** support.
 
-> Originally built as a graduation project, Academia demonstrates a clean, scalable architecture backed by real-time notifications, biometric security, and a robust networking layer.
-
----
-
-## 📊 Project Statistics
-
-> Derived directly from the codebase.
-
-| Metric | Value | Metric | Value |
-| --- | :---: | --- | :---: |
-| Dart source files | **169** | Feature modules | **17** |
-| Lines of Dart (excl. generated) | **~25,300** | Cubits (state) | **20** |
-| Repositories | **17** | Data models | **26** |
-| Screens | **23** | Feature widgets | **38** |
-| API endpoints | **44** | App routes | **18** |
-| Production packages | **25+** | Languages | **EN · AR** |
-
----
-
-## 🖼️ Screenshots
-
-> _Add your screenshots here — replace the placeholders below._
-
-<div align="center">
-
-| Home | Courses & Grades | Schedule | Community |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/home.png" width="180"/> | <img src="docs/screenshots/courses.png" width="180"/> | <img src="docs/screenshots/schedule.png" width="180"/> | <img src="docs/screenshots/community.png" width="180"/> |
-| **Digital ID** | **Attendance (QR)** | **Payments** | **Dark Mode** |
-| <img src="docs/screenshots/id.png" width="180"/> | <img src="docs/screenshots/attendance.png" width="180"/> | <img src="docs/screenshots/payments.png" width="180"/> | <img src="docs/screenshots/dark.png" width="180"/> |
-
-</div>
-
-### 🎬 Demo
-
-| Animated walkthrough | Full video |
-| :---: | :---: |
-| <img src="docs/demo/demo.gif" width="240" alt="Demo GIF placeholder"/> | [▶️ Watch the demo video](#) _(add link)_ |
+> Originally built as a graduation project, the app demonstrates a clean, scalable, feature-first architecture backed by real-time notifications, biometric security, and a production-grade networking layer.
 
 ---
 
@@ -87,71 +30,33 @@ A cross-platform student portal that brings the entire campus experience — gra
 
 | Area | What it does |
 | --- | --- |
-| 🔐 **Authentication** | Email/password login with JWT access tokens and an HTTP-only refresh-token cookie; sessions restored on launch and silently refreshed on `401`. |
-| 🧬 **Biometric App Lock** | Returning sessions are gated behind device biometrics (fingerprint / Face ID) or passcode via `local_auth`. |
-| 🏠 **Home Dashboard** | Profile card, quick actions, recent grades, upcoming exams, attendance, tasks, payments and notification previews. |
-| 📚 **Courses & Grades** | Enrolled courses, per-course grade breakdowns and a GPA summary. |
-| ➕ **Course Registration** | Available offerings, course & lab registration, group selection, and course drop with a live registered-courses table. |
+| 🔐 **Authentication** | Email/password login with JWT access tokens and an HTTP-only refresh-token cookie. Sessions are restored automatically on launch and silently refreshed on `401`. |
+| 🧬 **Biometric App Lock** | On returning sessions, the app is gated behind device biometrics (fingerprint / Face ID) or the device passcode via `local_auth`. |
+| 🏠 **Home Dashboard** | At-a-glance profile card, quick actions, recent grades, upcoming exams, attendance, tasks, payments and notification previews. |
+| 📚 **Courses & Grades** | Browse enrolled courses, per-course grade breakdowns and a GPA summary. |
+| ➕ **Course Registration** | View available offerings, register for courses and labs, pick groups, and drop courses — with a live registered-courses table. |
 | 📝 **Exams Dashboard** | Filterable exam schedule with detailed exam cards. |
-| 🗓️ **Class Schedule** | Weekly timetable in both grid and list views. |
+| 🗓️ **Class Schedule** | Weekly timetable rendered as both a grid view and a list view. |
 | 📄 **Study Materials** | Searchable material library with in-app PDF viewing and downloads. |
-| 🪪 **Digital Student ID** | Digital ID card (front/back) with a privileges table and QR code. |
-| ✅ **Attendance** | Scan session QR codes to mark attendance; view active sessions and history. |
-| 💳 **Payments** | Invoices and outstanding balances, paid online via embedded Paymob checkout. |
-| 🏆 **Leaderboard** | Student ranking for a gamified, competitive layer. |
+| 🪪 **Digital Student ID** | A digital ID card (front/back) with privileges table and QR code. |
+| ✅ **Attendance** | Scan session QR codes to mark attendance, view active sessions and full attendance history. |
+| 💳 **Payments** | View invoices and outstanding balances and pay online through an embedded Paymob checkout. |
+| 🏆 **Leaderboard** | Ranks students to add a gamified, competitive layer. |
 | 👥 **Community** | Social feed with posts, likes and comments, plus suggested/your study groups. |
 | 🗂️ **Tasks** | View available tasks and submit assignments. |
-| 🤖 **Chatbot / FAQ** | Category-based campus FAQ assistant. |
-| 🔔 **Notifications** | Real-time via Socket.IO + Firebase Cloud Messaging, surfaced as system-tray notifications with an unread badge. |
-| ⚙️ **Settings** | Theme toggle, language switch, edit profile, change password and logout. |
+| 🤖 **Chatbot / FAQ** | Category-based campus FAQ assistant (e.g. admissions, registration). |
+| 🔔 **Notifications** | Real-time delivery via **Socket.IO** + **Firebase Cloud Messaging** push, surfaced through system-tray local notifications with an unread badge. |
+| ⚙️ **Settings** | Toggle theme, switch language, edit profile, change password and log out. |
 
 ---
 
 ## 🏗️ Architecture
 
-A **feature-first** layout with a clear split between a shared **core** layer and self-contained **features**. Each feature owns its UI, state, models and data access, and follows the same flow:
-
-```
-Screen  →  Cubit (state)  →  Repository (data)  →  ApiClient (network)
-```
-
-```mermaid
-graph TD
-    subgraph UI["🎨 Presentation"]
-        S[Screens & Widgets]
-    end
-    subgraph STATE["🧠 State — flutter_bloc"]
-        C[Cubits + States]
-    end
-    subgraph DATA["🗄️ Data"]
-        R[Repositories]
-        API[ApiClient · Dio]
-        LOCAL[(Hive · SecureStorage · Prefs)]
-    end
-    subgraph EXT["☁️ External"]
-        BE[College System REST API]
-        WS[Socket.IO]
-        FCM[Firebase Cloud Messaging]
-        PAY[Paymob]
-    end
-
-    S -->|user intent| C
-    C -->|calls| R
-    C -->|reads/writes| LOCAL
-    R --> API
-    API -->|HTTPS + JWT| BE
-    C -. realtime .- WS
-    FCM -.->|push| S
-    API -.->|checkout| PAY
-    BE --> WS
-```
-
-<details>
-<summary><b>📁 Directory layout</b></summary>
+The project follows a **feature-first** layout with a clean separation between the shared **core** layer and self-contained **features**. Each feature owns its own UI, state, models and data access.
 
 ```
 lib/
-├── main.dart                 # Bootstrap: Firebase, FCM, notifications, cookie jar
+├── main.dart                 # App bootstrap: Firebase, FCM, notifications, cookie jar
 ├── firebase_options.dart     # Generated FlutterFire config
 │
 ├── core/                     # Cross-cutting infrastructure
@@ -166,83 +71,36 @@ lib/
 │   ├── utils/                # Shared components
 │   └── widgets/              # Reusable widgets
 │
-├── features/                 # One folder per feature (17 total)
+├── features/                 # One folder per feature
 │   └── <feature>/
-│       ├── cubit/            # Cubit + states
+│       ├── cubit/            # Cubit + states (flutter_bloc)
 │       ├── models/           # Data models
 │       ├── repo/             # Repository (talks to ApiClient)
 │       ├── widgets/          # Feature-specific widgets
 │       └── <feature>_screen.dart
 │
-├── layout/                   # Bottom-nav shell (Home/Courses/Register/Exams/Profile)
+├── layout/                   # Bottom-nav shell (Home / Courses / Register / Exams / Profile)
 └── generated/                # Localization (intl) generated code
 ```
 
-</details>
+**Per-feature pattern:** `Screen → Cubit (state) → Repo (data) → ApiClient (network)`. This keeps UI declarative, business logic testable, and networking centralized.
 
----
+### Networking layer
 
-## 🔄 Application Flow
+A single, well-documented `ApiClient` (Dio) singleton powers all HTTP traffic:
 
-Startup, biometric gate, session restore, and the auto-refresh path:
+- **Two Dio instances** — a main authenticated client and a dedicated, token-less client used only for `/auth/refresh`.
+- **Automatic token refresh** — an interceptor catches `401`s, refreshes the access token once, and transparently retries the original request (with concurrent-refresh de-duplication).
+- **Persistent cookie jar** — the refresh-token cookie is stored on disk (`PersistCookieJar`) so sessions survive app restarts.
+- **Typed errors** via `ApiException`, and a `uploadFile` helper for multipart uploads.
 
-```mermaid
-flowchart TD
-    A([App launch]) --> B[Init: Prefs · Hive · Cookie Jar · Firebase · Notifications]
-    B --> C{Valid token<br/>& not expired?}
-    C -- No --> L[Login Screen]
-    C -- Yes --> D[🔐 Biometric / passcode]
-    D -- Failed --> K[Show 'Unlock' button]
-    K --> D
-    D -- Passed --> E[Auto-login → fetch profile]
-    L -->|credentials| E
-    E --> F[Home Layout]
-    F --> G[Open Socket.IO + FCM streams]
+### Real-time notifications
 
-    F --> H[Authenticated API call]
-    H --> I{Response 401?}
-    I -- No --> F
-    I -- Yes --> J[Refresh token via cookie]
-    J -- Success --> H
-    J -- Fail --> L
-```
+`main.dart` wires up a robust notification pipeline:
 
----
-
-## ☁️ Backend Overview
-
-Academia is the **client**; it talks to a separate **College System** backend (not included in this repo). The contract the app relies on:
-
-- **REST API** under `…/api/v1` consumed through a single typed `ApiClient` — **44** endpoints spanning auth, profile, courses, registration, exams, schedule, materials, attendance, payments, community, tasks and notifications.
-- **Auth model** — `POST /auth/login` issues a JWT **access token** plus an HTTP-only **refresh-token cookie**; `POST /auth/refresh` mints new access tokens using only the cookie.
-- **Realtime** — a **Socket.IO** server on the default namespace; JWT is passed via the auth map. Server emits `new-notification` and `unread-count`; clients are auto-joined to their own room.
-- **Push** — **Firebase Cloud Messaging**; the app registers its device token via `/notifications/register-device`.
-- **Payments** — Paymob order creation (`/payments/invoices/paymob-order`) completed inside an in-app WebView.
-
-> Swap deployments by editing the URLs in [`lib/core/constants/endpoints.dart`](lib/core/constants/endpoints.dart).
-
----
-
-## 🔒 Security
-
-- **Token storage** — access token and expiry kept in `flutter_secure_storage` (Keychain / Keystore), never in plain prefs.
-- **Refresh-token cookie** — held in a disk-backed `PersistCookieJar` and **cleared on logout** so it can't be replayed.
-- **Token-less refresh client** — a dedicated Dio instance handles `/auth/refresh` and never leaks the expired `Authorization` header.
-- **Biometric gate** — app access is protected by device biometrics / passcode, with a graceful fallback when no lock is enrolled.
-- **Transport** — all traffic over HTTPS with bearer-token authorization.
-- **Single-retry refresh** — `401`s trigger exactly one refresh-and-retry with concurrent-request de-duplication, preventing refresh storms.
-
----
-
-## ⚡ Performance
-
-- **`IndexedStack` shell** keeps the five primary tabs alive, preserving scroll position and avoiding rebuild cost on tab switch.
-- **Connection de-duplication** — concurrent token refreshes share a single in-flight future; Socket.IO reuses an existing live connection.
-- **Image caching** via `cached_network_image` to cut redundant network fetches.
-- **Local-first data** — Hive + SharedPreferences cache settings and data for instant cold starts.
-- **WebSocket-only transport** for Socket.IO (no long-polling fallback) for lower-latency events.
-- **Responsive layouts** with `flutter_screenutil` against a `390×844` baseline for consistent rendering across screen sizes.
-- **Over-the-air updates** ready via Shorebird code push (`shorebird.yaml`).
+- **Socket.IO** (`WebSocketService`) streams `new-notification` and `unread-count` events, authenticating over a JWT auth map.
+- **Firebase Cloud Messaging** handles foreground, background (top-level isolate handler) and cold-start taps.
+- **flutter_local_notifications** renders system-tray notifications for data-only payloads on every path.
 
 ---
 
@@ -255,8 +113,8 @@ Academia is the **client**; it talks to a separate **College System** backend (n
 | **Navigation** | `go_router` |
 | **Networking** | `dio`, `dio_cookie_manager`, `cookie_jar` |
 | **Local storage** | `hive` / `hive_flutter`, `shared_preferences`, `flutter_secure_storage` |
-| **Responsive UI** | `flutter_screenutil` |
-| **Localization** | `flutter_localizations`, `intl`, `intl_utils` |
+| **Responsive UI** | `flutter_screenutil` (390×844 design baseline) |
+| **Localization** | `flutter_localizations`, `intl`, `intl_utils` (EN + AR) |
 | **Notifications** | `firebase_core`, `firebase_messaging`, `flutter_local_notifications`, `socket_io_client` |
 | **Media & files** | `cached_network_image`, `image_picker`, `flutter_cached_pdfview`, `url_launcher` |
 | **Device features** | `mobile_scanner` (QR), `geolocator`, `local_auth`, `webview_flutter` |
@@ -269,65 +127,74 @@ Academia is the **client**; it talks to a separate **College System** backend (n
 
 ### Prerequisites
 
-- **Flutter SDK** 3.8+ ([install guide](https://docs.flutter.dev/get-started/install)) · **Dart** 3.8+ (bundled)
-- VS Code / Android Studio with the Flutter & Dart plugins
-- Android SDK (min SDK **21**) and/or Xcode for mobile builds
+- **Flutter SDK** 3.8 or newer ([install guide](https://docs.flutter.dev/get-started/install))
+- **Dart** 3.8+ (bundled with Flutter)
+- A configured editor (VS Code / Android Studio) with the Flutter & Dart plugins
+- For mobile builds: Android SDK (min SDK **21**) and/or Xcode
 
 ### Installation
 
 ```bash
-# 1. Clone
+# 1. Clone the repository
 git clone <your-repo-url>
 cd college_project
 
 # 2. Install dependencies
 flutter pub get
 
-# 3. Regenerate code (after model/Hive or localization changes)
+# 3. (If you change models/Hive types or localization) regenerate code
 dart run build_runner build --delete-conflicting-outputs
 flutter pub run intl_utils:generate
 
-# 4. Run
+# 4. Run the app
 flutter run
 ```
 
 ### Firebase setup
 
-A generated `lib/firebase_options.dart` is included; for your own project:
+The app uses Firebase Cloud Messaging. A generated `lib/firebase_options.dart` is included, but for your own backend you should configure your own Firebase project:
 
 ```bash
 dart pub global activate flutterfire_cli
 flutterfire configure
 ```
 
-This regenerates `firebase_options.dart` and platform config (`google-services.json` / `GoogleService-Info.plist`).
+This regenerates `firebase_options.dart` and the platform config files (`google-services.json` / `GoogleService-Info.plist`).
 
 ### Backend configuration
 
-Point the URLs in [`lib/core/constants/endpoints.dart`](lib/core/constants/endpoints.dart) at your own deployment:
+API base URLs live in [`lib/core/constants/endpoints.dart`](lib/core/constants/endpoints.dart):
 
 ```dart
 static const String baseUrl =
     "https://college-system-backend.onrender.com/api/v1";
+
 static const String notificationsSocketIO =
     "https://college-system-backend.onrender.com";
 ```
+
+Point these at your own deployment of the College System backend to run against a different server.
 
 ---
 
 ## 🌍 Localization
 
-- Ships with **English** and **Arabic** (`lib/l10n/intl_en.arb`, `intl_ar.arb`).
-- Arabic enables full **RTL** automatically; language is persisted and switchable at runtime.
-- Add/edit strings in the `.arb` files, then run `flutter pub run intl_utils:generate`.
+The app ships with **English** and **Arabic** translations defined in `lib/l10n/intl_en.arb` and `lib/l10n/intl_ar.arb`. Arabic enables full **RTL** layout automatically. The active language is persisted via `SharedPreferences` and can be switched at runtime from Settings.
+
+To add or edit strings, update the `.arb` files and regenerate:
+
+```bash
+flutter pub run intl_utils:generate
+```
 
 ---
 
 ## 🎨 Theming
 
-- **Material 3** with a seeded color scheme from the brand primary color.
-- **Light & dark** themes with custom surfaces, persisted and toggled at runtime via `AppCubit`.
-- **Poppins** global font; responsive sizing via `flutter_screenutil`.
+- **Material 3** with a seeded color scheme derived from the brand primary color.
+- **Light & dark themes** with custom surfaces; the choice is persisted and toggled at runtime via `AppCubit`.
+- **Poppins** as the global font family.
+- Responsive sizing through `flutter_screenutil` against a `390×844` design baseline.
 
 ---
 
@@ -337,10 +204,10 @@ static const String notificationsSocketIO =
 | --- | --- |
 | Android | ✅ Primary target (min SDK 21, app label **Academia**) |
 | iOS | ✅ Supported |
-| Web | ✅ Configured |
-| Windows / macOS / Linux | ✅ Configured |
+| Web | ✅ Project configured |
+| Windows / macOS / Linux | ✅ Project configured |
 
-> Mobile is the primary target — biometric lock, QR scanning, push notifications and camera features shine there.
+> Mobile (Android/iOS) is the primary target; biometric lock, QR scanning, push notifications and camera features are best experienced there.
 
 ---
 
@@ -348,43 +215,45 @@ static const String notificationsSocketIO =
 
 ```bash
 flutter pub get                  # Fetch dependencies
-flutter run                      # Run on device/emulator
+flutter run                      # Run on a connected device/emulator
 flutter analyze                  # Static analysis / lints
 flutter test                     # Run tests
-flutter build apk --release      # Android APK
-flutter build appbundle          # Android App Bundle
-flutter build ios                # iOS (on macOS)
-dart run build_runner build --delete-conflicting-outputs   # Codegen
+flutter build apk --release      # Build Android APK
+flutter build appbundle          # Build Android App Bundle
+flutter build ios                # Build iOS (on macOS)
+dart run build_runner build --delete-conflicting-outputs   # Codegen (Hive, etc.)
 ```
 
 ---
 
-## 🗺️ Roadmap
+## 📂 Project Structure (top level)
 
-- [ ] Add a `LICENSE` file to clarify usage rights
-- [ ] Set a production `applicationId` (currently `com.example.college_project`)
-- [ ] Capture and embed real screenshots, demo GIF and video
-- [ ] Widget & unit test coverage for cubits and repositories
-- [ ] CI pipeline (`flutter analyze` + `flutter test`) on pull requests
-- [ ] Wire FCM `onTokenRefresh` to the device-registration endpoint
-- [ ] Offline-first caching for grades and schedule
-
-> Contributions toward any roadmap item are welcome.
+```
+college_project/
+├── lib/                # Application source (see Architecture above)
+├── assets/             # Logo, data (chatbot FAQ JSON)
+├── android/ ios/ web/  # Platform projects
+├── windows/ macos/ linux/
+├── pubspec.yaml        # Dependencies & asset declarations
+└── shorebird.yaml      # Code-push (Shorebird) configuration
+```
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork and create a feature branch.
-2. Follow the **feature-first** structure (`screen → cubit → repo → ApiClient`).
+Contributions are welcome! To propose a change:
+
+1. Fork the repository and create a feature branch.
+2. Follow the existing **feature-first** structure (`screen → cubit → repo → ApiClient`).
 3. Run `flutter analyze` and ensure the app builds before opening a PR.
-4. Keep user-facing strings in the `.arb` files (no hard-coded text).
+4. Keep UI strings in the `.arb` localization files (no hard-coded user-facing text).
 
 ---
 
 ## 📜 License
 
-No license file is currently included. To open-source the project, add a `LICENSE` (e.g. MIT) to clarify usage rights.
+No license file is currently included in this repository. If you intend to open-source the project, add a `LICENSE` file (for example, MIT) to clarify usage rights.
 
 ---
 
