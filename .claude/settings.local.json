@@ -11,7 +11,8 @@
       "Bash(ls README*)",
       "Bash(ls lib/l10n)",
       "Bash(ls *.arb)",
-      "Bash(find . -name \"*.arb\" -not -path \"*/build/*\")"
+      "Bash(find . -name \"*.arb\" -not -path \"*/build/*\")",
+      "Bash(xargs cat)"
     ]
   }
 }
