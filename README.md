@@ -31,7 +31,9 @@ _A modern full-stack college management ecosystem integrating a web dashboard, b
 
 <br>
 
-## Table of Contents
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=TABLE+OF+CONTENTS" width="450"/>
+
+---
 
 - [Overview](#overview)
 - [Features](#features)
