@@ -1,0 +1,595 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model announcements {
+  id         Int           @id @default(autoincrement())
+  author_id  String        @db.Uuid
+  title      String
+  content    String
+  audience   audience_type @default(All)
+  publish_at DateTime?     @default(now()) @db.Timestamptz(6)
+  expire_at  DateTime?     @db.Timestamptz(6)
+  users      users         @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([audience, publish_at], map: "idx_announcements_audience_publish_at")
+}
+
+model academic_calendar {
+  id                 Int                          @id @default(autoincrement())
+  event_name         String
+  event_type         academic_calendar_event_type
+  event_date         DateTime                     @db.Date
+  end_date           DateTime?                    @db.Date
+  description        String?
+  semester           String?
+  academic_year      String?
+  created_at         DateTime?                    @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?                    @updatedAt @db.Timestamptz(6)
+  created_by_user_id String?                      @db.Uuid
+  users              users?                       @relation(fields: [created_by_user_id], references: [id], onUpdate: NoAction)
+
+  @@index([event_date])
+  @@index([event_type])
+  @@index([semester])
+  @@index([event_type, academic_year, event_date], map: "idx_academic_calendar_event_type_academic_year_event_date")
+  @@index([event_type, semester, event_date], map: "idx_academic_calendar_event_type_semester_event_date")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model attendance {
+  id              Int             @id @default(autoincrement())
+  student_user_id String          @db.Uuid
+  lecture_id      Int?
+  tutorial_lab_id Int?
+  session_date    DateTime        @db.Date
+  status          String
+  lectures        lectures?       @relation(fields: [lecture_id], references: [lecture_id], onDelete: NoAction, onUpdate: NoAction)
+  users           users           @relation(fields: [student_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tutorials_labs  tutorials_labs? @relation(fields: [tutorial_lab_id], references: [tutorial_lab_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model community_groups {
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String?
+  avatar_url      String?
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  community_posts community_posts[]
+  group_members   group_members[]
+}
+
+model group_members {
+  group_id         Int
+  user_id          String           @db.Uuid
+  joined_at        DateTime?        @default(now()) @db.Timestamptz(6)
+  community_groups community_groups @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users            users            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([group_id, user_id])
+  @@index([user_id])
+  @@index([group_id])
+  @@index([user_id, joined_at], map: "idx_group_members_user_id_joined_at")
+}
+
+model community_posts {
+  id               Int               @id @default(autoincrement())
+  author_id        String            @db.Uuid
+  content          String
+  image_url        String?
+  is_pinned        Boolean?          @default(false)
+  created_at       DateTime?         @default(now()) @db.Timestamptz(6)
+  group_id         Int?
+  users            users             @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  community_groups community_groups? @relation(fields: [group_id], references: [id], onUpdate: NoAction)
+  post_comments    post_comments[]
+  post_likes       post_likes[]
+
+  @@index([author_id])
+  @@index([group_id])
+  @@index([created_at])
+  @@index([author_id, created_at], map: "idx_community_posts_author_id_created_at")
+  @@index([group_id, created_at], map: "idx_community_posts_group_id_created_at")
+}
+
+model post_comments {
+  id              Int             @id @default(autoincrement())
+  post_id         Int
+  author_id       String          @db.Uuid
+  content         String
+  created_at      DateTime?       @default(now()) @db.Timestamptz(6)
+  users           users           @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  community_posts community_posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([post_id])
+  @@index([author_id])
+  @@index([created_at])
+  @@index([post_id, created_at], map: "idx_post_comments_post_id_created_at")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model course_materials {
+  id              Int             @id @default(autoincrement())
+  lecture_id      Int?
+  tutorial_lab_id Int?
+  title           String
+  url             String?
+  file_id         String?         @db.Uuid
+  uploaded_at     DateTime?       @default(now()) @db.Timestamptz(6)
+  files           files?          @relation(fields: [file_id], references: [file_id], onDelete: NoAction, onUpdate: NoAction)
+  lectures        lectures?       @relation(fields: [lecture_id], references: [lecture_id], onDelete: NoAction, onUpdate: NoAction)
+  tutorials_labs  tutorials_labs? @relation(fields: [tutorial_lab_id], references: [tutorial_lab_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([lecture_id, uploaded_at], map: "idx_course_materials_lecture_id_uploaded_at")
+  @@index([tutorial_lab_id, uploaded_at], map: "idx_course_materials_tutorial_lab_id_uploaded_at")
+}
+
+model course_offerings {
+  offering_id    Int              @id @default(autoincrement())
+  course_code    String
+  year           Int
+  semester       semester_type
+  courses        courses          @relation(fields: [course_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  exams          exams[]
+  lectures       lectures[]
+  tutorials_labs tutorials_labs[]
+
+  @@index([course_code], map: "idx_course_offerings_course_code")
+  @@index([semester, course_code], map: "idx_course_offerings_semester_course_code")
+  @@index([semester, year], map: "idx_course_offerings_semester_year")
+}
+
+model course_prerequisites {
+  course_code                                             String
+  prerequisite_code                                       String
+  courses_course_prerequisites_course_codeTocourses       courses @relation("course_prerequisites_course_codeTocourses", fields: [course_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  courses_course_prerequisites_prerequisite_codeTocourses courses @relation("course_prerequisites_prerequisite_codeTocourses", fields: [prerequisite_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([course_code, prerequisite_code])
+}
+
+model courses {
+  code                                                                 String                 @id
+  name                                                                 String
+  credits                                                              Int
+  department_id                                                        String                 @db.Uuid
+  course_offerings                                                     course_offerings[]
+  course_prerequisites_course_prerequisites_course_codeTocourses       course_prerequisites[] @relation("course_prerequisites_course_codeTocourses")
+  course_prerequisites_course_prerequisites_prerequisite_codeTocourses course_prerequisites[] @relation("course_prerequisites_prerequisite_codeTocourses")
+  departments                                                          departments            @relation(fields: [department_id], references: [department_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([department_id], map: "idx_courses_department_id")
+}
+
+model departments {
+  department_id    String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String             @unique
+  courses          courses[]
+  financials       financials?
+  student_profiles student_profiles[]
+}
+
+model enrollments {
+  student_user_id String            @db.Uuid
+  lecture_id      Int
+  tutorial_lab_id Int?
+  mid_score       Float?
+  work_score      Float?
+  final_score     Float?
+  grade           String?
+  status          enrollment_status @default(enrolled)
+  id              Int               @id @default(autoincrement())
+  lectures        lectures          @relation(fields: [lecture_id], references: [lecture_id], onDelete: NoAction, onUpdate: NoAction)
+  users           users             @relation(fields: [student_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tutorials_labs  tutorials_labs?   @relation(fields: [tutorial_lab_id], references: [tutorial_lab_id], onDelete: NoAction, onUpdate: NoAction)
+  invoices        invoices?
+
+  @@unique([student_user_id, lecture_id])
+  @@index([lecture_id, status], map: "idx_enrollments_lecture_id_status")
+  @@index([student_user_id, status], map: "idx_enrollments_student_user_id_status")
+  @@index([tutorial_lab_id, status], map: "idx_enrollments_tutorial_lab_id_status")
+}
+
+model events {
+  id          Int     @id @default(autoincrement())
+  title       String
+  event_date  String
+  time        String?
+  location    String?
+  img_url     String?
+  link        String?
+  description String?
+
+  @@index([event_date])
+}
+
+model exams {
+  exam_id          Int              @id @default(autoincrement())
+  offering_id      Int
+  exam_type        String
+  exam_date        DateTime         @db.Date
+  day_of_week      String
+  start_time       DateTime         @db.Time(6)
+  end_time         DateTime         @db.Time(6)
+  location         String?
+  course_offerings course_offerings @relation(fields: [offering_id], references: [offering_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([exam_date, start_time], map: "idx_exams_exam_date_start_time")
+  @@index([offering_id], map: "idx_exams_offering_id")
+}
+
+model files {
+  file_id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  file_name           String
+  file_path           String             @unique
+  media_type          String?
+  size_bytes          BigInt?
+  uploaded_by_user_id String             @db.Uuid
+  created_at          DateTime?          @default(now()) @db.Timestamptz(6)
+  course_materials    course_materials[]
+  users               users              @relation(fields: [uploaded_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model financials {
+  id            Int         @id @default(autoincrement())
+  department_id String      @unique @db.Uuid
+  credit_price  Decimal     @db.Decimal
+  departments   departments @relation(fields: [department_id], references: [department_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model invoices {
+  id              Int            @id @default(autoincrement())
+  student_user_id String         @db.Uuid
+  enrollment_id   Int?           @unique
+  course_code     String
+  semester        semester_type
+  year            Int
+  credit_hours    Int
+  credit_price    Decimal        @db.Decimal
+  total_amount    Decimal        @db.Decimal
+  status          payment_status @default(pending)
+  paypal_order_id String?
+  payment_date    DateTime?      @db.Timestamptz(6)
+  created_at      DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?      @updatedAt @db.Timestamptz(6)
+  enrollments     enrollments?   @relation(fields: [enrollment_id], references: [id], onUpdate: NoAction)
+  users           users          @relation(fields: [student_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  payments        payments[]
+
+  @@index([student_user_id])
+  @@index([semester, year])
+  @@index([status])
+  @@index([paypal_order_id])
+}
+
+model payments {
+  id             Int             @id @default(autoincrement())
+  invoice_id     Int
+  gateway        payment_gateway
+  transaction_id String
+  amount         Decimal         @db.Decimal
+  status         payment_status
+  created_at     DateTime?       @default(now()) @db.Timestamptz(6)
+  invoices       invoices        @relation(fields: [invoice_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([gateway, transaction_id])
+  @@index([invoice_id])
+  @@index([status])
+}
+
+model student_payments {
+  id              Int             @id @default(autoincrement())
+  student_user_id String          @db.Uuid
+  semester        semester_type
+  year            Int
+  total_amount    Decimal         @db.Decimal
+  invoice_count   Int
+  gateway         payment_gateway
+  transaction_id  String
+  paid_at         DateTime        @db.Timestamptz(6)
+  created_at      DateTime?       @default(now()) @db.Timestamptz(6)
+  users           users           @relation(fields: [student_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([student_user_id, semester, year])
+  @@unique([gateway, transaction_id])
+  @@index([student_user_id])
+  @@index([semester, year])
+  @@index([paid_at])
+}
+
+model grade_distributions {
+  id         Int      @id @default(autoincrement())
+  lecture_id Int      @unique
+  work_max   Float
+  mid_max    Float
+  final_max  Float
+  lectures   lectures @relation(fields: [lecture_id], references: [lecture_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model lectures {
+  lecture_id         Int                  @id @default(autoincrement())
+  offering_id        Int
+  instructor_id      String               @db.Uuid
+  capacity           Int
+  day_of_week        String
+  start_time         DateTime             @db.Time(6)
+  end_time           DateTime             @db.Time(6)
+  location           String?
+  group              String?
+  enrolled_count     Int                  @default(0)
+  attendance         attendance[]
+  course_materials   course_materials[]
+  enrollments        enrollments[]
+  grade_distribution grade_distributions?
+  users              users                @relation(fields: [instructor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  course_offerings   course_offerings     @relation(fields: [offering_id], references: [offering_id], onDelete: Cascade, onUpdate: NoAction)
+  tasks              tasks[]
+
+  @@index([instructor_id], map: "idx_lectures_instructor_id")
+  @@index([offering_id], map: "idx_lectures_offering_id")
+}
+
+model news_articles {
+  id           Int       @id @default(autoincrement())
+  title        String
+  content      String?
+  publish_date DateTime  @db.Date
+  image_url    String?
+  link         String?
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model notifications {
+  id         Int               @id @default(autoincrement())
+  user_id    String            @db.Uuid
+  message    String
+  is_read    Boolean           @default(false)
+  created_at DateTime?         @default(now()) @db.Timestamptz(6)
+  type       notification_type @default(general)
+  users      users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id])
+  @@index([is_read])
+  @@index([created_at])
+  @@index([user_id, created_at], map: "idx_notifications_user_id_created_at")
+  @@index([user_id, is_read], map: "idx_notifications_user_id_is_read")
+}
+
+model notification_preferences {
+  user_id             String  @id @db.Uuid
+  new_grade           Boolean @default(true)
+  exam_deadline       Boolean @default(true)
+  community_activity  Boolean @default(false)
+  campus_announcement Boolean @default(true)
+  users               users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model post_likes {
+  post_id         Int
+  user_id         String          @db.Uuid
+  created_at      DateTime?       @default(now()) @db.Timestamptz(6)
+  community_posts community_posts @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([post_id, user_id])
+  @@index([user_id])
+  @@index([post_id])
+}
+
+model student_profiles {
+  user_id            String       @id @db.Uuid
+  student_id         String       @unique
+  year_level         Int?         @default(1)
+  cgpa               Float?
+  department_id      String?      @db.Uuid
+  total_credits      Int?
+  faculty_advisor_id String?      @db.Uuid
+  departments        departments? @relation(fields: [department_id], references: [department_id], onDelete: NoAction, onUpdate: NoAction)
+  faculty_advisor    users?       @relation("FacultyAdvisor", fields: [faculty_advisor_id], references: [id], onUpdate: NoAction)
+  users              users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([student_id])
+  @@index([department_id])
+  @@index([faculty_advisor_id])
+}
+
+model task_submissions {
+  id                 Int       @id @default(autoincrement())
+  task_id            Int
+  student_id         String    @db.Uuid
+  submission_content String?
+  submitted_at       DateTime? @default(now()) @db.Timestamptz(6)
+  grade              Float?
+  users              users     @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tasks              tasks     @relation(fields: [task_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([task_id, student_id], map: "idx_task_submissions_task_id_student_id")
+  @@index([task_id, submitted_at], map: "idx_task_submissions_task_id_submitted_at")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model tasks {
+  id               Int                @id @default(autoincrement())
+  lecture_id       Int?
+  tutorial_lab_id  Int?
+  title            String
+  description      String?
+  due_date         DateTime?          @db.Timestamptz(6)
+  created_at       DateTime?          @default(now()) @db.Timestamptz(6)
+  task_submissions task_submissions[]
+  lectures         lectures?          @relation(fields: [lecture_id], references: [lecture_id], onDelete: NoAction, onUpdate: NoAction)
+  tutorials_labs   tutorials_labs?    @relation(fields: [tutorial_lab_id], references: [tutorial_lab_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([lecture_id, due_date, created_at], map: "idx_tasks_lecture_id_due_date_created_at")
+  @@index([tutorial_lab_id, due_date, created_at], map: "idx_tasks_tutorial_lab_id_due_date_created_at")
+}
+
+model testimonials {
+  id           Int      @id @default(autoincrement())
+  student_name String
+  program      String
+  quote        String
+  image_url    String?
+  is_featured  Boolean? @default(false)
+}
+
+model tutorials_labs {
+  tutorial_lab_id  Int                @id @default(autoincrement())
+  offering_id      Int
+  ta_id            String             @db.Uuid
+  type             String
+  capacity         Int
+  day_of_week      String
+  start_time       DateTime           @db.Time(6)
+  end_time         DateTime           @db.Time(6)
+  location         String?
+  group            String
+  enrolled_count   Int                @default(0)
+  attendance       attendance[]
+  course_materials course_materials[]
+  enrollments      enrollments[]
+  tasks            tasks[]
+  course_offerings course_offerings   @relation(fields: [offering_id], references: [offering_id], onDelete: Cascade, onUpdate: NoAction)
+  users            users              @relation(fields: [ta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([offering_id], map: "idx_tutorials_labs_offering_id")
+  @@index([ta_id], map: "idx_tutorials_labs_ta_id")
+}
+
+model users {
+  id                       String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name                String
+  email                    String                    @unique
+  password_hash            String
+  role                     user_role
+  avatar_url               String?
+  phone                    String?
+  national_id              String?
+  address                  String?
+  created_at               DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime?                 @default(now()) @db.Timestamptz(6)
+  failed_login_attempts    Int                       @default(0)
+  locked_until             DateTime?                 @db.Timestamptz(6)
+  must_change_password     Boolean                   @default(false)
+  academic_calendar        academic_calendar[]
+  announcements            announcements[]
+  attendance               attendance[]
+  community_posts          community_posts[]
+  enrollments              enrollments[]
+  files                    files[]
+  group_members            group_members[]
+  invoices                 invoices[]
+  lectures                 lectures[]
+  notification_preferences notification_preferences?
+  notifications            notifications[]
+  post_comments            post_comments[]
+  post_likes               post_likes[]
+  refresh_tokens           refresh_tokens[]
+  student_payments         student_payments[]
+  advised_students         student_profiles[]        @relation("FacultyAdvisor")
+  student_profiles         student_profiles?
+  task_submissions         task_submissions[]
+  tutorials_labs           tutorials_labs[]
+  device_tokens            device_tokens[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model refresh_tokens {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String   @unique
+  user_id    String   @db.Uuid
+  expires_at DateTime @db.Timestamptz(6)
+  revoked    Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  ip_address String?
+  user_agent String?
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token])
+}
+
+model device_tokens {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String   @unique
+  user_id    String?  @db.Uuid
+  platform   String?
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  users      users?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([token])
+}
+
+enum audience_type {
+  All
+  Students
+  Faculty
+}
+
+enum academic_calendar_event_type {
+  semester_start
+  semester_end
+  registration_start
+  registration_end
+  payment_start
+  payment_end
+  registration_deadline
+  exam_week
+  midterm
+  final_exam
+  holiday
+  orientation
+  other
+}
+
+enum semester_type {
+  Spring
+  Fall
+  Summer
+  Winter
+}
+
+enum enrollment_status {
+  enrolled
+  dropped
+  completed
+}
+
+enum user_role {
+  student
+  doctor
+  admin
+  teaching_assistant
+  super_admin
+  leader
+}
+
+enum notification_type {
+  new_grade
+  exam_deadline
+  community_activity
+  campus_announcement
+  general
+}
+
+enum payment_status {
+  pending
+  paid
+  failed
+  refunded
+}
+
+enum payment_gateway {
+  paypal
+  paymob
+  manual
+}

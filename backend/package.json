@@ -1,0 +1,64 @@
+{
+    "name": "college-system-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "src/server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "node --watch src/server.js",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:generate": "prisma generate",
+        "start": "node src/server.js",
+        "seed": "node prisma/seed.js",
+        "db:studio": "prisma studio",
+        "backfill:general-group": "node src/scripts/backfillGeneralGroup.js",
+        "test:manual-course-registration": "node tests/manual-course-registration-smoke.js",
+        "test:registration-period": "node tests/registration-period-smoke.js",
+        "test:digital-student-id": "node tests/digital-student-id-smoke.js",
+        "test:profile-access": "node tests/profile-access-smoke.js",
+        "test:grade-ta-updates": "node tests/grade-ta-updates-smoke.js",
+        "test:payment-financials": "node tests/payment-financials-smoke.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MuhammedMahmoud0/college-system-backend.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/MuhammedMahmoud0/college-system-backend/issues"
+    },
+    "homepage": "https://github.com/MuhammedMahmoud0/college-system-backend#readme",
+    "dependencies": {
+        "@paypal/checkout-server-sdk": "^1.0.3",
+        "@prisma/adapter-pg": "^7.1.0",
+        "@prisma/client": "^7.1.0",
+        "@supabase/supabase-js": "^2.93.2",
+        "bcrypt": "^6.0.0",
+        "bullmq": "^5.71.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.6",
+        "dotenv": "^17.2.3",
+        "exceljs": "^4.4.0",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.5.1",
+        "firebase-admin": "^13.9.0",
+        "helmet": "^8.1.0",
+        "ioredis": "^5.10.0",
+        "jsonwebtoken": "^9.0.3",
+        "multer": "^2.0.2",
+        "pg": "^8.16.3",
+        "socket.io": "^4.8.3",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1",
+        "uuid": "^13.0.0",
+        "winston": "^3.9.0",
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "prisma": "^7.2.0",
+        "prisma-erd-generator": "^2.4.2"
+    }
+}
