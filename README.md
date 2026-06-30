@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Source/assets/Academia%20Logo.png" alt="Academia Logo" width="150" />
+  <img src="Source/assets/Academia%20Logo.png" alt="Academia Logo" width="350" />
 
 # 🎓 Academia - College Management Ecosystem
 
@@ -30,7 +30,7 @@ _Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile
 
 </div>
 
----
+<br>
 
 ## Table of Contents
 
@@ -49,11 +49,11 @@ _Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile
 - [Demo Videos](#demo-videos)
 - [License](#license)
 
----
+<br>
 
 <a id="overview"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=OVERVIEW" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=OVERVIEW" width="450"/>
 
 ---
 
@@ -68,11 +68,11 @@ The ecosystem operates seamlessly through structured protocols connecting four p
 3. **Data Persistence & Cache-Aside Pipeline**: All structured academic records (students, courses, enrollments, schedules, grades, financial invoices) reside in a high-concurrency **PostgreSQL** database managed via **Prisma 7 ORM**. To achieve sub-millisecond response times, the backend implements a dual **Redis** architecture: one instance powers application-level caching, while the second drives asynchronous task execution using **BullMQ** (e.g., bulk Excel student imports and background notifications).
 4. **Cloud Infrastructure & Gateways**: File storage for course materials and student submissions is managed via **Supabase Storage**. Mobile push notifications are orchestrated through **Firebase Cloud Messaging (FCM)**, while student online fee payments are securely processed via integrated **Paymob** and **PayPal** checkout gateways.
 
----
+<br>
 
 <a id="system-architecture"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=SYSTEM+ARCHITECTURE" width="550"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=600&height=25&lines=SYSTEM+ARCHITECTURE" width="550"/>
 
 ---
 
@@ -133,11 +133,11 @@ graph TD
     FCM -->|Push Alerts| MB
 ```
 
----
+<br>
 
 <a id="technology-stack"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=TECHNOLOGY+STACK" width="550"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=600&height=25&lines=TECHNOLOGY+STACK" width="550"/>
 
 ---
 
@@ -205,11 +205,11 @@ graph TD
 | **Swagger / OpenAPI** | `swagger-ui-express` v5.x | Automated interactive API contract verification and documentation |
 | **ESLint & Winston**  | Code Quality & Logging    | Strict linting rules and structured production logging output     |
 
----
+<br>
 
 <a id="repository-structure"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=REPOSITORY+STRUCTURE" width="550"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=600&height=25&lines=REPOSITORY+STRUCTURE" width="550"/>
 
 ---
 
@@ -228,9 +228,11 @@ Academia-College-Management-Ecosystem/
 └── README.md
 ```
 
+<br>
+
 <a id="frontend"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=FRONTEND" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=FRONTEND" width="450"/>
 
 ---
 
@@ -278,9 +280,11 @@ npm run dev
 
 - **Standalone Frontend Repository**: [https://github.com/VALKAN00/college-system-frontend](https://github.com/VALKAN00/college-system-frontend)
 
+<br>
+
 <a id="backend"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=BACKEND" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=BACKEND" width="450"/>
 
 ---
 
@@ -339,9 +343,11 @@ npm run dev
 
 - **Standalone Backend Repository**: [https://github.com/MuhammedMahmoud0/college-system-backend](https://github.com/MuhammedMahmoud0/college-system-backend)
 
+<br>
+
 <a id="mobile-application"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=MOBILE+APPLICATION" width="550"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=600&height=25&lines=MOBILE+APPLICATION" width="550"/>
 
 ---
 
@@ -389,13 +395,17 @@ flutter run
 
 - **Standalone Mobile Repository**: [https://github.com/KaboOA/graduation_project](https://github.com/KaboOA/graduation_project)
 
+<br>
+
 <a id="ai-machine-learning"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=650&height=25&lines=AI+%26+MACHINE+LEARNING" width="600"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=650&height=25&lines=AI+%26+MACHINE+LEARNING" width="600"/>
 
 The ecosystem incorporates two specialized artificial intelligence services that elevate the academic learning experience.
 
 ---
+
+<a id="course-recommendation-system"></a>
 
 ### 🎯 Course Recommendation System
 
@@ -440,6 +450,8 @@ python app.py
 
 ---
 
+<a id="lecture-summarization-system"></a>
+
 ### 📑 Lecture Summarization System
 
 #### 📖 Overview
@@ -477,9 +489,11 @@ python api.py
 
 - **Summarization Module**: [Source Code Directory](file:///home/muhammed_mahmoud/Projects/My_GitHub/Academia-College-Management-Ecosystem/ai/summarization)
 
+<br>
+
 <a id="deployment"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=DEPLOYMENT" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=DEPLOYMENT" width="450"/>
 
 ---
 
@@ -492,9 +506,11 @@ Deploying the complete Academia ecosystem in production involves deploying each 
 | **Mobile Application**     | MediaFire (APK Distribution)  | Distributed as a release APK via MediaFire for demonstration and testing. Not yet published on the Google Play Store. |
 | **AI Microservices**       | Local Development Environment | Recommendation and Summarization services are executed locally during development                                     |
 
+<br>
+
 <a id="team"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=TEAM" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=TEAM" width="450"/>
 
 ---
 
@@ -614,11 +630,13 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
   </table>
 </div>
 
----
+<br>
 
 <a id="demo-videos"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=DEMO+VIDEOS" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=DEMO+VIDEOS" width="450"/>
+
+---
 
 Below are placeholders reserved for GitHub-hosted demonstration walkthroughs showcasing the system in real-time operations:
 
@@ -652,11 +670,13 @@ Below are placeholders reserved for GitHub-hosted demonstration walkthroughs sho
   </details>
 </div>
 
----
+<br>
 
 <a id="license"></a>
 
-## <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
+## <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
+
+---
 
 This project is open-source software licensed under the **ISC License**.
 
