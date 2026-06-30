@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter pub run:*)",
+      "Bash(del \"d:\\\\Graduation Project\\\\college_project\\\\lib\\\\features\\\\course_regestration\\\\models\\\\course_model.dart\")",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(ls -d android ios web windows macos linux)",
+      "Bash(ls README*)",
+      "Bash(ls lib/l10n)",
+      "Bash(ls *.arb)",
+      "Bash(find . -name \"*.arb\" -not -path \"*/build/*\")"
+    ]
+  }
+}
