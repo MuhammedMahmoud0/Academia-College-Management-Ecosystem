@@ -55,6 +55,8 @@ _Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=OVERVIEW" width="450"/>
 
+---
+
 The **Academia College Management Ecosystem** is a unified, end-to-end digital campus solution designed to streamline academic operations, empower students and faculty, and enhance administrative decision-making. Built as a multi-client distributed platform, Academia bridges the gap between complex university workflows and intuitive, modern user interfaces.
 
 ### 🌐 Inter-Module Communication & Data Flow
@@ -71,6 +73,8 @@ The ecosystem operates seamlessly through structured protocols connecting four p
 <a id="system-architecture"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=SYSTEM+ARCHITECTURE" width="550"/>
+
+---
 
 The following diagram illustrates the complete architectural topology of the Academia ecosystem, detailing data pathways between clients, API gateways, databases, background job queues, and specialized AI microservices:
 
@@ -134,6 +138,8 @@ graph TD
 <a id="technology-stack"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=TECHNOLOGY+STACK" width="550"/>
+
+---
 
 ### 🚀 Backend
 
@@ -205,55 +211,28 @@ graph TD
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=REPOSITORY+STRUCTURE" width="550"/>
 
+---
+
 The ecosystem is organized into modular subrepositories and directories within this central documentation hub:
 
 ```text
 Academia-College-Management-Ecosystem/
+│
+├── backend/
+├── frontend/
+├── mobile/
+├── ai/
+│   ├── recommendation/
+│   └── summarization/
 ├── Source/
-│   └── assets/                     # Official project logos, diagrams, and branding assets
-├── backend/                        # Node.js + Express 5 Core API Gateway & Real-time Server
-│   ├── src/
-│   │   ├── config/                 # Prisma DB connection, Swagger specs, Redis setup
-│   │   ├── controllers/            # Business logic handlers (Auth, Courses, Attendance, Payments, etc.)
-│   │   ├── middlewares/            # JWT authentication, RBAC authorization, Multer file uploads
-│   │   ├── routes/                 # Express REST endpoint routers
-│   │   └── utils/                  # Socket.IO emitter, BullMQ queues, Cron jobs, Supabase client
-│   ├── prisma/                     # Database schema.prisma, migration scripts, and seeders
-│   ├── tests/                      # Smoke tests and automated integration test suites
-│   └── package.json
-├── frontend/                       # React 19 + Vite Web Application Dashboard
-│   └── college-system/
-│       ├── src/
-│       │   ├── components/         # Modular UI widgets (Analytics, Community, Registration, Schedule)
-│       │   ├── pages/              # Main layout shells (Student, Doctor, Admin Dashboards)
-│       │   └── services/           # Axios HTTP client interceptors and Socket listeners
-│       ├── netlify.toml            # Deployment configuration
-│       └── package.json
-├── mobile/                         # Flutter Cross-Platform Mobile Application
-│   ├── lib/
-│   │   ├── core/                   # Shared API client, theme cubits, routing, local storage
-│   │   ├── features/               # Feature modules (Auth, Home, Courses, Exams, ID, Attendance)
-│   │   └── layout/                 # Bottom navigation shell and responsive wrappers
-│   └── pubspec.yaml
-└── ai/                             # Python AI/ML Microservices
-    ├── recommendation/             # Course Recommendation Engine
-    │   ├── app.py                  # Flask REST API endpoint (/recommend)
-    │   ├── Course_Recommendation_cross_score_gem.ipynb # Model exploration notebook
-    │   ├── Coursera.csv            # Course training and embedding dataset
-    │   └── requirements.txt
-    └── summarization/              # Document Summarization Engine
-        ├── api.py                  # FastAPI REST API server
-        ├── main.py                 # Core OCR extraction and NLP summarization pipeline
-        ├── SummerizationModelipynb_v3.ipynb # Model training & evaluation notebook
-        ├── postman/                # API collection and verification tests
-        └── requirements.txt
+└── README.md
 ```
-
----
 
 <a id="frontend"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=FRONTEND" width="450"/>
+
+---
 
 ### 🌟 Overview
 
@@ -299,11 +278,11 @@ npm run dev
 
 - **Standalone Frontend Repository**: [https://github.com/VALKAN00/college-system-frontend](https://github.com/VALKAN00/college-system-frontend)
 
----
-
 <a id="backend"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=BACKEND" width="450"/>
+
+---
 
 ### 🌟 Overview
 
@@ -360,11 +339,11 @@ npm run dev
 
 - **Standalone Backend Repository**: [https://github.com/MuhammedMahmoud0/college-system-backend](https://github.com/MuhammedMahmoud0/college-system-backend)
 
----
-
 <a id="mobile-application"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=600&height=25&lines=MOBILE+APPLICATION" width="550"/>
+
+---
 
 ### 🌟 Overview
 
@@ -410,8 +389,6 @@ flutter run
 
 - **Standalone Mobile Repository**: [https://github.com/KaboOA/graduation_project](https://github.com/KaboOA/graduation_project)
 
----
-
 <a id="ai-machine-learning"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=650&height=25&lines=AI+%26+MACHINE+LEARNING" width="600"/>
@@ -445,17 +422,6 @@ Utilizes a structured course embeddings dataset (`Coursera.csv`) containing over
 1. **Preprocessing**: Course titles, descriptions, and skill tags are cleaned and tokenized into semantic vectors using trained Bi-Encoder neural networks.
 2. **Cross-Score Ranking**: When a student inputs target interests or past coursework, the model computes cross-score semantic similarity against the vector space.
 3. **Generative Rationale**: Top-ranking candidates are passed to Gemini 2.5 Flash to synthesize tailored explanations explaining _why_ the course fits the student's learning goals.
-
-#### 📡 API Endpoint
-
-```http
-POST /recommend
-Content-Type: application/json
-
-{
-  "interests": ["machine learning", "data science", "neural networks"]
-}
-```
 
 #### ⚙️ Setup & Local Development
 
@@ -496,17 +462,6 @@ Long academic documents consume hours of manual revision time. This tool instant
 2. **Hybrid Extraction**: Evaluates document pages; clean text is parsed via `pdfplumber`, while image-heavy or scanned pages pass through a Tesseract OCR preprocessing pipeline.
 3. **Chunked Summarization**: Extracts conceptual cores and outputs structured JSON metadata containing page-by-page breakdowns (`Visual` vs `Text` notes) and executive summaries.
 
-#### 📡 API Endpoints
-
-```http
-POST /summarize/upload
-Content-Type: multipart/form-data
-
-file: <PDF File>
-```
-
-_Additional exposed routes:_ `POST /summarize/path`, `POST /summarize/upload/structured`, `POST /summarize/path/structured`.
-
 #### ⚙️ Setup & Local Development
 
 ```bash
@@ -522,51 +477,57 @@ python api.py
 
 - **Summarization Module**: [Source Code Directory](file:///home/muhammed_mahmoud/Projects/My_GitHub/Academia-College-Management-Ecosystem/ai/summarization)
 
----
-
 <a id="deployment"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=DEPLOYMENT" width="450"/>
 
+---
+
 Deploying the complete Academia ecosystem in production involves deploying each decoupled layer to specialized cloud infrastructure:
 
-| Component                  | Target Environment                                    | Deployment Strategy                                                                                                                                         |
-| -------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Core Backend API**       | Docker Container / Cloud VPS (AWS EC2 / DigitalOcean) | Packaged via Node.js Docker container behind Nginx reverse proxy with SSL termination. Connected to managed PostgreSQL and Redis cloud clusters.            |
-| **Frontend Web Dashboard** | Netlify / Vercel Edge Network                         | Automated CI/CD pipeline triggered on git push. Builds optimized static assets via `vite build` configured with environment API endpoints (`netlify.toml`). |
-| **Mobile Application**     | Google Play Store & Apple App Store                   | Compiled to release APK/AAB and iOS IPA bundles via Flutter build tools. Managed via Firebase App Distribution during QA testing.                           |
-| **AI Microservices**       | Dedicated GPU / High-RAM Cloud Instances              | Hosted as isolated Docker containers running Uvicorn/Gunicorn workers. Communicates over internal VPC network with the Core Backend API.                    |
-
----
+| Component                  | Deployment Platform           | Deployment Details                                                                                                    |
+| -------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Core Backend API**       | Render                        | Deployed on Render. Uses **Supabase PostgreSQL** as the primary database and **Supabase Storage** for file storage.   |
+| **Frontend Web Dashboard** | Netlify                       | Deployed on Netlify with environment variables configured for the production backend API.                             |
+| **Mobile Application**     | MediaFire (APK Distribution)  | Distributed as a release APK via MediaFire for demonstration and testing. Not yet published on the Google Play Store. |
+| **AI Microservices**       | Local Development Environment | Recommendation and Summarization services are executed locally during development                                     |
 
 <a id="team"></a>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=TEAM" width="450"/>
+
+---
 
 The Academia Ecosystem was conceptualized, architected, and engineered by a dedicated graduation team. Contributors are dynamically retrieved from git commits across all module repositories:
 
 ### 🚀 Backend Team
 
 <div align="center">
-  <table width="90%">
+  <table width="50%">
     <tr>
-      <td align="center" width="50%">
+      <td align="center" width="33%">
         <a href="https://github.com/MuhammedMahmoud0">
           <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="100px;" alt="Muhammed Mahmoud"/><br />
           <sub><b>Muhammed Mahmoud</b></sub>
         </a><br />
         <small><code>@MuhammedMahmoud0</code></small><br />
-        <small>✉️ muhammedmahmoud091@gmail.com</small><br />
-        <i>Ecosystem Architect & Backend Lead</i>
+        <small>muhammedmahmoud091@gmail.com</small><br />
       </td>
-      <td align="center" width="50%">
+      <td align="center" width="33%">
         <a href="https://github.com/Abdallah1Atef">
           <img src="https://avatars.githubusercontent.com/u/167599516?v=4" width="100px;" alt="Abdallah Atef"/><br />
           <sub><b>Abdallah Atef</b></sub>
         </a><br />
         <small><code>@Abdallah1Atef</code></small><br />
-        <small>✉️ atef123khmes@gmail.com</small><br />
-        <i>Backend Developer</i>
+        <small>atef123khmes@gmail.com</small><br />
+      </td>
+      <td align="center" width="33%">
+        <a href="https://github.com/ZizoElkhateeb">
+          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="100px;" alt="Ziad Mohamed"/><br />
+          <sub><b>Ziad Mohamed</b></sub>
+        </a><br />
+        <small><code>@ZizoElkhateeb</code></small><br />
+        <small>CDS.ZiadMohamed23135@alexu.edu.eg</small><br />
       </td>
     </tr>
   </table>
@@ -575,7 +536,7 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
 ### 💻 Frontend Team
 
 <div align="center">
-  <table width="90%">
+  <table width="50%">
     <tr>
       <td align="center" width="50%">
         <a href="https://github.com/VALKAN00">
@@ -583,8 +544,7 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
           <sub><b>Abdelrhman Ahmed</b></sub>
         </a><br />
         <small><code>@VALKAN00</code></small><br />
-        <small>✉️ lito2182002@gmail.com</small><br />
-        <i>Frontend Lead Developer</i>
+        <small>lito2182002@gmail.com</small><br />
       </td>
       <td align="center" width="50%">
         <a href="https://github.com/nahedrefaei">
@@ -592,7 +552,6 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
           <sub><b>Nahed Refaay</b></sub>
         </a><br />
         <small><code>@nahedrefaei</code></small><br />
-        <i>Frontend Developer</i>
       </td>
     </tr>
   </table>
@@ -601,7 +560,7 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
 ### 📱 Mobile Team
 
 <div align="center">
-  <table width="90%">
+  <table width="50%">
     <tr>
       <td align="center" width="50%">
         <a href="https://github.com/KaboOA">
@@ -609,7 +568,6 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
           <sub><b>Ahmed Kabary</b></sub>
         </a><br />
         <small><code>@KaboOA</code></small><br />
-        <i>Mobile Lead Developer</i>
       </td>
       <td align="center" width="50%">
         <a href="https://github.com/mennaossama">
@@ -617,8 +575,7 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
           <sub><b>Menna Ossama</b></sub>
         </a><br />
         <small><code>@mennaossama</code></small><br />
-        <small>✉️ mennaossama51@gmail.com</small><br />
-        <i>Mobile Developer</i>
+        <small>mennaossama51@gmail.com</small><br />
       </td>
     </tr>
   </table>
@@ -627,25 +584,31 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
 ### 🧠 AI & Machine Learning Team
 
 <div align="center">
-  <table width="90%">
+  <table width="50%">
     <tr>
-      <td align="center" width="50%">
-        <a href="https://github.com/ZizoElkhateeb">
-          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="100px;" alt="Ziad Mohamed"/><br />
-          <sub><b>Ziad Mohamed</b></sub>
-        </a><br />
-        <small><code>@ZizoElkhateeb</code></small><br />
-        <small>✉️ CDS.ZiadMohamed23135@alexu.edu.eg</small><br />
-        <i>AI / ML Lead Engineer</i>
-      </td>
-      <td align="center" width="50%">
+      <td align="center" width="33%">
         <a href="https://github.com/MuhammedMahmoud0">
           <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="100px;" alt="Muhammed Mahmoud"/><br />
           <sub><b>Muhammed Mahmoud</b></sub>
         </a><br />
         <small><code>@MuhammedMahmoud0</code></small><br />
-        <small>✉️ muhammedmahmoud091@gmail.com</small><br />
-        <i>ML Pipeline & API Integrations</i>
+        <small>muhammedmahmoud091@gmail.com</small><br />
+      </td>
+      <td align="center" width="33%">
+        <a href="https://github.com/VALKAN00">
+          <img src="https://avatars.githubusercontent.com/u/147733659?v=4" width="100px;" alt="Abdelrhman Ahmed"/><br />
+          <sub><b>Abdelrhman Ahmed</b></sub>
+        </a><br />
+        <small><code>@VALKAN00</code></small><br />
+        <small>lito2182002@gmail.com</small><br />
+      </td>
+      <td align="center" width="33%">
+        <a href="https://github.com/ZizoElkhateeb">
+          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="100px;" alt="Ziad Mohamed"/><br />
+          <sub><b>Ziad Mohamed</b></sub>
+        </a><br />
+        <small><code>@ZizoElkhateeb</code></small><br />
+        <small>CDS.ZiadMohamed23135@alexu.edu.eg</small><br />
       </td>
     </tr>
   </table>
@@ -693,25 +656,11 @@ Below are placeholders reserved for GitHub-hosted demonstration walkthroughs sho
 
 <a id="license"></a>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
+## <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
 
 This project is open-source software licensed under the **ISC License**.
 
-```text
-Copyright (c) 2026 Academia College Management Ecosystem Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-```
+ISC — see [LICENSE](LICENSE) for details.
 
 ---
 
