@@ -1,0 +1,283 @@
+{
+  "info": {
+    "name": "PDF Summarization API",
+    "_postman_id": "f48e7c13-0f57-4a85-8c6c-7f4be7939d2d",
+    "description": "Collection for testing FastAPI endpoints in this project.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response is JSON', function () {",
+              "  pm.response.to.be.json;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.test('Has status and ollama fields', function () {",
+              "  pm.expect(data).to.have.property('status');",
+              "  pm.expect(data).to.have.property('ollama');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summarize Upload",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/summarize/upload",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "summarize",
+            "upload"
+          ]
+        },
+        "description": "Select a local PDF file in Postman for the form-data field named file."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.test('Upload response fields exist', function () {",
+              "  pm.expect(data).to.have.property('filename');",
+              "  pm.expect(data).to.have.property('summary');",
+              "  pm.expect(data).to.have.property('output_file');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summarize Path",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pdf_path\": \"{{pdfPath}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/summarize/path",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "summarize",
+            "path"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.test('Path response fields exist', function () {",
+              "  pm.expect(data).to.have.property('pdf_path');",
+              "  pm.expect(data).to.have.property('summary');",
+              "  pm.expect(data).to.have.property('output_file');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summarize Upload Structured",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/summarize/upload/structured",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "summarize",
+            "upload",
+            "structured"
+          ]
+        },
+        "description": "Upload a PDF and receive strict per-page JSON notes."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.test('Structured upload fields exist', function () {",
+              "  pm.expect(data).to.have.property('structured_pages');",
+              "  pm.expect(data).to.have.property('page_count');",
+              "  pm.expect(data.structured_pages).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summarize Path Structured",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pdf_path\": \"{{pdfPath}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/summarize/path/structured",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "summarize",
+            "path",
+            "structured"
+          ]
+        },
+        "description": "Use a server-side PDF path and receive strict per-page JSON notes."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const data = pm.response.json();",
+              "pm.test('Structured path fields exist', function () {",
+              "  pm.expect(data).to.have.property('structured_pages');",
+              "  pm.expect(data).to.have.property('page_count');",
+              "  pm.expect(data.structured_pages).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "pdfPath",
+      "value": "test.pdf"
+    }
+  ]
+}
