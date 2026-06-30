@@ -3,8 +3,7 @@
 
 # 🎓 Academia - College Management Ecosystem
 
-**An Enterprise-Grade, AI-Powered Unified University & College Management Platform**<br>
-_Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile Portal, and Advanced AI/ML Intelligence into a Single Comprehensive Campus Experience._
+_A modern full-stack college management ecosystem integrating a web dashboard, backend API, mobile application, and AI-powered academic services._
 
   <br>
 
@@ -35,6 +34,7 @@ _Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile
 ## Table of Contents
 
 - [Overview](#overview)
+- [Features](#features)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
 - [Repository Structure](#repository-structure)
@@ -57,16 +57,28 @@ _Unifying Backend API Services, Interactive Web Dashboard, Cross-Platform Mobile
 
 ---
 
-The **Academia College Management Ecosystem** is a unified, end-to-end digital campus solution designed to streamline academic operations, empower students and faculty, and enhance administrative decision-making. Built as a multi-client distributed platform, Academia bridges the gap between complex university workflows and intuitive, modern user interfaces.
+The **Academia College Management Ecosystem** is a full-stack university management platform designed to simplify academic and administrative workflows. It consists of four integrated components—a web application, backend API, mobile application, and AI services—that work together to provide a unified experience for students, instructors, and administrators.
 
-### 🌐 Inter-Module Communication & Data Flow
+The backend serves as the central hub of the ecosystem, exposing REST APIs and real-time communication through Socket.IO. The React web dashboard and Flutter mobile application consume these services, while dedicated AI microservices provide intelligent course recommendations and lecture summarization. Data is stored in PostgreSQL with Supabase Storage for file management, and Redis powers caching and background job processing.
 
-The ecosystem operates seamlessly through structured protocols connecting four primary pillars:
+<br>
 
-1. **RESTful API & Real-Time Communication Layer**: The **Node.js/Express 5 Backend** serves as the central API gateway. Both the **React Web Application** and the **Flutter Mobile App** consume REST endpoints protected by JWT and role-based access controls (RBAC). For real-time updates—such as GPS-validated attendance check-ins, instant community chat/feed notifications, and exam alerts—client applications establish bidirectional persistent connections via **Socket.IO**.
-2. **AI & Machine Learning Integration Layer**: The core backend communicates asynchronously with dedicated microservices running Python via **HTTP REST APIs**. When a student requests personalized course advice, the backend queries the **Flask Recommendation Service** (`POST /recommend`). When students or faculty upload academic PDFs or lecture notes, the backend forwards files to the **FastAPI Summarization Service** (`POST /summarize/upload`), which runs OCR and LLM summarization pipelines to generate concise study notes.
-3. **Data Persistence & Cache-Aside Pipeline**: All structured academic records (students, courses, enrollments, schedules, grades, financial invoices) reside in a high-concurrency **PostgreSQL** database managed via **Prisma 7 ORM**. To achieve sub-millisecond response times, the backend implements a dual **Redis** architecture: one instance powers application-level caching, while the second drives asynchronous task execution using **BullMQ** (e.g., bulk Excel student imports and background notifications).
-4. **Cloud Infrastructure & Gateways**: File storage for course materials and student submissions is managed via **Supabase Storage**. Mobile push notifications are orchestrated through **Firebase Cloud Messaging (FCM)**, while student online fee payments are securely processed via integrated **Paymob** and **PayPal** checkout gateways.
+<a id="features"></a>
+
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=FEATURES" width="450"/>
+
+- 🔐 Authentication & Role-Based Access Control
+- 👨‍🎓 Student & Staff Management
+- 📚 Course Registration & Enrollment
+- 📅 Attendance Tracking
+- 📝 Exams & Grades
+- 💳 Financial Management
+- 👥 Community Platform
+- 📁 Course Materials
+- 📱 Mobile Application
+- 🤖 AI Course Recommendation
+- 📝 AI Lecture Summarization
+- ⚡ Real-Time Notifications
 
 <br>
 
@@ -143,67 +155,59 @@ graph TD
 
 ### 🚀 Backend
 
-| Technology            | Version / Tool                           | Role & Usage                                                                |
-| --------------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
-| **Node.js**           | ES Modules (v20+)                        | High-performance asynchronous server runtime                                |
-| **Express.js**        | v5.2.x                                   | Next-generation web application framework and REST router                   |
-| **Socket.IO**         | v4.8.x                                   | Real-time bidirectional WebSocket server for live updates & attendance      |
-| **Prisma ORM**        | v7.1.x (`@prisma/adapter-pg`)            | Type-safe database query engine and schema migration tool                   |
-| **JWT & Bcrypt**      | `jsonwebtoken` v9 / `bcrypt` v6          | Secure stateless authentication, HTTP-only cookies, and password hashing    |
-| **BullMQ & Redis**    | `bullmq` v5 / `ioredis` v5               | Enterprise asynchronous background job processing & caching                 |
-| **Multer & Supabase** | `multer` v2 / `@supabase/supabase-js` v2 | Multipart file upload handling and secure object storage integration        |
-| **ExcelJS**           | v4.4.x                                   | Automated spreadsheet processing for student roster imports & grade exports |
+| Category        | Technologies             |
+| --------------- | ------------------------ |
+| Runtime         | Node.js, Express.js      |
+| Database        | PostgreSQL, Prisma ORM   |
+| Authentication  | JWT, bcrypt              |
+| Real-Time       | Socket.IO                |
+| Background Jobs | BullMQ, Redis            |
+| File Storage    | Supabase Storage, Multer |
+| Documentation   | Swagger / OpenAPI        |
 
 ### 💻 Frontend
 
-| Technology              | Version / Tool                          | Role & Usage                                                               |
-| ----------------------- | --------------------------------------- | -------------------------------------------------------------------------- |
-| **React**               | v19.1.x                                 | Core UI library for dynamic declarative web components                     |
-| **Vite**                | v7.1.x                                  | Next-generation ultra-fast bundler and development server                  |
-| **Tailwind CSS**        | v4.1.x (`@tailwindcss/vite`)            | Utility-first styling engine with glassmorphism and responsive design      |
-| **Material UI (MUI)**   | v7.3.x (`@mui/material`, `x-data-grid`) | Enterprise data tables, interactive cards, and accessible icons            |
-| **GSAP & Lenis**        | v3.15.x / `lenis` v1.3.x                | Fluid micro-animations, layout transitions, and smooth scrolling           |
-| **Chart.js & Recharts** | v4.5.x / v3.3.x                         | Visualizing student academic analytics, GPA trends, and grade distribution |
-| **Socket.IO Client**    | v4.8.x                                  | Real-time listener for community feed posts and instant announcements      |
+| Category           | Technologies              |
+| ------------------ | ------------------------- |
+| Framework          | React, Vite               |
+| Styling            | Tailwind CSS, Material UI |
+| State & Routing    | React Router              |
+| Networking         | Axios, Socket.IO Client   |
+| Data Visualization | Chart.js, Recharts        |
+| Animation          | GSAP, Lenis               |
 
 ### 📱 Mobile
 
-| Technology                   | Version / Tool                   | Role & Usage                                                            |
-| ---------------------------- | -------------------------------- | ----------------------------------------------------------------------- |
-| **Flutter & Dart**           | SDK v3.8+                        | Cross-platform native compilation for iOS and Android                   |
-| **Flutter BLoC**             | `flutter_bloc` v9.1.x            | Predictable, event-driven state management architecture                 |
-| **Go Router**                | `go_router` v16.3.x              | Deep linking and declarative navigation routing                         |
-| **Dio & Cookie Manager**     | `dio` v5.9.x / `cookie_jar` v4.x | Interceptor-based networking with automated transparent token refresh   |
-| **Local Auth**               | `local_auth` v2.3.x              | Biometric authentication (Face ID / Fingerprint / Passcode) app lock    |
-| **Mobile Scanner**           | `mobile_scanner` v7.2.x          | Hardware-accelerated QR code scanner for classroom attendance check-ins |
-| **Firebase Cloud Messaging** | `firebase_messaging` v16.x       | System push notifications even when the app is in background/terminated |
+| Category         | Technologies                 |
+| ---------------- | ---------------------------- |
+| Framework        | Flutter, Dart                |
+| State Management | Flutter BLoC                 |
+| Navigation       | Go Router                    |
+| Networking       | Dio                          |
+| Local Storage    | Hive, Flutter Secure Storage |
+| Authentication   | Local Auth                   |
+| Notifications    | Firebase Cloud Messaging     |
+| QR Scanner       | Mobile Scanner               |
 
 ### 🧠 AI & Machine Learning
 
-| Technology                   | Version / Tool                           | Role & Usage                                                             |
-| ---------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
-| **PyTorch**                  | Deep Learning Framework                  | Tensor operations and neural network model execution                     |
-| **Sentence-Transformers**    | Bi-Encoder & Cross-Encoder               | Computing semantic similarity between student profiles and course skills |
-| **Google Gemini API**        | `google-generativeai` (Gemini 2.5 Flash) | Generative LLM reasoning for personalized course selection rationales    |
-| **Transformers & Ollama**    | Hugging Face / Ollama LLM Engine         | Advanced natural language summarization of complex academic literature   |
-| **PyTesseract & pdfplumber** | OCR & PDF Extraction                     | Optical Character Recognition for scanned lecture handouts and PDFs      |
-| **FastAPI & Flask**          | REST microframeworks                     | Lightweight production endpoints exposing machine learning models        |
+| Category  | Technologies             |
+| --------- | ------------------------ |
+| Framework | PyTorch                  |
+| NLP       | Sentence Transformers    |
+| LLMs      | Gemini 2.5 Flash, Ollama |
+| APIs      | Flask, FastAPI           |
+| OCR       | PyTesseract, pdfplumber  |
 
-### 🗄️ Database & Cloud
+### ☁️ Infrastructure
 
-| Technology           | Version / Tool          | Role & Usage                                                     |
-| -------------------- | ----------------------- | ---------------------------------------------------------------- |
-| **PostgreSQL**       | Relational SQL Database | Primary ACID-compliant relational data store                     |
-| **Redis**            | In-Memory Data Store    | High-speed cache layer (TTL) and background task queue broker    |
-| **Supabase Storage** | Cloud Object Store      | Hosting syllabus files, lecture slides, assignments, and avatars |
-
-### 🛠️ DevOps & Tooling
-
-| Technology            | Version / Tool            | Role & Usage                                                      |
-| --------------------- | ------------------------- | ----------------------------------------------------------------- |
-| **Docker**            | Containerization          | Multi-stage container environments for backend and AI services    |
-| **Swagger / OpenAPI** | `swagger-ui-express` v5.x | Automated interactive API contract verification and documentation |
-| **ESLint & Winston**  | Code Quality & Logging    | Strict linting rules and structured production logging output     |
+| Category       | Technologies          |
+| -------------- | --------------------- |
+| Database       | PostgreSQL (Supabase) |
+| Object Storage | Supabase Storage      |
+| Cache & Queue  | Redis, BullMQ         |
+| Deployment     | Render, Netlify       |
+| Documentation  | Swagger / OpenAPI     |
 
 <br>
 
@@ -238,27 +242,29 @@ Academia-College-Management-Ecosystem/
 
 ### 🌟 Overview
 
-The Academia Frontend is a sleek, dynamic web dashboard crafted with **React 19**, **Vite**, and **Tailwind CSS v4**. Designed to provide dedicated interfaces for Students, Professors, Teaching Assistants, and University Administrators, it delivers rich data visualization, smooth animations via GSAP, and intuitive academic workflows.
+The Academia Web Dashboard is a React-based application that provides dedicated interfaces for students, instructors, teaching assistants, and administrators. It integrates with the backend through REST APIs and Socket.IO to deliver real-time academic workflows, analytics, course management, and community features.
 
 ### ✨ Features
 
-- **Role-Tailored Dashboards**: Customized workspace layouts for students (grades, schedule, fee payments), instructors (course management, grade submissions, materials), and administrators (user management, system configuration, academic calendar).
-- **Interactive Academic Analytics**: Visual charts powered by Chart.js and Recharts displaying semester GPA trends, credit distribution, and class attendance statistics.
-- **Dynamic Course Registration**: Real-time course offering selection with prerequisite verification, capacity tracking, and conflict-free group scheduling.
-- **Social Community Hub**: Campus social feed allowing students and instructors to post discussions, share study resources, comment, and form study groups.
-- **Digital Financial Desk**: Online fee breakdown, invoice management, and secure integrated online payment processing.
+- 🔐 Authentication & Role-Based Access
+- 📚 Course Registration & Enrollment
+- 📊 Academic Analytics & Dashboards
+- 👥 Community & Discussion Platform
+- 💳 Online Fee & Invoice Management
+- 📅 Academic Calendar & Scheduling
+- 📢 Announcements & Notifications
+- 📁 Course Materials & Resources
 
 ### 🛠️ Technologies
 
-- **Core Framework**: React 19, Vite 7
-- **Styling & UI**: Tailwind CSS v4, Material UI (MUI v7), Lucide Icons
-- **Animation**: GSAP (@gsap/react), Lenis Smooth Scroll
-- **State & Routing**: React Router v7, Axios, Socket.IO Client
-
-### 🎥 Demo Video
-
-> _Placeholder for Web Dashboard Video Walkthrough:_  
-> `<a href="#demo-videos">Watch Web Demo Walkthrough below</a>`
+| Category           | Technologies              |
+| ------------------ | ------------------------- |
+| Framework          | React, Vite               |
+| Styling            | Tailwind CSS, Material UI |
+| State & Routing    | React Router              |
+| Networking         | Axios, Socket.IO Client   |
+| Data Visualization | Chart.js, Recharts        |
+| Animation          | GSAP, Lenis               |
 
 ### ⚙️ Setup & Local Development
 
@@ -278,9 +284,8 @@ npm run dev
 
 ### 🔗 Repository Link
 
-- **Standalone Frontend Repository**: [https://github.com/VALKAN00/college-system-frontend](https://github.com/VALKAN00/college-system-frontend)
-
-<br>
+- **Standalone Frontend Repository**: [Frontend Repository](https://github.com/VALKAN00/college-system-frontend)
+  <br>
 
 <a id="backend"></a>
 
@@ -290,30 +295,59 @@ npm run dev
 
 ### 🌟 Overview
 
-The core backend server powers the entire ecosystem, handling complex university rules, asynchronous background tasks, and real-time sockets. Built with **Node.js (ES Modules)**, **Express 5**, and **Prisma 7**, it guarantees enterprise reliability, data integrity, and strict access control.
+The Academia Backend is the central service of the ecosystem. Built with Node.js, Express, and Prisma, it exposes REST APIs and real-time communication for the web dashboard, mobile application, and AI services while managing authentication, academic workflows, file storage, and background processing.
 
 ### ✨ Features
 
-- **Complete Academic Domain Operations**: Full CRUD and business logic for departments, courses, prerequisites, semester offerings, registrations, lecture schedules, and examination timetables.
-- **Real-Time GPS Attendance**: WebSocket-powered check-in verification checking student GPS coordinates against lecture hall boundaries, with instant instructor override capabilities.
-- **Advanced Grade Management**: Midterm, coursework, and final examination scoring with automated grade distribution calculations and direct Excel spreadsheet transcript exports.
-- **Dual Payment Integration**: Multi-gateway payment handling supporting both PayPal Checkout SDK and Paymob payment webhooks.
-- **Automated Background Processing**: BullMQ job processing on Redis for asynchronous high-volume Excel student imports and scheduled exam reminder notifications.
+- 🔐 Authentication & Role-Based Access Control (RBAC)
+- 📚 Course & Enrollment Management
+- 📅 Attendance & Lecture Scheduling
+- 📝 Grade & Examination Management
+- 💳 Online Payment Integration
+- 📢 Notifications & Community Features
+- 📁 File Upload & Storage
+- ⚡ Real-Time Communication with Socket.IO
+- 🔄 Background Job Processing with BullMQ
+- 🤖 AI Service Integration
 
 ### 🛠️ Technologies
 
-- **Runtime & Router**: Node.js v20+, Express 5
-- **ORM & Database**: Prisma 7, PostgreSQL
-- **Real-Time & Caching**: Socket.IO v4, Redis (BullMQ + Cache-Aside)
-- **Security & Storage**: JWT, bcrypt, Helmet, Rate Limiter, Supabase Cloud Storage
+| Category        | Technologies             |
+| --------------- | ------------------------ |
+| Runtime         | Node.js, Express.js      |
+| Database        | PostgreSQL, Prisma ORM   |
+| Authentication  | JWT, bcrypt              |
+| Real-Time       | Socket.IO                |
+| Background Jobs | BullMQ, Redis            |
+| File Storage    | Supabase Storage, Multer |
+| Documentation   | Swagger / OpenAPI        |
 
-### 🏛️ Architecture & Database
+### 🏛️ Architecture & Database Diagram
 
-The backend enforces a strict layering pattern: `Route → Middleware (Auth/Upload) → Controller → Prisma ORM / Service → Database`. The PostgreSQL schema contains fully structured relational entities with cascading deletes, foreign key safeguards, and optimized indexes on high-traffic fields (such as student enrollments and attendance records).
+```mermaid
+graph LR
+A[Client] --> B[Routes]
+B --> C[Middleware]
+C --> D[Controllers]
+D --> E[Services]
+E --> F[Prisma ORM]
+F --> G[(PostgreSQL)]
+```
+
+### 🏗️ Architecture Highlights
+
+- Layered Architecture
+- RESTful API Design
+- JWT Authentication & Refresh Token Rotation
+- Role-Based Access Control (RBAC)
+- Real-Time Communication with Socket.IO
+- Background Jobs with BullMQ & Redis
+- PostgreSQL + Prisma ORM
+- Supabase Storage Integration
 
 ### 📖 API Documentation
 
-Once the backend is running, interactive OpenAPI / Swagger documentation is automatically hosted and accessible at:
+Interactive API documentation is available through Swagger once the backend is running.
 
 ```text
 http://localhost:3000/docs
@@ -341,7 +375,7 @@ npm run dev
 
 ### 🔗 Repository Link
 
-- **Standalone Backend Repository**: [https://github.com/MuhammedMahmoud0/college-system-backend](https://github.com/MuhammedMahmoud0/college-system-backend)
+- **Standalone Backend Repository**: [Backend Repository](https://github.com/MuhammedMahmoud0/college-system-backend)
 
 <br>
 
@@ -353,27 +387,31 @@ npm run dev
 
 ### 🌟 Overview
 
-The **Academia Mobile Application** puts the entire university experience into students' pockets. Built with **Flutter**, it delivers native iOS and Android performance, biometric security, and offline resilience with full English and Arabic (RTL) localization.
+The Academia Mobile Application is a Flutter-based companion app that enables students to access academic services from anywhere. It integrates with the backend through secure REST APIs and provides features such as attendance tracking, notifications, course materials, digital student ID, and account management.
 
 ### ✨ Features
 
-- **Biometric App Lock**: Gated launch requiring device fingerprint, Face ID, or passcode via `local_auth` on returning sessions.
-- **Instant QR Attendance Scanner**: Built-in camera scanner (`mobile_scanner`) allowing students to scan classroom QR codes for instant attendance check-ins.
-- **Digital Student ID Card**: Interactive front-and-back digital identity card displaying student credentials, academic standing, and library access barcode.
-- **In-App Study Material Reader**: Download and view lecture PDFs directly within the app using `flutter_cached_pdfview`.
-- **Transparent Token Refresh Networking**: Interceptor-powered Dio client that captures `401 Unauthorized` responses, silently refreshes JWT access tokens via disk-cached cookies (`PersistCookieJar`), and replays failed requests without user disruption.
+- 🔐 Biometric Authentication
+- 📱 Digital Student ID
+- 📷 QR Code Attendance
+- 📚 Course Materials & PDF Viewer
+- 🔔 Push Notifications
+- 📍 Location-Based Attendance Verification
+- 🔄 Automatic Token Refresh
+- 🌍 Arabic & English Localization
 
 ### 🛠️ Technologies
 
-- **Core Engine**: Flutter SDK v3.8+, Dart v3.8+
-- **State Management & Routing**: Flutter BLoC v9.1, Go Router v16.3
-- **Networking & Storage**: Dio v5.9, Cookie Jar, Hive, Flutter Secure Storage
-- **Native Hardware**: Mobile Scanner, Geolocator, Local Auth, Firebase Cloud Messaging
-
-### 🎥 Demo Video
-
-> _Placeholder for Mobile Application Walkthrough:_  
-> `<a href="#demo-videos">Watch Mobile App Walkthrough below</a>`
+| Category         | Technologies                 |
+| ---------------- | ---------------------------- |
+| Framework        | Flutter, Dart                |
+| State Management | Flutter BLoC                 |
+| Navigation       | Go Router                    |
+| Networking       | Dio                          |
+| Local Storage    | Hive, Flutter Secure Storage |
+| Authentication   | Local Auth                   |
+| Notifications    | Firebase Cloud Messaging     |
+| Device Features  | Mobile Scanner, Geolocator   |
 
 ### ⚙️ Setup & Local Development
 
@@ -391,9 +429,14 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
+### 📱 Supported Platforms
+
+- ✅ Android
+- ⚠️ iOS (Codebase Supported)
+
 ### 🔗 Repository Link
 
-- **Standalone Mobile Repository**: [https://github.com/KaboOA/graduation_project](https://github.com/KaboOA/graduation_project)
+- **Standalone Mobile Repository**: [Mobile Repository](https://github.com/KaboOA/graduation_project)
 
 <br>
 
@@ -401,7 +444,7 @@ flutter run
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=650&height=25&lines=AI+%26+MACHINE+LEARNING" width="600"/>
 
-The ecosystem incorporates two specialized artificial intelligence services that elevate the academic learning experience.
+The Academia ecosystem integrates two AI-powered services that enhance the learning experience by providing personalized course recommendations and automatic lecture summarization. Both services are consumed by the backend through REST APIs and are available to the web and mobile applications.
 
 ---
 
@@ -411,42 +454,30 @@ The ecosystem incorporates two specialized artificial intelligence services that
 
 #### 📖 Overview
 
-An AI recommendation service that analyzes a student's academic background, skill proficiencies, and personal career interests to suggest highly relevant courses from curriculum and online offerings.
+Recommends relevant academic and online courses based on a student's interests and learning goals using semantic search and large language models.
 
-#### ❓ Problem Solved
+#### 🔄 Workflow
 
-Students often struggle to navigate elective options and identify courses that align with current tech market demands and their past academic trajectory. This engine automates intelligent curriculum guidance.
+```mermaid
+flowchart LR
 
-#### 📊 Dataset
+A[Student Request]
+--> B[Bi-Encoder]
 
-Utilizes a structured course embeddings dataset (`Coursera.csv`) containing over 3,500 curated courses with skills tags, difficulty ratings, and descriptive summaries.
+B --> C[Cross-Encoder]
+
+C --> D[Gemini 2.5 Flash]
+
+D --> E[Course Recommendations]
+```
 
 #### 🛠️ Technologies
 
-- **Language & Server**: Python 3, Flask REST API (`gunicorn`)
-- **Deep Learning**: PyTorch, Sentence-Transformers (`CrossEncoder`, `Bi-Encoder`)
-- **LLM Reasoning**: Google Generative AI (`gemini-2.5-flash`)
-
-#### 🏗️ Model Architecture & Workflow
-
-1. **Preprocessing**: Course titles, descriptions, and skill tags are cleaned and tokenized into semantic vectors using trained Bi-Encoder neural networks.
-2. **Cross-Score Ranking**: When a student inputs target interests or past coursework, the model computes cross-score semantic similarity against the vector space.
-3. **Generative Rationale**: Top-ranking candidates are passed to Gemini 2.5 Flash to synthesize tailored explanations explaining _why_ the course fits the student's learning goals.
-
-#### ⚙️ Setup & Local Development
-
-```bash
-cd ai/recommendation
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-export GEMINI_API_KEY="your_api_key_here"
-python app.py
-# Server listens on http://localhost:5000
-```
-
-#### 🔗 Repository Link
-
-- **Recommendation Module**: [Source Code Directory](file:///home/muhammed_mahmoud/Projects/My_GitHub/Academia-College-Management-Ecosystem/ai/recommendation)
+- Python
+- Flask
+- PyTorch
+- Sentence Transformers
+- Gemini 2.5 Flash
 
 ---
 
@@ -456,38 +487,32 @@ python app.py
 
 #### 📖 Overview
 
-An advanced NLP document summarization service that digests multi-page academic textbooks, scanned lecture handouts, and slide decks into structured, easy-to-review study sheets.
+Summarizes lecture notes and academic documents into concise study material using OCR and transformer-based language models.
 
-#### ❓ Problem Solved
+#### 🔄 Workflow
 
-Long academic documents consume hours of manual revision time. This tool instantly extracts key conceptual summaries categorized by page number and content type.
+```mermaid
+flowchart LR
+
+A[PDF]
+
+--> B[Text Extraction]
+
+--> C[OCR]
+
+--> D[LLM]
+
+--> E[Summary]
+```
 
 #### 🛠️ Technologies
 
-- **Language & Server**: Python 3, FastAPI (`uvicorn`)
-- **Document Processing**: `pdfplumber`, `pdf2image`, PyTesseract OCR, Pillow
-- **Summarization Engine**: Hugging Face Transformers, PyTorch, Ollama LLM integration
-
-#### 🏗️ Model Architecture & Workflow
-
-1. **Document Ingestion**: Accepts direct PDF file uploads (`multipart/form-data`) or server file paths.
-2. **Hybrid Extraction**: Evaluates document pages; clean text is parsed via `pdfplumber`, while image-heavy or scanned pages pass through a Tesseract OCR preprocessing pipeline.
-3. **Chunked Summarization**: Extracts conceptual cores and outputs structured JSON metadata containing page-by-page breakdowns (`Visual` vs `Text` notes) and executive summaries.
-
-#### ⚙️ Setup & Local Development
-
-```bash
-cd ai/summarization
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-# Ensure Tesseract OCR is installed on system OS
-python api.py
-# Server listens on http://localhost:5001
-```
-
-#### 🔗 Repository Link
-
-- **Summarization Module**: [Source Code Directory](file:///home/muhammed_mahmoud/Projects/My_GitHub/Academia-College-Management-Ecosystem/ai/summarization)
+- Python
+- FastAPI
+- Transformers
+- Ollama
+- PyTesseract
+- pdfplumber
 
 <br>
 
@@ -514,32 +539,33 @@ Deploying the complete Academia ecosystem in production involves deploying each 
 
 ---
 
-The Academia Ecosystem was conceptualized, architected, and engineered by a dedicated graduation team. Contributors are dynamically retrieved from git commits across all module repositories:
-
-### 🚀 Backend Team
+The Academia ecosystem was developed collaboratively by students specializing in backend, frontend, mobile, and artificial intelligence.
 
 <div align="center">
-  <table width="50%">
+
+<img src="Source/assets/backend-team-banner-purple.svg" alt="Backend Team" width="450"/>
+
+  <table>
     <tr>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/MuhammedMahmoud0">
-          <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="100px;" alt="Muhammed Mahmoud"/><br />
+          <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="110" style="border-radius:50%;" alt="Muhammed Mahmoud"/><br />
           <sub><b>Muhammed Mahmoud</b></sub>
         </a><br />
         <small><code>@MuhammedMahmoud0</code></small><br />
         <small>muhammedmahmoud091@gmail.com</small><br />
       </td>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/Abdallah1Atef">
-          <img src="https://avatars.githubusercontent.com/u/167599516?v=4" width="100px;" alt="Abdallah Atef"/><br />
+          <img src="https://avatars.githubusercontent.com/u/167599516?v=4" width="110" style="border-radius:50%;" alt="Abdallah Atef"/><br />
           <sub><b>Abdallah Atef</b></sub>
         </a><br />
         <small><code>@Abdallah1Atef</code></small><br />
         <small>atef123khmes@gmail.com</small><br />
       </td>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/ZizoElkhateeb">
-          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="100px;" alt="Ziad Mohamed"/><br />
+          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="110" style="border-radius:50%;" alt="Ziad Mohamed"/><br />
           <sub><b>Ziad Mohamed</b></sub>
         </a><br />
         <small><code>@ZizoElkhateeb</code></small><br />
@@ -549,22 +575,25 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
   </table>
 </div>
 
-### 💻 Frontend Team
+---
 
 <div align="center">
-  <table width="50%">
+
+<img src="Source/assets/frontend-team-banner-purple.svg" alt="Frontend Team" width="450"/>
+
+  <table>
     <tr>
-      <td align="center" width="50%">
+      <td align="center">
         <a href="https://github.com/VALKAN00">
-          <img src="https://avatars.githubusercontent.com/u/147733659?v=4" width="100px;" alt="Abdelrhman Ahmed"/><br />
+          <img src="https://avatars.githubusercontent.com/u/147733659?v=4" width="110" style="border-radius:50%;" alt="Abdelrhman Ahmed"/><br />
           <sub><b>Abdelrhman Ahmed</b></sub>
         </a><br />
         <small><code>@VALKAN00</code></small><br />
         <small>lito2182002@gmail.com</small><br />
       </td>
-      <td align="center" width="50%">
+      <td align="center">
         <a href="https://github.com/nahedrefaei">
-          <img src="https://avatars.githubusercontent.com/u/125561929?v=4" width="100px;" alt="Nahed Refaay"/><br />
+          <img src="https://avatars.githubusercontent.com/u/125561929?v=4" width="110" style="border-radius:50%;" alt="Nahed Refaay"/><br />
           <sub><b>Nahed Refaay</b></sub>
         </a><br />
         <small><code>@nahedrefaei</code></small><br />
@@ -573,21 +602,24 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
   </table>
 </div>
 
-### 📱 Mobile Team
+---
 
 <div align="center">
-  <table width="50%">
+
+<img src="Source/assets/mobile-team-banner-purple.svg" alt="Mobile Team" width="450"/>
+
+  <table>
     <tr>
-      <td align="center" width="50%">
+      <td align="center">
         <a href="https://github.com/KaboOA">
-          <img src="https://avatars.githubusercontent.com/u/71717647?v=4" width="100px;" alt="Ahmed Kabary"/><br />
+          <img src="https://avatars.githubusercontent.com/u/71717647?v=4" width="110" style="border-radius:50%;" alt="Ahmed Kabary"/><br />
           <sub><b>Ahmed Kabary</b></sub>
         </a><br />
         <small><code>@KaboOA</code></small><br />
       </td>
-      <td align="center" width="50%">
+      <td align="center">
         <a href="https://github.com/mennaossama">
-          <img src="https://avatars.githubusercontent.com/u/125574589?v=4" width="100px;" alt="Menna Ossama"/><br />
+          <img src="https://avatars.githubusercontent.com/u/125574589?v=4" width="110" style="border-radius:50%;" alt="Menna Ossama"/><br />
           <sub><b>Menna Ossama</b></sub>
         </a><br />
         <small><code>@mennaossama</code></small><br />
@@ -597,30 +629,33 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
   </table>
 </div>
 
-### 🧠 AI & Machine Learning Team
+---
 
 <div align="center">
-  <table width="50%">
+
+<img src="Source/assets/ai-ml-team-fire-purple.svg" alt="AI & Machine Learning Team" width="450"/>
+
+  <table>
     <tr>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/MuhammedMahmoud0">
-          <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="100px;" alt="Muhammed Mahmoud"/><br />
+          <img src="https://avatars.githubusercontent.com/u/179109266?v=4" width="110" style="border-radius:50%;" alt="Muhammed Mahmoud"/><br />
           <sub><b>Muhammed Mahmoud</b></sub>
         </a><br />
         <small><code>@MuhammedMahmoud0</code></small><br />
         <small>muhammedmahmoud091@gmail.com</small><br />
       </td>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/VALKAN00">
-          <img src="https://avatars.githubusercontent.com/u/147733659?v=4" width="100px;" alt="Abdelrhman Ahmed"/><br />
+          <img src="https://avatars.githubusercontent.com/u/147733659?v=4" width="110" style="border-radius:50%;" alt="Abdelrhman Ahmed"/><br />
           <sub><b>Abdelrhman Ahmed</b></sub>
         </a><br />
         <small><code>@VALKAN00</code></small><br />
         <small>lito2182002@gmail.com</small><br />
       </td>
-      <td align="center" width="33%">
+      <td align="center">
         <a href="https://github.com/ZizoElkhateeb">
-          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="100px;" alt="Ziad Mohamed"/><br />
+          <img src="https://avatars.githubusercontent.com/u/130157238?v=4" width="110" style="border-radius:50%;" alt="Ziad Mohamed"/><br />
           <sub><b>Ziad Mohamed</b></sub>
         </a><br />
         <small><code>@ZizoElkhateeb</code></small><br />
@@ -638,53 +673,34 @@ The Academia Ecosystem was conceptualized, architected, and engineered by a dedi
 
 ---
 
-Below are placeholders reserved for GitHub-hosted demonstration walkthroughs showcasing the system in real-time operations:
+### 💻 Web Dashboard
 
-### 💻 Web Demo Walkthrough
+> _(GitHub video will be embedded here.)_
 
-<div align="center">
-  <details>
-    <summary><b>▶️ Click to Expand Web Dashboard Demo Showcase</b></summary>
-    <br/>
-    <!-- Replace placeholder link below with actual video asset when uploaded -->
-    <a href="https://github.com/MuhammedMahmoud0/Academia-College-Management-Ecosystem">
-      <img src="https://placehold.co/800x450/2d3748/ffffff?text=Web+Dashboard+Walkthrough+Video+(Placeholder)" alt="Web Demo Walkthrough" width="80%"/>
-    </a>
-    <br/>
-    <i>Interactive Web Dashboard Walkthrough demonstrating course registration, analytics, and admin operations.</i>
-  </details>
-</div>
+<!-- Paste GitHub video link -->
 
-### 📱 Mobile Demo Walkthrough
+---
 
-<div align="center">
-  <details>
-    <summary><b>▶️ Click to Expand Mobile App Demo Showcase</b></summary>
-    <br/>
-    <!-- Replace placeholder link below with actual video asset when uploaded -->
-    <a href="https://github.com/MuhammedMahmoud0/Academia-College-Management-Ecosystem">
-      <img src="https://placehold.co/400x700/1a202c/ffffff?text=Mobile+App+Walkthrough+Video+(Placeholder)" alt="Mobile Demo Walkthrough" width="40%"/>
-    </a>
-    <br/>
-    <i>Cross-Platform Flutter Portal Walkthrough demonstrating biometric login, QR attendance scanner, and ID card.</i>
-  </details>
-</div>
+### 📱 Mobile Application
+
+> _(GitHub video will be embedded here.)_
+
+<!-- Paste GitHub video link -->
 
 <br>
 
 <a id="license"></a>
 
-## <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=5a4dbf&vCenter=true&width=435&height=25&lines=LICENSE" width="450"/>
 
 ---
 
-This project is open-source software licensed under the **ISC License**.
+This project is licensed under the **ISC License**.
 
-ISC — see [LICENSE](LICENSE) for details.
+See the [LICENSE](LICENSE) file for more information.
 
 ---
 
 <div align="center">
   <b>Built with ❤️ by the Academia Graduation Project Team</b><br/>
-  <sub>Empowering Higher Education Through Modern Software Engineering & AI</sub>
 </div>

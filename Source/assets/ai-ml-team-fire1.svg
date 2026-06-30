@@ -1,0 +1,77 @@
+<svg width="600" height="90" viewBox="0 0 600 90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fireGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ff3d00">
+        <animate attributeName="stop-color"
+          values="#ff3d00;#ff8a00;#ffd300;#ff8a00;#ff3d00"
+          dur="1.2s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="45%" stop-color="#ff8a00">
+        <animate attributeName="stop-color"
+          values="#ff8a00;#ffd300;#ff8a00;#ff3d00;#ff8a00"
+          dur="1.2s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#ffe066">
+        <animate attributeName="stop-color"
+          values="#ffe066;#fff3b0;#ffd300;#fff3b0;#ffe066"
+          dur="1.2s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+
+    <filter id="fireFlicker" x="-30%" y="-100%" width="160%" height="300%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="7" result="noise">
+        <animate attributeName="baseFrequency" dur="0.6s"
+          values="0.012 0.09;0.018 0.12;0.012 0.07;0.02 0.1;0.012 0.09"
+          repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+      <feGaussianBlur stdDeviation="0.4" />
+    </filter>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <style>
+      @keyframes emberRise {
+        0%   { transform: translateY(0) scale(1); opacity: 0.9; }
+        80%  { opacity: 0.4; }
+        100% { transform: translateY(-55px) scale(0.2); opacity: 0; }
+      }
+      .ember {
+        animation-name: emberRise;
+        animation-timing-function: ease-out;
+        animation-iteration-count: infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .fire-text {
+        font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
+        font-weight: 800;
+        font-size: 34px;
+      }
+    </style>
+  </defs>
+
+  <!-- rising embers -->
+  <circle class="ember" cx="40" cy="70" r="2.2" fill="#ffb300" style="animation-duration:1.4s; animation-delay:0s;" />
+  <circle class="ember" cx="150" cy="74" r="1.6" fill="#ff7043" style="animation-duration:1.7s; animation-delay:0.3s;" />
+  <circle class="ember" cx="260" cy="68" r="2" fill="#ffd54f" style="animation-duration:1.3s; animation-delay:0.6s;" />
+  <circle class="ember" cx="340" cy="72" r="1.4" fill="#ff8a65" style="animation-duration:1.9s; animation-delay:0.1s;" />
+  <circle class="ember" cx="430" cy="70" r="2.1" fill="#ffca28" style="animation-duration:1.5s; animation-delay:0.5s;" />
+  <circle class="ember" cx="510" cy="74" r="1.7" fill="#ff7043" style="animation-duration:1.6s; animation-delay:0.8s;" />
+
+  <!-- glow backdrop pass -->
+  <text x="300" y="55" text-anchor="middle" class="fire-text" fill="url(#fireGradient)" filter="url(#glow)" opacity="0.55">
+    AI &amp; Machine Learning Team
+  </text>
+
+  <!-- flickering main text -->
+  <text x="300" y="55" text-anchor="middle" class="fire-text" fill="url(#fireGradient)" filter="url(#fireFlicker)">
+    AI &amp; Machine Learning Team
+  </text>
+</svg>

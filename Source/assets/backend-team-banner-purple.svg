@@ -1,0 +1,93 @@
+<svg width="600" height="90" viewBox="0 0 600 90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c0a1c" stop-opacity="0" />
+      <stop offset="100%" stop-color="#5a4dbf" stop-opacity="0.10" />
+    </linearGradient>
+
+    <style>
+      @keyframes codeFall {
+        0%   { transform: translateY(-20px); opacity: 0; }
+        15%  { opacity: 0.8; }
+        90%  { opacity: 0.5; }
+        100% { transform: translateY(70px); opacity: 0; }
+      }
+      .code-col {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        fill: #8a7fd9;
+        animation-name: codeFall;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+      }
+      @keyframes glitchShift {
+        0%, 92%, 100% { transform: translate(0, 0); opacity: 0; }
+        93% { transform: translate(-3px, 1px); opacity: 0.85; }
+        95% { transform: translate(3px, -1px); opacity: 0.85; }
+        97% { transform: translate(-2px, 0); opacity: 0.6; }
+        99% { transform: translate(2px, 1px); opacity: 0.4; }
+      }
+      .glitch-light { animation: glitchShift 3.4s infinite; fill: #c4bdf0; }
+      .glitch-dark  { animation: glitchShift 3.4s infinite 0.08s; fill: #2e2761; }
+      @keyframes flicker {
+        0%, 100% { opacity: 1; }
+        45% { opacity: 1; }
+        46% { opacity: 0.75; }
+        47% { opacity: 1; }
+        72% { opacity: 1; }
+        73% { opacity: 0.6; }
+        74% { opacity: 1; }
+      }
+      .main-term { fill: #9b8ce8; animation: flicker 4s infinite; }
+      @keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+      }
+      .cursor { animation: blink 1s steps(1) infinite; fill: #9b8ce8; }
+      .term-text {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 1px;
+      }
+      @keyframes scan {
+        0% { transform: translateY(-6px); }
+        100% { transform: translateY(96px); }
+      }
+      .scanline { animation: scan 2.6s linear infinite; }
+    </style>
+
+    <clipPath id="bgClip">
+      <rect x="0" y="0" width="600" height="90" rx="6" />
+    </clipPath>
+  </defs>
+
+  <!-- terminal background -->
+  <rect x="0" y="0" width="600" height="90" rx="6" fill="#0c0a1c" />
+  <rect x="0" y="0" width="600" height="90" rx="6" fill="url(#bgFade)" />
+
+  <g clip-path="url(#bgClip)" opacity="0.55">
+    <text class="code-col" x="20"  y="0" style="animation-duration:2.3s; animation-delay:0s;">01</text>
+    <text class="code-col" x="70"  y="0" style="animation-duration:1.9s; animation-delay:0.4s;">{ }</text>
+    <text class="code-col" x="125" y="0" style="animation-duration:2.6s; animation-delay:0.9s;">SQL</text>
+    <text class="code-col" x="470" y="0" style="animation-duration:2.1s; animation-delay:0.2s;">10</text>
+    <text class="code-col" x="520" y="0" style="animation-duration:2.4s; animation-delay:0.7s;">API</text>
+    <text class="code-col" x="565" y="0" style="animation-duration:1.8s; animation-delay:1.1s;">::</text>
+  </g>
+
+  <!-- scanline sweep -->
+  <rect class="scanline" x="0" y="0" width="600" height="3" fill="#9b8ce8" opacity="0.22" />
+
+  <!-- glitch layers -->
+  <text class="term-text glitch-light" x="40" y="55">&gt;_ Backend Team</text>
+  <text class="term-text glitch-dark"  x="40" y="55">&gt;_ Backend Team</text>
+
+  <!-- main terminal text -->
+  <text class="term-text main-term" x="40" y="55">
+    <tspan>&gt;_ Backend Team</tspan>
+  </text>
+  <rect class="cursor" x="345" y="36" width="14" height="24" />
+
+  <!-- border frame -->
+  <rect x="1.5" y="1.5" width="597" height="87" rx="6" fill="none" stroke="#3d3380" stroke-width="1.5" />
+</svg>
