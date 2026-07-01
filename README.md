@@ -690,7 +690,7 @@ The Academia ecosystem was developed collaboratively by students specializing in
 
 ### 💻 Web Dashboard
 
-<!-- <p align="center">
+<p align="center">
   <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
     <img src="./Source/assets/web-demo-thumbnail.png" alt="Web Dashboard Demo" width="800"/>
   </a>
@@ -700,10 +700,7 @@ The Academia ecosystem was developed collaboratively by students specializing in
   <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
     ▶️ Watch the Full Web Demo
   </a>
-</p> -->
-<div align="center">
-  <iframe width="800" height="450" src="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/preview" allow="autoplay"></iframe>
-</div>
+</p>
 
 ---
 
