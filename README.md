@@ -406,7 +406,18 @@ The Academia Mobile Application is a Flutter-based companion app that enables st
 
 ### 🛠️ Technologies
 
-| Category         | Technologies                 |
+| Category | Technologies |<p align="center">
+<a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
+<img src="./assets/web-demo-thumbnail.png" alt="Web Dashboard Demo" width="800"/>
+</a>
+
+</p>
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
+    ▶️ Watch the Full Web Demo
+  </a>
+</p>
 | ---------------- | ---------------------------- |
 | Framework        | Flutter, Dart                |
 | State Management | Flutter BLoC                 |
@@ -679,9 +690,20 @@ The Academia ecosystem was developed collaboratively by students specializing in
 
 ### 💻 Web Dashboard
 
-> _(GitHub video will be embedded here.)_
+<!-- <p align="center">
+  <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
+    <img src="./Source/assets/web-demo-thumbnail.png" alt="Web Dashboard Demo" width="800"/>
+  </a>
+</p>
 
-<!-- Paste GitHub video link -->
+<p align="center">
+  <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
+    ▶️ Watch the Full Web Demo
+  </a>
+</p> -->
+<div align="center">
+  <iframe width="800" height="450" src="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/preview" allow="autoplay"></iframe>
+</div>
 
 ---
 
