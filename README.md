@@ -406,18 +406,7 @@ The Academia Mobile Application is a Flutter-based companion app that enables st
 
 ### 🛠️ Technologies
 
-| Category | Technologies |<p align="center">
-<a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
-<img src="./assets/web-demo-thumbnail.png" alt="Web Dashboard Demo" width="800"/>
-</a>
-
-</p>
-
-<p align="center">
-  <a href="https://drive.google.com/file/d/1pIwiySO63U0JgaznirzbiVU-8o1hqvhq/view?usp=drivesdk">
-    ▶️ Watch the Full Web Demo
-  </a>
-</p>
+| Category         | Technologies                 |
 | ---------------- | ---------------------------- |
 | Framework        | Flutter, Dart                |
 | State Management | Flutter BLoC                 |
